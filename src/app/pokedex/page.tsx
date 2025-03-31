@@ -1,35 +1,12 @@
 "use client";
-import {
-  QueryClientProvider,
-  useQuery,
-  useQueryClient,
-} from "@tanstack/react-query";
-import { get } from "http";
-import type { Key } from "react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "~/components/ui/card";
-import { TypeBadge } from "~/components/ui/typebadge";
-import type { PokemonList, Pokemon } from "~/types/types";
-import Image from "next/image";
+import { useQuery } from "@tanstack/react-query";
+import type { PokemonList } from "~/types/types";
 import PokemonCard from "~/components/pokemoncard";
-import { HoverCardEffect } from "~/components/hover-card-effect";
-import Link from "next/link";
 
-const getAllPokemon = async () => {
+const getAllPokemon = async (): Promise<PokemonList> => {
   const response = await fetch(
     "https://pokeapi.co/api/v2/pokemon/?offset=0&limit=1025",
   );
-  const pokeList = await response.json();
-  return pokeList as PokemonList;
-};
-
-const getPokemonDetails = async (url: string): Promise<Pokemon> => {
-  const response = await fetch(url);
   return response.json();
 };
 

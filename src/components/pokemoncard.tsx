@@ -13,6 +13,9 @@ import { HoverCardEffect } from "./hover-card-effect";
 
 const getPokemonDetails = async (url: string): Promise<Pokemon> => {
   const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error("Failed to fetch Pokémon details");
+  }
   return response.json();
 };
 
