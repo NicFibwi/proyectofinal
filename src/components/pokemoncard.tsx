@@ -16,7 +16,7 @@ const getPokemonDetails = async (url: string): Promise<Pokemon> => {
   if (!response.ok) {
     throw new Error("Failed to fetch Pokémon details");
   }
-  return response.json();
+  return response.json() as Promise<Pokemon>;
 };
 
 export default function PokemonCard({ url }: { url: string }) {

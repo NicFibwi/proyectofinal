@@ -7,7 +7,8 @@ const getAllPokemon = async (): Promise<PokemonList> => {
   const response = await fetch(
     "https://pokeapi.co/api/v2/pokemon/?offset=0&limit=1025",
   );
-  return response.json();
+
+  return (await response.json()) as PokemonList;
 };
 
 export default function PokedexPage() {
