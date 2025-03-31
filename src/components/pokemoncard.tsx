@@ -10,6 +10,7 @@ import { TypeBadge } from "~/components/ui/typebadge";
 import type { Pokemon } from "~/types/types";
 import Image from "next/image";
 import { HoverCardEffect } from "./hover-card-effect";
+import Link from "next/link";
 
 const getPokemonDetails = async (url: string): Promise<Pokemon> => {
   const response = await fetch(url);
@@ -49,30 +50,32 @@ export default function PokemonCard({ url }: { url: string }) {
 
   return (
     <HoverCardEffect>
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex flex-row items-center justify-between capitalize">
-            <div>{pokemon.name}</div>
-            <div className="text-muted-foreground">#{pokemon.id}</div>
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="flex flex-col items-center justify-center">
-          <Image
-            src={pokemon.sprites.front_default}
-            alt={pokemon.name}
-            width={100}
-            height={100}
-            loading="lazy"
-          />
-        </CardContent>
-        <CardDescription className="flex flex-row items-center justify-around">
-          <div className="flex gap-2">
-            {pokemon.types.map((type, index) => (
-              <TypeBadge key={index} type={type} />
-            ))}
-          </div>
-        </CardDescription>
-      </Card>
+      <Link href={`/pokedex/${pokemon.name}/`}>
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex flex-row items-center justify-between capitalize">
+              <div>{pokemon.name}</div>
+              <div className="text-muted-foreground">#{pokemon.id}</div>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="flex flex-col items-center justify-center">
+            <Image
+              src={pokemon.sprites.front_default}
+              alt={pokemon.name}
+              width={100}
+              height={100}
+              loading="lazy"
+            />
+          </CardContent>
+          <CardDescription className="flex flex-row items-center justify-around">
+            <div className="flex gap-2">
+              {pokemon.types.map((type, index) => (
+                <TypeBadge key={index} type={type} />
+              ))}
+            </div>
+          </CardDescription>
+        </Card>
+      </Link>
     </HoverCardEffect>
   );
 }
