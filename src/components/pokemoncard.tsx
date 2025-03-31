@@ -1,0 +1,75 @@
+import { useQuery } from "@tanstack/react-query";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "~/components/ui/card";
+import { TypeBadge } from "~/components/ui/typebadge";
+import type { Pokemon } from "~/types/types";
+import Image from "next/image";
+import { HoverCardEffect } from "./hover-card-effect";
+
+const getPokemonDetails = async (url: string): Promise<Pokemon> => {
+  const response = await fetch(url);
+  return response.json();
+};
+
+export default function PokemonCard({ url }: { url: string }) {
+  const {
+    data: pokemon,
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ["pokemon", url],
+    queryFn: () => getPokemonDetails(url),
+  });
+
+  if (isLoading) {
+    return (
+      <Card>
+        <div className="flex h-32 items-center justify-center">Loading...</div>
+      </Card>
+    );
+  }
+
+  if (isError || !pokemon) {
+    return (
+      <Card>
+        <div className="flex h-32 items-center justify-center">
+          Error loading Pokémon.
+        </div>
+      </Card>
+    );
+  }
+
+  return (
+    <HoverCardEffect>
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex flex-row items-center justify-between capitalize">
+            <div>{pokemon.name}</div>
+            <div className="text-muted-foreground">#{pokemon.id}</div>
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="flex flex-col items-center justify-center">
+          <Image
+            src={pokemon.sprites.front_default}
+            alt={pokemon.name}
+            width={100}
+            height={100}
+            loading="lazy"
+          />
+        </CardContent>
+        <CardDescription className="flex flex-row items-center justify-around">
+          <div className="flex gap-2">
+            {pokemon.types.map((type, index) => (
+              <TypeBadge key={index} type={type} />
+            ))}
+          </div>
+        </CardDescription>
+      </Card>
+    </HoverCardEffect>
+  );
+}

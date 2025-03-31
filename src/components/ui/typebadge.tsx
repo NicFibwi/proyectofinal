@@ -31,7 +31,7 @@ export function TypeBadge({ type }: TypeBadgeProps) {
   return (
     <div
       className={cn(
-        "rounded-md px-2 py-1 text-xs font-bold text-white",
+        "flex h-6 w-18 items-center justify-center rounded-md px-2 py-1 text-xs font-bold text-white",
         typeColors[type.type.name] || "bg-gray-300", // Default color if type is unknown
       )}
     >

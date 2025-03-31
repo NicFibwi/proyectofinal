@@ -15,6 +15,10 @@ import {
 } from "~/components/ui/card";
 import { TypeBadge } from "~/components/ui/typebadge";
 import type { PokemonList, Pokemon } from "~/types/types";
+import Image from "next/image";
+import PokemonCard from "~/components/pokemoncard";
+import { HoverCardEffect } from "~/components/hover-card-effect";
+import Link from "next/link";
 
 const getAllPokemon = async () => {
   const response = await fetch(
@@ -24,20 +28,28 @@ const getAllPokemon = async () => {
   return pokeList as PokemonList;
 };
 
-const getPokemon = async (apiUrl: string) => {
-  const response = await fetch(apiUrl);
-  const pokemon = await response.json();
-  return pokemon as Pokemon;
-}
+const getPokemonDetails = async (url: string): Promise<Pokemon> => {
+  const response = await fetch(url);
+  return response.json();
+};
 
 export default function PokedexPage() {
-
-  const getPokemonList = useQuery({
+  const {
+    data: pokemonList,
+    isLoading,
+    isError,
+  } = useQuery({
     queryKey: ["pokemonlist"],
     queryFn: getAllPokemon,
   });
 
-  const { data } = getPokemonList;
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (isError || !pokemonList) {
+    return <div>Error loading Pokémon list.</div>;
+  }
 
   return (
     <div className="space-y-6">
@@ -49,28 +61,8 @@ export default function PokedexPage() {
       </div>
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
-        {data?.results.map((p) => (
-
-          
-          
-          <Card key={p.name}>
-            <CardHeader>
-              <CardTitle className="capitalize">{p.name}</CardTitle>
-            </CardHeader>
-            {/* <CardContent>
-              <img src={} alt={data.name} className="mx-auto h-24 w-24" />
-              <div className="flex-center flex">
-                <span className="text-muted-foreground">#{data.id}</span>
-              </div>
-            </CardContent>
-            <CardDescription>
-              <div className="flex gap-2">
-                {pokemon.types.map((type, index) => (
-                  <TypeBadge key={index} type={type} />
-                ))}
-              </div>
-            </CardDescription> */}
-          </Card>
+        {pokemonList.results.map((pokemon) => (
+          <PokemonCard key={pokemon.name} url={pokemon.url} />
         ))}
       </div>
     </div>

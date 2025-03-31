@@ -5,6 +5,11 @@
 import "./src/env.js";
 
 /** @type {import("next").NextConfig} */
-const config = {};
+const config = {
+  reactStrictMode: true,
+  images: {
+    domains: ["raw.githubusercontent.com"], // Allow images from this domain
+  },
+};
 
 export default config;
