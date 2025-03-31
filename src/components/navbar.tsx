@@ -19,7 +19,6 @@ import {
   NavigationMenuList,
   navigationMenuTriggerStyle,
 } from "~/components/ui/navigation-menu";
-import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import { cn } from "~/lib/utils";
 import {
   Database,
@@ -87,7 +86,7 @@ export default function Navbar() {
 
   return (
     <header className="bg-background/95 supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50 w-full border-b backdrop-blur">
-      <div className="container flex h-16 items-center justify-between">
+      <div className="flex size-full h-16 w-full items-center justify-between">
         {/* Left Section: Site Name */}
         <div className="ml-4 flex items-center gap-2">
           <Link href="/" className="flex items-center space-x-2">
@@ -158,7 +157,7 @@ export default function Navbar() {
         </div>
 
         {/* Right section: Auth */}
-        <div></div>
+        <div className="mr-4">Hello</div>
       </div>
     </header>
   );
