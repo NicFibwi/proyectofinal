@@ -1,7 +1,7 @@
 export default async function PokemonDetailsPage({
   params,
 }: {
-  params: { name: string };
+  params: Promise<{ name: string }>;
 }) {
   const name = (await params).name;
 
