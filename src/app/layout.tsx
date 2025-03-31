@@ -13,7 +13,7 @@ export const metadata: Metadata = {
   description: "Your ultimate Pokémon companion app",
 };
 
-export default function RootLayout({
+export default function RootLayout({  
   children,
 }: Readonly<{
   children: React.ReactNode;
