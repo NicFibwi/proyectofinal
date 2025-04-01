@@ -19,7 +19,7 @@ const typeColors: Record<string, string> = {
   flying: "bg-indigo-400",
   psychic: "bg-pink-500",
   bug: "bg-lime-500",
-  rock: "bg-gray-600",
+  rock: "bg-yellow-900",
   ghost: "bg-indigo-800",
   dragon: "bg-indigo-600",
   dark: "bg-gray-800",

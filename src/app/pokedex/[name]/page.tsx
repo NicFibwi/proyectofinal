@@ -1,6 +1,7 @@
 "use client";
 import { useQuery } from "@tanstack/react-query";
 import React from "react";
+import TypeEffectivenessTable from "~/components/type-effectiveness";
 import { Card } from "~/components/ui/card";
 import type { Pokemon } from "~/types/types";
 
@@ -60,6 +61,11 @@ export default function PokemonDetailsPage({
           </div>
         ))}
       </div>
+      {/* Type efectiveness */}
+      <TypeEffectivenessTable
+        pokemonTypes={pokemon.types.map((typeInfo) => typeInfo.type.name)}
+      />
+      <div></div>
     </div>
   );
 }
