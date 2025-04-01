@@ -107,6 +107,7 @@ export function PokemonStatsChart({ stats, id, name }: PokemonStatsChartProps) {
                 tickLine={false}
                 tickMargin={0}
                 width={15}
+                tick={{ fontSize: 9 }}
               />
               <XAxis
                 type="number"
