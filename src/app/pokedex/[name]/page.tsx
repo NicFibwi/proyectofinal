@@ -3,7 +3,10 @@ import { useQuery } from "@tanstack/react-query";
 import React from "react";
 import TypeEffectivenessTable from "~/components/type-effectiveness";
 import { Card } from "~/components/ui/card";
+import { PokemonStatsChart } from "~/components/pokemon-stat-chart";
 import type { Pokemon } from "~/types/types";
+import Image from "next/image";
+import { SpriteCarousel } from "~/components/sprite-carousel";
 
 const getPokemonData = async (name: string): Promise<Pokemon> => {
   const response = await fetch("https://pokeapi.co/api/v2/pokemon/" + name);
@@ -48,24 +51,57 @@ export default function PokemonDetailsPage({
     );
   }
 
+  const formattedStats = pokemon.stats.map((stat) => ({
+    name: stat.stat.name,
+    base_stat: stat.base_stat,
+    color: "#FFFFFF", // Default color, can be customized
+  }));
+  const spriteImages = [
+    pokemon.sprites.other?.["official-artwork"].front_default,
+    pokemon.sprites.other?.["official-artwork"].front_shiny,
+    pokemon.sprites.front_default,
+    pokemon.sprites.back_default,
+    pokemon.sprites.front_shiny,
+    pokemon.sprites.back_shiny,
+  ].filter((image): image is string => Boolean(image)); // Filter out null or undefined sprites
+
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-4xl font-bold capitalize">{name}</h1>
-      <p>ID: {pokemon.id}</p>
-      <p>Height: {pokemon.height}</p>
-      <div>
+    <div className="container flex flex-row">
+      <div className="m-6 flex w-2/3 flex-col items-center justify-center">
+        <Card className="m-6 flex h-auto w-full flex-col items-center justify-center">
+          <p>{pokemon.name}</p>
+        </Card>
+      </div>
+
+      <div className="m-6 flex w-1/3 flex-col items-center justify-center">
+        <Card className="mb-6 flex h-auto w-full flex-col items-center justify-center">
+          <p className="capitalize">{pokemon.name}</p>
+        </Card>
+        <Card className="mb-6 flex h-auto w-full flex-col items-center justify-center">
+          <SpriteCarousel images={spriteImages} />
+        </Card>
+        <Card className="mb-6 flex h-auto w-full flex-col items-center justify-center">
+          <PokemonStatsChart
+            stats={formattedStats}
+            id={pokemon.id}
+            name={pokemon.name}
+          />
+        </Card>
+        <Card className="mb-6 flex h-auto w-fit flex-col items-center justify-center">
+          <TypeEffectivenessTable
+            pokemonTypes={pokemon.types.map((typeInfo) => typeInfo.type.name)}
+          />
+        </Card>
+      </div>
+
+      {/* <div>
         <h2 className="text-2xl font-semibold">Moves:</h2>
         {pokemon.moves.map((move) => (
           <div key={move.move.name} className="capitalize">
             {move.move.name}
           </div>
         ))}
-      </div>
-      {/* Type efectiveness */}
-      <TypeEffectivenessTable
-        pokemonTypes={pokemon.types.map((typeInfo) => typeInfo.type.name)}
-      />
-      <div></div>
+      </div> */}
     </div>
   );
 }

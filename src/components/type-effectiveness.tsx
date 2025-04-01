@@ -193,7 +193,7 @@ const TypeEffectivenessTable: React.FC<TypeEffectivenessTableProps> = ({
         label: "Effective",
         value: 2,
         description: "2× damage",
-        bgClass: "bg-green-500",
+        bgClass: "bg-green-400",
         textClass: "text-white",
         types: typeEffectiveness
           .filter((t) => t.effectiveness === 2)
@@ -247,7 +247,7 @@ const TypeEffectivenessTable: React.FC<TypeEffectivenessTableProps> = ({
   return (
     <div
       className={cn(
-        "mx-auto w-full max-w-3xl overflow-hidden rounded-lg bg-transparent shadow-lg",
+        "mx-auto w-full max-w-3xl overflow-hidden rounded-lg bg-transparent",
       )}
     >
       <div>
