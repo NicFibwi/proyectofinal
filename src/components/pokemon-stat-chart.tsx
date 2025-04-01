@@ -1,15 +1,10 @@
 "use client";
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "./ui/card";
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Cell } from "recharts";
+import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "./ui/chart";
 import type { ValueType } from "recharts/types/component/DefaultTooltipContent";
 import { ResponsiveContainer } from "recharts";
+import { useMemo } from "react";
 
 interface PokemonStat {
   name: string;
@@ -57,6 +52,7 @@ const getStatColor = (value: number) => {
 const scaleStatValue = (value: number) => {
   return value;
 };
+
 export function PokemonStatsChart({ stats, id, name }: PokemonStatsChartProps) {
   // Calculate the total base stats
   const baseStatTotal = stats.reduce(
@@ -64,12 +60,15 @@ export function PokemonStatsChart({ stats, id, name }: PokemonStatsChartProps) {
     0,
   );
 
-  // Map the stats to include the stat value in the label
-  const chartData = stats.map((stat) => ({
-    stat: `${statNames[stat.name as keyof typeof statNames] || stat.name} (${stat.base_stat})`, // Add stat value next to the name
-    value: scaleStatValue(stat.base_stat),
-    fill: getStatColor(stat.base_stat),
-  }));
+  // Use useMemo to prevent recreating the data on every render
+  const chartData = useMemo(() => {
+    return stats.map((stat, index) => ({
+      id: `${id}-${stat.name}-${index}`, // Unique identifier
+      stat: `${statNames[stat.name as keyof typeof statNames] || stat.name} (${stat.base_stat})`,
+      value: scaleStatValue(stat.base_stat),
+      color: getStatColor(stat.base_stat),
+    }));
+  }, [stats, id]);
 
   return (
     <Card className="w-full border-none bg-transparent shadow-none">
@@ -83,11 +82,7 @@ export function PokemonStatsChart({ stats, id, name }: PokemonStatsChartProps) {
       <CardContent>
         <ChartContainer
           className="flex h-auto items-center justify-start"
-          config={
-            {
-              /* No extra configuration */
-            }
-          }
+          config={{}}
         >
           <ResponsiveContainer
             width="100%"
@@ -111,7 +106,7 @@ export function PokemonStatsChart({ stats, id, name }: PokemonStatsChartProps) {
                 axisLine={false}
                 tickLine={false}
                 tickMargin={0}
-                width={15} // Adjust width to fit the longer labels
+                width={15}
               />
               <XAxis
                 type="number"
@@ -120,7 +115,12 @@ export function PokemonStatsChart({ stats, id, name }: PokemonStatsChartProps) {
                 tickLine={false}
                 tickCount={6}
               />
-              <Bar dataKey="value" radius={[0, 4, 4, 0]} barSize={15} />
+              {/* Use Cell components instead of fill property on Bar */}
+              <Bar dataKey="value" radius={[0, 4, 4, 0]} barSize={15}>
+                {chartData.map((entry, index) => (
+                  <Cell key={`cell-${id}-${index}`} fill={entry.color} />
+                ))}
+              </Bar>
               <ChartTooltip
                 cursor={false}
                 content={

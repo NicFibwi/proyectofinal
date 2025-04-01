@@ -78,7 +78,6 @@ const navItems = [
     description: "Pokémon-based minigames with new activities every day",
   },
 ];
-
 export default function Navbar() {
   const pathname = usePathname();
   const isMobile = useMobile();
@@ -96,7 +95,7 @@ export default function Navbar() {
 
         {/* Mid Section: Navigation */}
         <div className="flex items-center gap-4">
-          {!isMobile && (
+          {!isMobile ? (
             <NavigationMenu className="hidden md:flex">
               <NavigationMenuList>
                 {navItems.map((item, index) => (
@@ -122,30 +121,29 @@ export default function Navbar() {
                 ))}
               </NavigationMenuList>
             </NavigationMenu>
+          ) : (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="h-8 w-8 p-0">
+                  <Menu className="h-5 w-5" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-56" align="start" forceMount>
+                {navItems.map((item) => (
+                  <DropdownMenuItem key={item.href} asChild>
+                    <Link href={item.href}>
+                      <span className="flex items-center">
+                        {item.icon}
+                        {item.name}
+                      </span>
+                    </Link>
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
           )}
 
           <ThemeToggle />
-
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <DropdownMenuContent className="w-56" align="end" forceMount>
-                <DropdownMenuLabel className="font-normal">
-                  <div className="flex flex-col space-y-1">
-                    <p className="text-sm leading-none font-medium">Trainer</p>
-                    <p className="text-muted-foreground text-xs leading-none">
-                      trainer@example.com
-                    </p>
-                  </div>
-                </DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem>Profile</DropdownMenuItem>
-                <DropdownMenuItem>Settings</DropdownMenuItem>
-                <DropdownMenuItem>My Teams</DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem>Log out</DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenuTrigger>
-          </DropdownMenu>
         </div>
 
         {/* Right section: Auth */}

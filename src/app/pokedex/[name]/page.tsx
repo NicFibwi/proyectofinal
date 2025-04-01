@@ -68,7 +68,7 @@ export default function PokemonDetailsPage({
   return (
     <div className="container flex flex-row">
       <div className="m-6 flex w-2/3 flex-col items-center justify-center">
-        <Card className="m-6 flex h-auto w-full flex-col items-center justify-center">
+        <Card className="mb-6 flex h-full w-full flex-col items-center justify-center">
           <p>{pokemon.name}</p>
         </Card>
       </div>
