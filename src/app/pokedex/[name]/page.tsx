@@ -66,14 +66,9 @@ export default function PokemonDetailsPage({
   ].filter((image): image is string => Boolean(image)); // Filter out null or undefined sprites
 
   return (
-    <div className="container flex flex-row">
-      <div className="m-6 flex w-2/3 flex-col items-center justify-center">
-        <Card className="mb-6 flex h-full w-full flex-col items-center justify-center">
-          <p>{pokemon.name}</p>
-        </Card>
-      </div>
-
-      <div className="m-6 flex w-1/3 flex-col items-center justify-center">
+    <div className="container flex flex-col md:flex-row">
+      {/* Sidebar Content */}
+      <div className="m-6 flex flex-col items-center justify-center sm:w-full md:w-1/3">
         <Card className="mb-6 flex h-auto w-full flex-col items-center justify-center">
           <p className="capitalize">{pokemon.name}</p>
         </Card>
@@ -94,14 +89,12 @@ export default function PokemonDetailsPage({
         </Card>
       </div>
 
-      {/* <div>
-        <h2 className="text-2xl font-semibold">Moves:</h2>
-        {pokemon.moves.map((move) => (
-          <div key={move.move.name} className="capitalize">
-            {move.move.name}
-          </div>
-        ))}
-      </div> */}
+      {/* Main Content */}
+      <div className="m-6 flex flex-col items-center justify-center sm:w-full md:w-2/3">
+        <Card className="mb-6 flex h-full w-full flex-col items-center justify-center">
+          <p>{pokemon.name}</p>
+        </Card>
+      </div>
     </div>
   );
 }

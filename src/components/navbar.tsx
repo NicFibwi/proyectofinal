@@ -80,8 +80,6 @@ const navItems = [
 ];
 export default function Navbar() {
   const pathname = usePathname();
-  const isMobile = useMobile();
-  const [isOpen, setIsOpen] = useState(false);
 
   return (
     <header className="bg-background/95 supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50 w-full border-b backdrop-blur">
@@ -94,34 +92,40 @@ export default function Navbar() {
         </div>
 
         {/* Mid Section: Navigation */}
-        <div className="flex items-center gap-4">
-          {!isMobile ? (
-            <NavigationMenu className="hidden md:flex">
-              <NavigationMenuList>
-                {navItems.map((item, index) => (
-                  <NavigationMenuItem
-                    key={item.href}
-                    className={`stagger-item stagger-delay-${index + 1}`}
-                  >
-                    <Link href={item.href} legacyBehavior passHref>
-                      <NavigationMenuLink
-                        className={cn(
-                          navigationMenuTriggerStyle(),
-                          pathname === item.href && "bg-accent",
-                          "transition-all duration-200 hover:scale-105",
-                        )}
-                      >
-                        <span className="flex items-center">
-                          {item.icon}
-                          {item.name}
-                        </span>
-                      </NavigationMenuLink>
-                    </Link>
-                  </NavigationMenuItem>
-                ))}
-              </NavigationMenuList>
-            </NavigationMenu>
-          ) : (
+        <div className="hidden items-center gap-4 xl:flex">
+          <NavigationMenu>
+            <NavigationMenuList>
+              {navItems.map((item, index) => (
+                <NavigationMenuItem
+                  key={item.href}
+                  className={`stagger-item stagger-delay-${index + 1}`}
+                >
+                  <Link href={item.href} legacyBehavior passHref>
+                    <NavigationMenuLink
+                      className={cn(
+                        navigationMenuTriggerStyle(),
+                        pathname === item.href && "bg-accent",
+                        "transition-all duration-200 hover:scale-105",
+                      )}
+                    >
+                      <span className="flex items-center">
+                        {item.icon}
+                        {item.name}
+                      </span>
+                    </NavigationMenuLink>
+                  </Link>
+                </NavigationMenuItem>
+              ))}
+            </NavigationMenuList>
+          </NavigationMenu>
+        </div>
+
+        {/* Dropdown Menu for Mobile */}
+
+        {/* Theme Toggle */}
+        <div className="flex flex-row">
+          <ThemeToggle />
+          <div className="flex items-center gap-4 xl:hidden">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="h-8 w-8 p-0">
@@ -141,22 +145,7 @@ export default function Navbar() {
                 ))}
               </DropdownMenuContent>
             </DropdownMenu>
-          )}
-
-          <ThemeToggle />
-        </div>
-
-        {/* Right section: Auth */}
-        <div className="mr-4">
-          <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-            {/* <Avatar className="h-8 w-8">
-                <AvatarImage
-                  src="/placeholder.svg?height=32&width=32"
-                  alt="Profile"
-                />
-                <AvatarFallback>TR</AvatarFallback>
-              </Avatar> */}
-          </Button>
+          </div>
         </div>
       </div>
     </header>
