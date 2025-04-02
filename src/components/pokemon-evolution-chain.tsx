@@ -211,7 +211,7 @@ export default function PokemonEvolutionChain({ url }: { url: string }) {
               <Card>
                 <CardContent className="mb-4 flex items-center justify-center">
                   <CardTitle className="capitalize">{evolution.name}</CardTitle>
-                  <Image src={evolution.sprite} alt={evolution.name} />
+                  <img src={evolution.sprite} alt={evolution.name} />
                 </CardContent>
               </Card>
             )}
