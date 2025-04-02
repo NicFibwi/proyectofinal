@@ -8,8 +8,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
 import {
@@ -29,9 +27,6 @@ import {
   Home,
   Menu,
 } from "lucide-react";
-import { useState } from "react";
-import { Sheet, SheetContent, SheetTrigger } from "~/components/ui/sheet";
-import { useMobile } from "~/hooks/use-mobile";
 
 const navItems = [
   {

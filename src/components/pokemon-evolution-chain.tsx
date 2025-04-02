@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, type JSX } from "react";
+import React from "react";
 import { Card, CardContent, CardTitle } from "./ui/card";
 import type {
   SpeciesEvolutionChain,
@@ -9,9 +9,8 @@ import type {
   Sprites,
 } from "~/types/types";
 import { useQuery } from "@tanstack/react-query";
-import Image from "next/image";
 import Link from "next/link";
-
+import Image from "next/image";
 // Fetch the evolution chain data
 const getPokemonChain = async (url: string): Promise<SpeciesEvolutionChain> => {
   const response = await fetch(url);
@@ -215,7 +214,13 @@ export default function PokemonEvolutionChain({ url }: { url: string }) {
                     <CardTitle className="capitalize">
                       {evolution.name}
                     </CardTitle>
-                    <img src={evolution.sprite} alt={evolution.name} />
+                    <Image
+                      src={evolution.sprite}
+                      width={96}
+                      height={96}
+                      alt={evolution.name}
+                      className="object-contain"
+                    />
                   </CardContent>
                 </Card>
               </Link>

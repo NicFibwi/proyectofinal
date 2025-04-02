@@ -6,20 +6,21 @@
 <!-- POKEMON -->
 - [x] Fetch Pokemon data (pokemon and pokemon-species)
   - Make necessary components:
-    · [ ] pokemoncard (for pokedex list)
-    · [ ] sprite-carousel (Pokemon images in pokemon page)
-    · [ ] type-effectiveness (Type effectiveness against the pokemon)
-    · [ ] typebadge (Types looking good)
-    · [ ] pokemon-evolution-chain (Visual representation of pokemon evolution chain)
-    · [ ] pokemon-species-info (Technical information of the pokemon)
+    · [x] pokemoncard (for pokedex list)
+    · [x] sprite-carousel (Pokemon images in pokemon page)
+    · [x] type-effectiveness (Type effectiveness against the pokemon)
+    · [x] typebadge (Types looking good)
+    · [x] pokemon-evolution-chain (Visual representation of pokemon evolution chain)
+    · [ ] pokemon-species-info (Any info worth implementing into the page from /pokemon-species/)
+    · [ ] pokemon-info (Any info worth implementing into the page from /pokemon/)
+          Abilities, cries, height,
     · [ ] pokemon-move-table (Table of all the moves the pokemon can learn)
-    · [ ] 
     · [ ]
     · [ ]
     · [ ]
     · [ ]
     · [ ]
-    
+    · [ ]
 - [ ] Make mega-evolution page
 - [ ] Fetch Item data
 - [ ] Fetch Move data
