@@ -113,7 +113,9 @@ export default function PokemonDetailsPage({
         <Card className="mb-6 flex h-full w-full flex-col items-center justify-center">
           <PokemonSpeciesInfo />
         </Card>
-        <PokemonEvolutionChain url={species?.evolution_chain.url!} />
+        {species?.evolution_chain.url && (
+          <PokemonEvolutionChain url={species.evolution_chain.url} />
+        )}
       </div>
     </div>
   );
