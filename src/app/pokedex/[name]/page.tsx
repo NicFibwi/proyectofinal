@@ -4,9 +4,11 @@ import React from "react";
 import TypeEffectivenessTable from "~/components/type-effectiveness";
 import { Card } from "~/components/ui/card";
 import { PokemonStatsChart } from "~/components/pokemon-stat-chart";
-import type { Pokemon } from "~/types/types";
+import type { Pokemon, PokemonSpecies } from "~/types/types";
 import Image from "next/image";
 import { SpriteCarousel } from "~/components/sprite-carousel";
+import PokemonSpeciesInfo from "~/components/pokemon-species-info";
+import PokemonEvolutionChain from "~/components/pokemon-evolution-chain";
 
 const getPokemonData = async (name: string): Promise<Pokemon> => {
   const response = await fetch("https://pokeapi.co/api/v2/pokemon/" + name);
@@ -14,6 +16,14 @@ const getPokemonData = async (name: string): Promise<Pokemon> => {
     throw new Error("Failed to fetch Pokémon data");
   }
   return response.json() as Promise<Pokemon>;
+};
+
+const getPokemonSpeciesData = async (name: string): Promise<PokemonSpecies> => {
+  const response = await fetch(name);
+  if (!response.ok) {
+    throw new Error("Failed to fetch Pokémon species data");
+  }
+  return response.json() as Promise<PokemonSpecies>;
 };
 
 export default function PokemonDetailsPage({
@@ -31,6 +41,15 @@ export default function PokemonDetailsPage({
   } = useQuery({
     queryKey: ["pokedata", name],
     queryFn: () => getPokemonData(name),
+  });
+
+  const {
+    data: species,
+    isLoading: isLoadingSpecies,
+    isError: isErrorSpecies,
+  } = useQuery({
+    queryKey: ["speciesdata", name],
+    queryFn: () => getPokemonSpeciesData(pokemon!.species.url),
   });
 
   if (isLoading) {
@@ -92,8 +111,9 @@ export default function PokemonDetailsPage({
       {/* Main Content */}
       <div className="m-6 flex flex-col items-center justify-center sm:w-full md:w-2/3">
         <Card className="mb-6 flex h-full w-full flex-col items-center justify-center">
-          <p>{pokemon.name}</p>
+          <PokemonSpeciesInfo />
         </Card>
+        <PokemonEvolutionChain url={species?.evolution_chain.url!} />
       </div>
     </div>
   );

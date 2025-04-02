@@ -54,13 +54,11 @@ const scaleStatValue = (value: number) => {
 };
 
 export function PokemonStatsChart({ stats, id, name }: PokemonStatsChartProps) {
-  // Calculate the total base stats
   const baseStatTotal = stats.reduce(
     (total, stat) => total + stat.base_stat,
     0,
   );
 
-  // Use useMemo to prevent recreating the data on every render
   const chartData = useMemo(() => {
     return stats.map((stat, index) => ({
       id: `${id}-${stat.name}-${index}`, // Unique identifier
@@ -98,6 +96,7 @@ export function PokemonStatsChart({ stats, id, name }: PokemonStatsChartProps) {
                 bottom: 10,
                 left: 50,
               }}
+              barCategoryGap={100}
             >
               <CartesianGrid strokeDasharray="3 3" opacity={0.5} />
               <YAxis
@@ -107,7 +106,7 @@ export function PokemonStatsChart({ stats, id, name }: PokemonStatsChartProps) {
                 tickLine={false}
                 tickMargin={0}
                 width={15}
-                tick={{ fontSize: 9 }}
+                // tick={{ fontSize: 9 }}
               />
               <XAxis
                 type="number"

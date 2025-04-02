@@ -247,7 +247,7 @@ const TypeEffectivenessTable: React.FC<TypeEffectivenessTableProps> = ({
   return (
     <div
       className={cn(
-        "mx-auto w-full max-w-3xl overflow-hidden rounded-lg bg-transparent",
+        "mx-auto w-full max-w-3xl overflow-hidden rounded-lg bg-transparent shadow-none",
       )}
     >
       <div>
@@ -315,6 +315,11 @@ const TypeEffectivenessTable: React.FC<TypeEffectivenessTableProps> = ({
               </div>
             ),
         )}
+        <div className="flex flex-row items-center justify-center gap-2 p-4 text-sm text-gray-500">
+          <p>
+            Effectiveness may change depending on the abilities the Pokemon has.
+          </p>
+        </div>
       </div>
     </div>
   );

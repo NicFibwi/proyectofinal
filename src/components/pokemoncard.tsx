@@ -61,7 +61,10 @@ export default function PokemonCard({ url }: { url: string }) {
           </CardHeader>
           <CardContent className="flex flex-col items-center justify-center">
             <Image
-              src={pokemon.sprites.front_default}
+              src={
+                pokemon.sprites.other?.["official-artwork"].front_default ??
+                "/placeholder.png"
+              }
               alt={pokemon.name}
               width={100}
               height={100}
