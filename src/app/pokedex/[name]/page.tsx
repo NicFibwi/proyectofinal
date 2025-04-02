@@ -89,7 +89,7 @@ export default function PokemonDetailsPage({
       {/* Sidebar Content */}
       <div className="m-6 flex flex-col items-center justify-center sm:w-full md:w-1/3">
         <Card className="mb-6 flex h-auto w-full flex-col items-center justify-center">
-          <p className="capitalize">{pokemon.name}</p>
+          <h3 className="capitalize">{pokemon.name}</h3>
         </Card>
         <Card className="mb-6 flex h-auto w-full flex-col items-center justify-center">
           <SpriteCarousel images={spriteImages} />
@@ -101,10 +101,15 @@ export default function PokemonDetailsPage({
             name={pokemon.name}
           />
         </Card>
-        <Card className="mb-6 flex h-auto w-fit flex-col items-center justify-center">
+        <Card className="mb-6 flex h-auto w-full flex-col items-center justify-center">
           <TypeEffectivenessTable
             pokemonTypes={pokemon.types.map((typeInfo) => typeInfo.type.name)}
           />
+        </Card>
+        <Card className="mb-6 flex h-auto w-full flex-col items-center justify-center">
+          {species?.evolution_chain.url && (
+            <PokemonEvolutionChain url={species.evolution_chain.url} />
+          )}
         </Card>
       </div>
 
@@ -113,9 +118,6 @@ export default function PokemonDetailsPage({
         <Card className="mb-6 flex h-full w-full flex-col items-center justify-center">
           <PokemonSpeciesInfo />
         </Card>
-        {species?.evolution_chain.url && (
-          <PokemonEvolutionChain url={species.evolution_chain.url} />
-        )}
       </div>
     </div>
   );

@@ -10,6 +10,7 @@ import type {
 } from "~/types/types";
 import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
+import Link from "next/link";
 
 // Fetch the evolution chain data
 const getPokemonChain = async (url: string): Promise<SpeciesEvolutionChain> => {
@@ -37,7 +38,7 @@ const getPokemonSpriteFromName = async (
 interface EvolutionData {
   name: string;
   sprite: string;
-  reason?: string; // Optional because the first Pokémon in the chain won't have a reason
+  reason?: string;
 }
 
 // Recursively process the evolution chain
@@ -58,9 +59,9 @@ const getEvolvesToChain = async (chain: Chain): Promise<EvolutionData[]> => {
 
           // Map gender to readable format
           if (detail.gender === 1) {
-            readableDetails.push("Male");
-          } else if (detail.gender === 2) {
             readableDetails.push("Female");
+          } else if (detail.gender === 2) {
+            readableDetails.push("Male");
           }
 
           // Map item to readable format
@@ -208,12 +209,16 @@ export default function PokemonEvolutionChain({ url }: { url: string }) {
         {evolutionChain.map((evolution, index) => (
           <div key={index} className="flex flex-col items-center">
             {evolution.name && (
-              <Card>
-                <CardContent className="mb-4 flex items-center justify-center">
-                  <CardTitle className="capitalize">{evolution.name}</CardTitle>
-                  <img src={evolution.sprite} alt={evolution.name} />
-                </CardContent>
-              </Card>
+              <Link href={`/pokedex/${evolution.name}`}>
+                <Card>
+                  <CardContent className="mb-4 flex items-center justify-center">
+                    <CardTitle className="capitalize">
+                      {evolution.name}
+                    </CardTitle>
+                    <img src={evolution.sprite} alt={evolution.name} />
+                  </CardContent>
+                </Card>
+              </Link>
             )}
             {evolution.reason && (
               <p className="text-center text-gray-500">
