@@ -210,18 +210,26 @@ export default function PokemonSpeciesCard({
                   <span className="flex gap-2">
                     <button
                       className="flex h-6 w-18 items-center justify-center rounded-md bg-amber-500 text-xs font-bold text-white hover:bg-red-200"
-                      onClick={() => {
-                        const audio = new Audio(pokemonInfo.cries.legacy);
-                        audio.play();
+                      onClick={async () => {
+                        try {
+                          const audio = new Audio(pokemonInfo.cries.legacy);
+                          await audio.play(); // Await the promise to handle it properly
+                        } catch (error) {
+                          console.error("Failed to play legacy cry:", error);
+                        }
                       }}
                     >
                       Legacy
                     </button>
                     <button
                       className="flex h-6 w-18 items-center justify-center rounded-md bg-yellow-500 text-xs font-bold text-white hover:bg-red-200"
-                      onClick={() => {
-                        const audio = new Audio(pokemonInfo.cries.latest);
-                        audio.play();
+                      onClick={async () => {
+                        try {
+                          const audio = new Audio(pokemonInfo.cries.latest);
+                          await audio.play(); // Await the promise to handle it properly
+                        } catch (error) {
+                          console.error("Failed to play latest cry:", error);
+                        }
                       }}
                     >
                       Latest
@@ -236,7 +244,7 @@ export default function PokemonSpeciesCard({
             <h3 className="text-lg font-bold">Pokédex Entries</h3>
             {englishEntries.length > 0 ? (
               <Tabs defaultValue={defaultTab} className="w-full">
-                <TabsList className="mb-4 grid h-auto grid-cols-3 flex-wrap w-full">
+                <TabsList className="mb-4 grid h-auto w-full grid-cols-3 flex-wrap">
                   {englishEntries.map((entry) => {
                     return (
                       <TabsTrigger
