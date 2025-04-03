@@ -89,7 +89,7 @@ export default function PokemonDetailsPage({
       {/* Sidebar Content */}
       <div className="m-6 flex flex-col items-center justify-center sm:w-full md:w-1/3">
         <Card className="mb-6 flex h-auto w-full flex-col items-center justify-center">
-          <h3 className="capitalize">{pokemon.name}</h3>
+          <h5 className="text-lg font-bold capitalize">{pokemon.name}</h5>
         </Card>
         <Card className="mb-6 flex h-auto w-full flex-col items-center justify-center">
           <SpriteCarousel images={spriteImages} />
@@ -114,9 +114,9 @@ export default function PokemonDetailsPage({
       </div>
 
       {/* Main Content */}
-      <div className="m-6 flex flex-col items-center justify-center sm:w-full md:w-2/3">
-        <Card className="mb-6 flex h-full w-full flex-col items-center justify-center">
-          <PokemonSpeciesInfo />
+      <div className="m-6 flex flex-col items-start justify-center sm:w-full md:w-2/3">
+        <Card className="mb-6 flex h-full w-full flex-col items-start justify-center">
+          {species && <PokemonSpeciesInfo speciesInfo={species} />}
         </Card>
       </div>
     </div>

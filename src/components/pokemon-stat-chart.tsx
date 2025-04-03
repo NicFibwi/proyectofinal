@@ -53,7 +53,7 @@ const scaleStatValue = (value: number) => {
   return value;
 };
 
-export function PokemonStatsChart({ stats, id, name }: PokemonStatsChartProps) {
+export function PokemonStatsChart({ stats, id }: PokemonStatsChartProps) {
   const baseStatTotal = stats.reduce(
     (total, stat) => total + stat.base_stat,
     0,
@@ -72,8 +72,10 @@ export function PokemonStatsChart({ stats, id, name }: PokemonStatsChartProps) {
     <Card className="w-full border-none bg-transparent shadow-none">
       <CardHeader>
         <div className="flex items-center gap-4">
-          <CardTitle className="capitalize">
-            Base Stats - {baseStatTotal}
+          <CardTitle>
+            <h3 className="text-lg font-bold">
+              Base Stat Total - {baseStatTotal}
+            </h3>
           </CardTitle>
         </div>
       </CardHeader>

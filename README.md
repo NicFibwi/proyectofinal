@@ -13,7 +13,7 @@
     · [x] pokemon-evolution-chain (Visual representation of pokemon evolution chain)
     · [ ] pokemon-species-info (Any info worth implementing into the page from /pokemon-species/)
     · [ ] pokemon-info (Any info worth implementing into the page from /pokemon/)
-          Abilities, cries, height,
+          Abilities, cries, height, id, name, types,
     · [ ] pokemon-move-table (Table of all the moves the pokemon can learn)
     · [ ]
     · [ ]

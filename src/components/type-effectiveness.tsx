@@ -126,6 +126,7 @@ const typeEffectivenessChart: Record<string, Record<string, number>> = {
     steel: 0.5,
   },
 };
+
 const allTypes = Object.keys(typeEffectivenessChart);
 interface TypeEffectivenessTableProps {
   pokemonTypes: string[];

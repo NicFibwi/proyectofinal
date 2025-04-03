@@ -203,23 +203,21 @@ export default function PokemonEvolutionChain({ url }: { url: string }) {
 
   return (
     <div className="flex flex-col items-center justify-center gap-4">
-      <h1>EVOLUTION CHAIN</h1>
+      <h3 className="text-lg font-bold">Evolution Chain</h3>
       <div className="flex flex-col items-center justify-center gap-4">
         {evolutionChain.map((evolution, index) => (
           <div key={index} className="flex flex-col items-center">
             {evolution.name && (
               <Link href={`/pokedex/${evolution.name}`}>
-                <Card>
-                  <CardContent className="mb-4 flex items-center justify-center">
+                <Card className="flex h-auto w-auto flex-col items-center justify-center">
+                  <CardContent className="mb-4 flex flex-col items-center justify-center">
                     <CardTitle className="capitalize">
                       {evolution.name}
                     </CardTitle>
-                    <Image
+                    <img
                       src={evolution.sprite}
-                      width={96}
-                      height={96}
                       alt={evolution.name}
-                      className="object-contain"
+                      className="h-24 w-24 object-contain"
                     />
                   </CardContent>
                 </Card>
