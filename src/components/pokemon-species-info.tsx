@@ -4,15 +4,18 @@ import { Badge } from "./ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 import { useMemo } from "react";
-import type { PokemonSpecies } from "../types/types";
+import type { PokemonSpecies, Pokemon } from "../types/types";
 import { Progress } from "./ui/progress";
+import { TypeBadge } from "./ui/typebadge";
 
 interface PokemonSpeciesCardProps {
   speciesInfo: PokemonSpecies;
+  pokemonInfo: Pokemon;
 }
 
 export default function PokemonSpeciesCard({
   speciesInfo,
+  pokemonInfo,
 }: PokemonSpeciesCardProps) {
   const englishEntries = useMemo(() => {
     const entries = speciesInfo.flavor_text_entries.filter(
@@ -62,17 +65,80 @@ export default function PokemonSpeciesCard({
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           <div className="space-y-4">
             <div>
+              <h3 className="text-lg font-bold">Combat Info</h3>
+              <div className="mt-2 space-y-2">
+                <div className="flex justify-between border-b-1">
+                  <span>Types:</span>
+                  <span className="flex flex-row">
+                    {pokemonInfo.types.map((type, index) => (
+                      <TypeBadge
+                        key={index}
+                        type={{
+                          slot: index + 1,
+                          type: {
+                            name: type.type.name.toLowerCase(),
+                            url: "#",
+                          },
+                        }}
+                      />
+                    ))}
+                  </span>
+                </div>
+                <div className="flex justify-between border-b-1">
+                  <span>Egg Groups:</span>
+                  <span className="felx gap-2">
+                    {speciesInfo.egg_groups
+                      .map(
+                        (group) =>
+                          group.name.charAt(0).toUpperCase() +
+                          group.name.slice(1),
+                      )
+                      .join(", ")}
+                  </span>
+                </div>
+
+                <div className="flex justify-between border-b-1">
+                  <span>Abilities:</span>
+                  <ul className="flex flex-col">
+                    {pokemonInfo.abilities.map((ability, index) => (
+                      <li
+                        key={index}
+                        className={`${
+                          ability.is_hidden ? "text-gray-500" : ""
+                        } list-disc`}
+                      >
+                        {ability.is_hidden
+                          ? `(Hidden) ${
+                              ability.ability.name.charAt(0).toUpperCase() +
+                              ability.ability.name.slice(1)
+                            }`
+                          : ability.ability.name.charAt(0).toUpperCase() +
+                            ability.ability.name.slice(1)}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div>
               <h3 className="text-lg font-bold">Basic Information</h3>
               <div className="mt-2 space-y-2">
-                <div className="flex justify-between">
+                <div className="flex justify-between border-b-1">
                   <span>Capture Rate:</span>
                   <span>{speciesInfo.capture_rate}</span>
                 </div>
-                <div className="flex justify-between">
+                <div className="flex justify-between border-b-1">
                   <span>Base Happiness:</span>
                   <span>{speciesInfo.base_happiness}</span>
                 </div>
-                <div className="flex justify-between">
+                <div className="flex justify-between border-b-1">
+                  <span>Growth Rate:</span>
+                  <span className="capitalize">
+                    {speciesInfo.growth_rate.name}
+                  </span>
+                </div>
+                <div className="flex justify-between border-b-1">
                   <span>Gender Rate:</span>
                   <div className="flex w-full items-center gap-2">
                     {speciesInfo.gender_rate === -1 ? (
@@ -113,13 +179,13 @@ export default function PokemonSpeciesCard({
             <div>
               <h3 className="text-lg font-bold">Classification</h3>
               <div className="mt-2 space-y-2">
-                <div className="flex justify-between">
+                <div className="flex justify-between border-b-1">
                   <span>Generation:</span>
                   <span>{formattedGeneration}</span>
                 </div>
-                <div className="flex justify-between">
+                <div className="flex justify-between border-b-1">
                   <span>Egg Groups:</span>
-                  <span>
+                  <span className="felx gap-2">
                     {speciesInfo.egg_groups
                       .map(
                         (group) =>
@@ -131,22 +197,59 @@ export default function PokemonSpeciesCard({
                 </div>
               </div>
             </div>
+
+            <div>
+              <h3 className="text-lg font-bold">Other</h3>
+              <div className="mt-2 space-y-2">
+                <div className="flex justify-between border-b-1">
+                  <span>Weight:</span>
+                  <span>{pokemonInfo.weight.toString()}</span>
+                </div>
+                <div className="flex justify-between border-b-1">
+                  <span>Cries:</span>
+                  <span className="flex gap-2">
+                    <button
+                      className="flex h-6 w-18 items-center justify-center rounded-md bg-amber-500 text-xs font-bold text-white hover:bg-red-200"
+                      onClick={() => {
+                        const audio = new Audio(pokemonInfo.cries.legacy);
+                        audio.play();
+                      }}
+                    >
+                      Legacy
+                    </button>
+                    <button
+                      className="flex h-6 w-18 items-center justify-center rounded-md bg-yellow-500 text-xs font-bold text-white hover:bg-red-200"
+                      onClick={() => {
+                        const audio = new Audio(pokemonInfo.cries.latest);
+                        audio.play();
+                      }}
+                    >
+                      Latest
+                    </button>
+                  </span>
+                </div>
+              </div>
+            </div>
           </div>
 
           <div className="space-y-4">
             <h3 className="text-lg font-bold">Pokédex Entries</h3>
             {englishEntries.length > 0 ? (
               <Tabs defaultValue={defaultTab} className="w-full">
-                <TabsList className="mb-4 grid h-auto grid-cols-3 flex-wrap">
-                  {englishEntries.map((entry) => (
-                    <TabsTrigger
-                      key={entry.version}
-                      value={entry.version}
-                      className="text-xs capitalize"
-                    >
-                      {entry.version.replace(/-/g, " ")}
-                    </TabsTrigger>
-                  ))}
+                <TabsList className="mb-4 grid h-auto grid-cols-3 flex-wrap w-full">
+                  {englishEntries.map((entry) => {
+                    return (
+                      <TabsTrigger
+                        key={entry.version}
+                        value={entry.version}
+                        className="text-xs capitalize hover:bg-gray-500"
+                      >
+                        {entry.version
+                          .replace(/-/g, " ")
+                          .replace(/Lets Go\s*/gi, "LG ")}
+                      </TabsTrigger>
+                    );
+                  })}
                 </TabsList>
                 {englishEntries.map((entry) => (
                   <TabsContent
@@ -156,7 +259,7 @@ export default function PokemonSpeciesCard({
                   >
                     <Card className="w-full border-none bg-transparent shadow-none">
                       <CardContent className="p-4">
-                        <p>{entry.text}</p>
+                        <p className="">{entry.text}</p>
                       </CardContent>
                     </Card>
                   </TabsContent>
