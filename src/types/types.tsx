@@ -299,7 +299,7 @@ export interface MoveInfo {
   contest_type: ContestType;
   damage_class: ContestType;
   effect_chance: number;
-  effect_changes: any[];
+  // effect_changes: any[];
   effect_entries: EffectEntry[];
   flavor_text_entries: FlavorTextEntry[];
   generation: ContestType;

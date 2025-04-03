@@ -44,7 +44,7 @@ export default function PokemonMovesTable({ pokemon }: PokemonMovesTableProps) {
       setMoveData(data);
     };
 
-    fetchMoveData();
+    void fetchMoveData();
   }, [pokemon.moves]);
 
   const handleSort = (column: string) => {
