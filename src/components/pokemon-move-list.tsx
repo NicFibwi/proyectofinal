@@ -12,6 +12,7 @@ import {
 import { TypeBadge } from "./ui/typebadge";
 import { type Pokemon } from "../types/types";
 import { type MoveInfo } from "../types/types";
+import { useQuery } from "@tanstack/react-query";
 
 const getMoveInfo = async (moveName: string): Promise<MoveInfo> => {
   const response = await fetch("https://pokeapi.co/api/v2/move/" + moveName);
@@ -26,26 +27,37 @@ interface PokemonMovesTableProps {
 }
 
 export default function PokemonMovesTable({ pokemon }: PokemonMovesTableProps) {
-  const [moveData, setMoveData] = useState<Record<string, MoveInfo | null>>({});
   const [sortColumn, setSortColumn] = useState<string | null>(null);
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
 
-  useEffect(() => {
-    const fetchMoveData = async () => {
-      const data: Record<string, MoveInfo | null> = {};
-      for (const move of pokemon.moves) {
+  const {
+    data: moveData = {},
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ["moveData", pokemon.moves],
+    queryFn: async () => {
+      const movePromises = pokemon.moves.map(async (move) => {
         try {
           const moveInfo = await getMoveInfo(move.move.name);
-          data[move.move.name] = moveInfo;
+          return { name: move.move.name, data: moveInfo };
         } catch {
-          data[move.move.name] = null; // Handle failed fetch
+          return { name: move.move.name, data: null }; // Handle failed fetch
         }
-      }
-      setMoveData(data);
-    };
+      });
 
-    void fetchMoveData();
-  }, [pokemon.moves]);
+      const results = await Promise.all(movePromises);
+      return results.reduce(
+        (acc, { name, data }) => {
+          acc[name] = data;
+          return acc;
+        },
+        {} as Record<string, MoveInfo | null>,
+      );
+    },
+    staleTime: 1000 * 60 * 5, // Cache data for 5 minutes
+    refetchOnWindowFocus: false, // Avoid refetching on window focus
+  });
 
   const handleSort = (column: string) => {
     if (sortColumn === column) {
@@ -83,8 +95,8 @@ export default function PokemonMovesTable({ pokemon }: PokemonMovesTableProps) {
         valueB = moveB.power ?? 0;
         break;
       case "damage_class":
-        valueA = moveA.damage_class?.name ?? ""; // Handle undefined or null
-        valueB = moveB.damage_class?.name ?? ""; // Handle undefined or null
+        valueA = moveA.damage_class?.name ?? "";
+        valueB = moveB.damage_class?.name ?? "";
         break;
       case "learnMethod":
         valueA = a.version_group_details[0]?.move_learn_method?.name ?? "";
@@ -98,6 +110,14 @@ export default function PokemonMovesTable({ pokemon }: PokemonMovesTableProps) {
     if (valueA > valueB) return sortDirection === "asc" ? 1 : -1;
     return 0;
   });
+
+  if (isLoading) {
+    return <div>Loading moves...</div>;
+  }
+
+  if (isError) {
+    return <div>Error loading moves.</div>;
+  }
 
   return (
     <div className="w-full overflow-x-auto">
@@ -148,12 +168,9 @@ export default function PokemonMovesTable({ pokemon }: PokemonMovesTableProps) {
             const moveInfo = moveData[move.move.name];
             return (
               <TableRow key={index}>
-                {/* Move Name */}
                 <TableCell className="font-medium capitalize">
                   {move.move.name.replace(/-/g, " ")}
                 </TableCell>
-
-                {/* Move Type */}
                 <TableCell>
                   {moveInfo?.type && (
                     <TypeBadge
@@ -167,8 +184,6 @@ export default function PokemonMovesTable({ pokemon }: PokemonMovesTableProps) {
                     />
                   )}
                 </TableCell>
-
-                {/* Class */}
                 <TableCell>
                   {moveInfo?.damage_class?.name && (
                     <img
@@ -184,14 +199,8 @@ export default function PokemonMovesTable({ pokemon }: PokemonMovesTableProps) {
                     />
                   )}
                 </TableCell>
-
-                {/* Accuracy */}
                 <TableCell>{moveInfo?.accuracy ?? "N/A"}</TableCell>
-
-                {/* Damage */}
                 <TableCell>{moveInfo?.power ?? "N/A"}</TableCell>
-
-                {/* Learn Method */}
                 <TableCell>
                   {move.version_group_details[0]?.move_learn_method?.name
                     ? move.version_group_details[0].move_learn_method.name ===
@@ -205,8 +214,6 @@ export default function PokemonMovesTable({ pokemon }: PokemonMovesTableProps) {
                         )
                     : "N/A"}
                 </TableCell>
-
-                {/* Description */}
                 <TableCell>
                   {moveInfo?.effect_entries[0]?.short_effect ?? "N/A"}
                 </TableCell>
