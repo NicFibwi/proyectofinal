@@ -38,10 +38,10 @@ export default function PokemonSpeciesCard({
   // Format generation name for display
   const formattedGeneration = useMemo(() => {
     return speciesInfo.generation.name
-      .replace("generation-", "Generation ")
+      .replace("generation-", " ")
       .replace(/-/g, " ")
       .split(" ")
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .map((word) => word.toUpperCase())
       .join(" ");
   }, [speciesInfo.generation.name]);
 
@@ -50,9 +50,9 @@ export default function PokemonSpeciesCard({
     englishEntries.length > 0 ? englishEntries[0]?.version : "";
 
   return (
-    <Card className="mx-auto w-full max-w-3xl shadow-lg">
-      <CardTitle className="flex items-center gap-3 text-2xl">
-        Pokémon #{speciesInfo.id}
+    <Card className="w-full border-none bg-transparent shadow-none">
+      <CardTitle className="flex items-center justify-evenly gap-3 text-2xl">
+        Pokémon with National ID - {speciesInfo.id}
         {speciesInfo.is_legendary && (
           <Badge className="bg-amber-500">Legendary</Badge>
         )}
@@ -108,7 +108,7 @@ export default function PokemonSpeciesCard({
                         } list-disc`}
                       >
                         {ability.is_hidden
-                          ? `(Hidden) ${
+                          ? `${
                               ability.ability.name.charAt(0).toUpperCase() +
                               ability.ability.name.slice(1)
                             }`
@@ -118,6 +118,22 @@ export default function PokemonSpeciesCard({
                     ))}
                   </ul>
                 </div>
+              </div>
+
+              <div className="flex justify-between border-b-1">
+                <span>Effort Values:</span>
+                <ul className="flex flex-col">
+                  {pokemonInfo.stats.map((stat, index) => {
+                    if (stat.effort > 0) {
+                      return (
+                        <li key={index} className="list-disc">
+                          {stat.effort} {stat.stat.name}
+                        </li>
+                      );
+                    }
+                    return null;
+                  })}
+                </ul>
               </div>
             </div>
 
@@ -203,7 +219,11 @@ export default function PokemonSpeciesCard({
               <div className="mt-2 space-y-2">
                 <div className="flex justify-between border-b-1">
                   <span>Weight:</span>
-                  <span>{pokemonInfo.weight.toString()}</span>
+                  <span>{(pokemonInfo.weight / 10).toFixed(2)} kg</span>
+                </div>
+                <div className="flex justify-between border-b-1">
+                  <span>Height:</span>
+                  <span>{(pokemonInfo.height / 10).toFixed(2)} m</span>
                 </div>
                 <div className="flex justify-between border-b-1">
                   <span>Cries:</span>

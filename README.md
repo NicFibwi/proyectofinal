@@ -11,7 +11,7 @@
     · [x] type-effectiveness (Type effectiveness against the pokemon)
     · [x] typebadge (Types looking good)
     · [x] pokemon-evolution-chain (Visual representation of pokemon evolution chain)
-    · [x] pokemon-species-info (Any info worth implementing into the page from /pokemon-species/)
+    · [x] pokemon-species-info (Any info worth implementing into the page from /pokemon-species/ and /pokemon/)
     · [ ] pokemon-info (Any info worth implementing into the page from /pokemon/)
           Abilities, cries, height, id, name, types,
     · [ ] pokemon-move-table (Table of all the moves the pokemon can learn)

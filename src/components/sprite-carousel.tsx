@@ -26,12 +26,6 @@ export function SpriteCarousel({ images }: SpriteCarrouselProps) {
             index === currentIndex ? "opacity-100" : "opacity-0"
           }`}
         >
-          {/* <Image
-            src={image}
-            alt={`Sprite ${index + 1}`}
-            fill
-            className="object-contain"
-          /> */}
           <img
             src={image}
             alt={`Sprite ${index + 1}`}
@@ -45,7 +39,7 @@ export function SpriteCarousel({ images }: SpriteCarrouselProps) {
             key={index}
             onClick={() => setCurrentIndex(index)}
             className={`h-3 w-3 rounded-full ${
-              index === currentIndex ? "bg-blue-500" : "bg-gray-300"
+              index === currentIndex ? "bg-zinc-700" : "bg-gray-300"
             }`}
           />
         ))}
