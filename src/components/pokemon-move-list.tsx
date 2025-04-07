@@ -42,7 +42,7 @@ export default function PokemonMovesTable({ pokemon }: PokemonMovesTableProps) {
           const moveInfo = await getMoveInfo(move.move.name);
           return { name: move.move.name, data: moveInfo };
         } catch {
-          return { name: move.move.name, data: null }; // Handle failed fetch
+          return { name: move.move.name, data: null };
         }
       });
 

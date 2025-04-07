@@ -82,6 +82,7 @@ export default function PokemonDetailsPage({
     base_stat: stat.base_stat,
     color: "#FFFFFF",
   }));
+  
   const spriteImages = [
     pokemon.sprites.other?.["official-artwork"].front_default,
     pokemon.sprites.other?.["official-artwork"].front_shiny,
