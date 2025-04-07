@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useMemo } from "react";
 import {
   type ColumnDef,
   flexRender,
@@ -9,8 +9,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import Link from "next/link";
-import { ExternalLink, ChevronLeft, ChevronRight } from "lucide-react";
-
+import { ExternalLink } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -22,87 +21,83 @@ import {
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { Badge } from "~/components/ui/badge";
-// import { Skeleton } from "~/components/ui/skeleton"
+import type { ItemCategory, ItemInfo, Result } from "~/types/types";
+import { useState } from "react";
 
-interface Item {
-  name: string;
-  url: string;
-}
-
-interface ItemResponse {
-  count: number;
-  next: string | null;
-  previous: string | null;
-  results: Item[];
-}
-
-const fetchItems = async (
-  page: number,
-  limit: number,
-): Promise<ItemResponse> => {
-  const response = await fetch(
-    `https://pokeapi.co/api/v2/item?offset=${page * limit}&limit=${limit}`,
+const fetchItems = async (): Promise<ItemInfo[]> => {
+  const categoryResponse = await fetch(
+    `https://pokeapi.co/api/v2/item-category/?offset=0&limit=54`,
   );
-  if (!response.ok) {
-    throw new Error("Failed to fetch items");
+  if (!categoryResponse.ok) {
+    throw new Error("Failed to fetch item categories");
   }
-  return response.json() as Promise<ItemResponse>;
+
+  const categoryData = (await categoryResponse.json()) as ItemCategory;
+  const categories = categoryData.results.filter(
+    (category: Result) => !category.url.includes("/37/"), // Skip "all-machines" category
+  );
+
+  const items: ItemInfo[] = [];
+  for (const category of categories) {
+    const categoryResponse = await fetch(category.url);
+    if (!categoryResponse.ok) {
+      throw new Error(`Failed to fetch items for category: ${category.name}`);
+    }
+
+    const categoryItems = (await categoryResponse.json()) as {
+      items: ItemInfo[];
+    };
+    items.push(...categoryItems.items);
+  }
+
+  return items;
 };
 
 export default function ItemsPage() {
-  const [page, setPage] = useState(0);
-  const limit = 10;
-
-  const { data, isLoading, isError } = useQuery({
-    queryKey: ["items", page],
-    queryFn: () => fetchItems(page, limit),
+  const { data, isLoading, isError } = useQuery<ItemInfo[]>({
+    queryKey: ["items"],
+    queryFn: fetchItems,
     staleTime: 1000,
   });
 
-  const formatItemName = (name: string) => {
-    return name
-      .split("-")
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(" ");
-  };
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 20;
 
-  const extractItemId = (url: string) => {
-    const regex = /\/item\/(\d+)\//;
-    const matches = regex.exec(url); // Use exec() instead of match()
-    return matches ? matches[1] : "";
-  };
+  const totalPages = data ? Math.ceil(data.length / itemsPerPage) : 0;
 
-  const columns: ColumnDef<Item>[] = [
+  // Memoize the sliced data
+  const paginatedData = useMemo(() => {
+    if (!data) return [];
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    return data.slice(startIndex, endIndex);
+  }, [data, currentPage]);
+
+  const columns: ColumnDef<ItemInfo>[] = [
     {
       accessorKey: "name",
       header: "Item Name",
       cell: (info) => (
-        <div className="font-medium">
-          {formatItemName(info.getValue() as string)}
-        </div>
+        <div className="font-medium">{info.getValue() as string}</div>
       ),
     },
     {
       accessorKey: "url",
       header: "Details",
-      cell: (info) => {
-        const url = info.getValue() as string;
-        const itemId = extractItemId(url);
-        return (
-          <div className="flex justify-end">
-            <Link href={`/docs/items/${info.row.original.name}`}>
-              <Button variant="ghost" size="sm" className="h-8 gap-1">
-                View <ExternalLink className="h-3.5 w-3.5" />
-              </Button>
-            </Link>
-          </div>
-        );
-      },
+      cell: (info) => (
+        <div className="flex justify-end">
+          <Link href={`/docs/items/${info.row.original.name}`}>
+            <Button variant="ghost" size="sm" className="h-8 gap-1">
+              View <ExternalLink className="h-3.5 w-3.5" />
+            </Button>
+          </Link>
+        </div>
+      ),
     },
   ];
 
   const table = useReactTable({
-    data: data?.results ?? [],
+    data: paginatedData, // Use memoized paginated data
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
@@ -198,28 +193,20 @@ export default function ItemsPage() {
               <div className="mt-4 flex items-center justify-between">
                 <Button
                   variant="outline"
-                  size="sm"
-                  onClick={() => setPage((prev) => Math.max(prev - 1, 0))}
-                  disabled={!data?.previous}
-                  className="gap-1"
+                  disabled={currentPage === 1}
+                  onClick={() => setCurrentPage((prev) => prev - 1)}
                 >
-                  <ChevronLeft className="h-4 w-4" /> Previous
+                  Previous
                 </Button>
-                <div className="flex items-center gap-1 text-sm">
-                  <span className="font-medium">Page {page + 1}</span>
-                  <span className="text-muted-foreground">of</span>
-                  <span className="font-medium">
-                    {Math.ceil((data?.count ?? 0) / limit)}
-                  </span>
-                </div>
+                <span>
+                  Page {currentPage} of {totalPages}
+                </span>
                 <Button
                   variant="outline"
-                  size="sm"
-                  onClick={() => setPage((prev) => prev + 1)}
-                  disabled={!data?.next}
-                  className="gap-1"
+                  disabled={currentPage === totalPages}
+                  onClick={() => setCurrentPage((prev) => prev + 1)}
                 >
-                  Next <ChevronRight className="h-4 w-4" />
+                  Next
                 </Button>
               </div>
             </>

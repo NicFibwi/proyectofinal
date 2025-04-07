@@ -380,6 +380,18 @@ export interface StatChange {
   change: number;
   stat: ContestType;
 }
+// return from https://pokeapi.co/api/v2/item-category/?offset=0&limit=54
+export interface ItemCategory {
+  count: number;
+  next: null;
+  previous: null;
+  results: Result[];
+}
+
+export interface Result {
+  name: string;
+  url: string;
+}
 
 //return from /item/ id
 export interface ItemInfo {
@@ -394,7 +406,7 @@ export interface ItemInfo {
   game_indices: GameIndex[];
   held_by_pokemon: Pokemon[];
   id: number;
-  // machines: any[];
+  machines: MachineElement[];
   name: string;
   names: Name[];
   sprites: Sprites;
@@ -429,4 +441,12 @@ export interface Name {
 
 export interface Sprites {
   default: string;
+}
+export interface MachineElement {
+  machine: MachineMachine;
+  version_group: Category;
+}
+
+export interface MachineMachine {
+  url: string;
 }
