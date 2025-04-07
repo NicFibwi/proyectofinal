@@ -98,6 +98,9 @@ export default function ItemDetailCard({ name }: { name: string }) {
               src={item.sprites.default}
               alt={item.name}
               className="h-90 w-90"
+              style={{
+                imageRendering: "pixelated", // Ensures the image is upscaled without blurring
+              }}
             />
           </Card>
         </div>
