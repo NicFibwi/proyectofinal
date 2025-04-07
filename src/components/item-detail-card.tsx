@@ -12,7 +12,7 @@ const getItemData = async (name: string): Promise<ItemInfo> => {
   if (!response.ok) {
     throw new Error("Failed to fetch item data");
   }
-  return response.json();
+  return response.json() as Promise<ItemInfo>;
 };
 
 export default function ItemDetailCard({ name }: { name: string }) {
@@ -35,7 +35,7 @@ export default function ItemDetailCard({ name }: { name: string }) {
         .map((entry) => ({
           version: entry.version_group.name,
           text: entry.text.replace(/\f/g, " "),
-        })) || []
+        })) ?? []
     );
   }, [item?.flavor_text_entries]);
 
@@ -122,7 +122,8 @@ export default function ItemDetailCard({ name }: { name: string }) {
                   >
                     {entry.version
                       .replace(/-/g, " ")
-                      .replace(/Lets Go\s*/gi, "LG ")}
+                      .replace(/Lets Go\s*/gi, "LG ")
+                      .replace(/Ultra\s*/gi, "U ")}
                   </TabsTrigger>
                 ))}
               </TabsList>

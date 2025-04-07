@@ -46,7 +46,7 @@ const fetchItems = async (
   if (!response.ok) {
     throw new Error("Failed to fetch items");
   }
-  return response.json();
+  return response.json() as Promise<ItemResponse>;
 };
 
 export default function ItemsPage() {
@@ -67,7 +67,8 @@ export default function ItemsPage() {
   };
 
   const extractItemId = (url: string) => {
-    const matches = url.match(/\/item\/(\d+)\//);
+    const regex = /\/item\/(\d+)\//;
+    const matches = regex.exec(url); // Use exec() instead of match()
     return matches ? matches[1] : "";
   };
 
@@ -101,7 +102,7 @@ export default function ItemsPage() {
   ];
 
   const table = useReactTable({
-    data: data?.results || [],
+    data: data?.results ?? [],
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
@@ -208,7 +209,7 @@ export default function ItemsPage() {
                   <span className="font-medium">Page {page + 1}</span>
                   <span className="text-muted-foreground">of</span>
                   <span className="font-medium">
-                    {Math.ceil((data?.count || 0) / limit)}
+                    {Math.ceil((data?.count ?? 0) / limit)}
                   </span>
                 </div>
                 <Button

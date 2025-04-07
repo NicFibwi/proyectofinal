@@ -1,3 +1,4 @@
+//lint ignore-file
 //Return from https://pokeapi.co/api/v2/pokemon/?offset=0&limit=1025
 
 export interface PokemonList {
@@ -391,9 +392,9 @@ export interface ItemInfo {
   fling_effect: null;
   fling_power: null;
   game_indices: GameIndex[];
-  held_by_pokemon: any[];
+  held_by_pokemon: Pokemon[];
   id: number;
-  machines: any[];
+  // machines: any[];
   name: string;
   names: Name[];
   sprites: Sprites;
