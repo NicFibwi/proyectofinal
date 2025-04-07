@@ -118,7 +118,7 @@ export default function Navbar() {
         {/* Dropdown Menu for Mobile */}
 
         {/* Theme Toggle */}
-        <div className="flex flex-row">
+        <div className="flex flex-row mr-4">
           <ThemeToggle />
           <div className="flex items-center gap-4 xl:hidden">
             <DropdownMenu>

@@ -9,6 +9,8 @@ import { SpriteCarousel } from "~/components/sprite-carousel";
 import PokemonSpeciesInfo from "~/components/pokemon-species-info";
 import PokemonEvolutionChain from "~/components/pokemon-evolution-chain";
 import PokemonMovesTable from "~/components/pokemon-move-list";
+import { Button } from "~/components/ui/button";
+import { useRouter } from "next/navigation";
 
 const getPokemonData = async (name: string): Promise<Pokemon> => {
   const response = await fetch("https://pokeapi.co/api/v2/pokemon/" + name);
@@ -33,6 +35,8 @@ export default function PokemonDetailsPage({
 }) {
   const params = React.use(paramsPromise); // Unwrap the params Promise
   const { name } = params;
+
+  const router = useRouter(); // Use the useRouter hook
 
   const {
     data: pokemon,
@@ -76,7 +80,7 @@ export default function PokemonDetailsPage({
   const formattedStats = pokemon.stats.map((stat) => ({
     name: stat.stat.name,
     base_stat: stat.base_stat,
-    color: "#FFFFFF", // Default color, can be customized
+    color: "#FFFFFF",
   }));
   const spriteImages = [
     pokemon.sprites.other?.["official-artwork"].front_default,
@@ -85,51 +89,77 @@ export default function PokemonDetailsPage({
     pokemon.sprites.back_default,
     pokemon.sprites.front_shiny,
     pokemon.sprites.back_shiny,
-  ].filter((image): image is string => Boolean(image)); // Filter out null or undefined sprites
+  ].filter((image): image is string => Boolean(image));
 
   return (
-    <div className="container flex flex-col items-start lg:flex-row">
-      {/* Sidebar Content */}
-      <div className="flex w-full flex-col items-center justify-center sm:m-6 lg:w-1/3">
-        <Card className="mb-6 flex h-auto w-full flex-col items-center justify-center">
-          <h5 className="text-lg font-bold capitalize">{pokemon.name}</h5>
-        </Card>
-        <Card className="mb-6 flex h-auto w-full flex-col items-center justify-center">
-          <SpriteCarousel images={spriteImages} />
-        </Card>
-        <Card className="mb-6 flex h-auto w-full flex-col items-center justify-center">
-          <PokemonStatsChart
-            stats={formattedStats}
-            id={pokemon.id}
-            name={pokemon.name}
-          />
-        </Card>
-        <Card className="mb-6 flex h-auto w-full flex-col items-center justify-center">
-          <TypeEffectivenessTable
-            pokemonTypes={pokemon.types.map((typeInfo) => typeInfo.type.name)}
-          />
-        </Card>
-        <Card className="mb-6 flex h-auto w-full flex-col items-center justify-center">
-          {species?.evolution_chain.url && (
-            <PokemonEvolutionChain url={species.evolution_chain.url} />
-          )}
-        </Card>
+    <div className="container h-full w-full">
+      <div className="flex flex-row items-center justify-between mb-6">
+        <div className="flex lg:w-1/5 flex-row items-center ml-6">
+          <Button onClick={() => router.push("/pokedex/")}>Back</Button>
+        </div>
+        <div className="flex lg:w-1/5 flex-row items-center justify-around ">
+          <Button
+            onClick={() => {
+              const prevPokemonId = pokemon.id === 1 ? 1025 : pokemon.id - 1;
+              router.push(`/pokedex/${prevPokemonId}`);
+            }}
+          >
+            Previous
+          </Button>
+          <Button
+            onClick={() => {
+              const nextPokemonId = (pokemon.id % 1025) + 1;
+              router.push(`/pokedex/${nextPokemonId}`);
+            }}
+          >
+            Next
+          </Button>
+        </div>
       </div>
 
-      {/* Main Content */}
-      <div className="flex w-full flex-col sm:m-6 md:w-full lg:w-2/3">
-        <Card className="mb-6 flex h-auto w-full flex-col items-center justify-center">
-          {species && (
-            <PokemonSpeciesInfo speciesInfo={species} pokemonInfo={pokemon} />
-          )}
-        </Card>
+      <div className="container flex flex-col items-start lg:flex-row">
+        {/* Sidebar Content */}
+        <div className="flex w-full flex-col items-center justify-center sm:m-6 lg:w-1/3">
+          <Card className="mb-6 flex h-auto w-full flex-col items-center justify-center">
+            <h5 className="text-lg font-bold capitalize">{pokemon.name}</h5>
+          </Card>
+          <Card className="mb-6 flex h-auto w-full flex-col items-center justify-center">
+            <SpriteCarousel images={spriteImages} />
+          </Card>
+          <Card className="mb-6 flex h-auto w-full flex-col items-center justify-center">
+            <PokemonStatsChart
+              stats={formattedStats}
+              id={pokemon.id}
+              name={pokemon.name}
+            />
+          </Card>
+          <Card className="mb-6 flex h-auto w-full flex-col items-center justify-center">
+            <TypeEffectivenessTable
+              pokemonTypes={pokemon.types.map((typeInfo) => typeInfo.type.name)}
+            />
+          </Card>
+          <Card className="mb-6 flex h-auto w-full flex-col items-center justify-center">
+            {species?.evolution_chain.url && (
+              <PokemonEvolutionChain url={species.evolution_chain.url} />
+            )}
+          </Card>
+        </div>
 
-        <Card>
-          <CardTitle className="flex flex-row items-center justify-around gap-4">
-            <h3 className="text-lg font-bold">Movelist</h3>
-          </CardTitle>
-          <PokemonMovesTable pokemon={pokemon} />
-        </Card>
+        {/* Main Content */}
+        <div className="flex w-full flex-col sm:m-6 md:w-full lg:w-2/3">
+          <Card className="mb-6 flex h-auto w-full flex-col items-center justify-center">
+            {species && (
+              <PokemonSpeciesInfo speciesInfo={species} pokemonInfo={pokemon} />
+            )}
+          </Card>
+
+          <Card>
+            <CardTitle className="flex flex-row items-center justify-around gap-4">
+              <h3 className="text-lg font-bold">Movelist</h3>
+            </CardTitle>
+            <PokemonMovesTable pokemon={pokemon} />
+          </Card>
+        </div>
       </div>
     </div>
   );
