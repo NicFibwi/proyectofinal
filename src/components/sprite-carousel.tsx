@@ -29,7 +29,8 @@ export function SpriteCarousel({ images }: SpriteCarrouselProps) {
           <img
             src={image}
             alt={`Sprite ${index + 1}`}
-            className="h-full w-full object-contain"
+            className="h-full w-full object-contain "
+            style={{ imageRendering: "pixelated" }}
           />
         </div>
       ))}
