@@ -2,7 +2,7 @@ import React from "react";
 import { cn } from "~/lib/utils";
 import type { Type } from "~/types/types";
 
-interface TypeBadgeProps {
+export interface TypeBadgeProps {
   type: Type; // Use the Type interface from your types file
 }
 
