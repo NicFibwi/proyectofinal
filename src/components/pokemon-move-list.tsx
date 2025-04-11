@@ -13,6 +13,7 @@ import { TypeBadge } from "./ui/typebadge";
 import { type Pokemon } from "../types/types";
 import { type MoveInfo } from "../types/types";
 import { useQuery } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 
 const getMoveInfo = async (moveName: string): Promise<MoveInfo> => {
   const response = await fetch("https://pokeapi.co/api/v2/move/" + moveName);
@@ -27,6 +28,8 @@ interface PokemonMovesTableProps {
 }
 
 export default function PokemonMovesTable({ pokemon }: PokemonMovesTableProps) {
+  const router = useRouter(); // Use the useRouter hook
+
   const [sortColumn, setSortColumn] = useState<string | null>(null);
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
 
@@ -143,17 +146,18 @@ export default function PokemonMovesTable({ pokemon }: PokemonMovesTableProps) {
               Class
             </TableHead>
             <TableHead
-              onClick={() => handleSort("accuracy")}
-              className="cursor-pointer"
-            >
-              Accuracy
-            </TableHead>
-            <TableHead
               onClick={() => handleSort("damage")}
               className="cursor-pointer"
             >
               Damage
             </TableHead>
+            <TableHead
+              onClick={() => handleSort("accuracy")}
+              className="cursor-pointer"
+            >
+              Accuracy
+            </TableHead>
+
             <TableHead
               onClick={() => handleSort("learnMethod")}
               className="cursor-pointer"
@@ -166,8 +170,13 @@ export default function PokemonMovesTable({ pokemon }: PokemonMovesTableProps) {
         <TableBody>
           {sortedMoves.map((move, index) => {
             const moveInfo = moveData[move.move.name];
+            const moveUrl = `/docs/moves/${move.move.name}`;
             return (
-              <TableRow key={index}>
+              <TableRow
+                key={index}
+                className="cursor-pointer"
+                onClick={() => router.push(moveUrl)}
+              >
                 <TableCell className="font-medium capitalize">
                   {move.move.name.replace(/-/g, " ")}
                 </TableCell>
@@ -198,9 +207,9 @@ export default function PokemonMovesTable({ pokemon }: PokemonMovesTableProps) {
                       className="h-6 w-6"
                     />
                   )}
-                </TableCell>
-                <TableCell>{moveInfo?.accuracy ?? "N/A"}</TableCell>
+                </TableCell>{" "}
                 <TableCell>{moveInfo?.power ?? "N/A"}</TableCell>
+                <TableCell>{moveInfo?.accuracy ?? "N/A"}</TableCell>
                 <TableCell>
                   {move.version_group_details[0]?.move_learn_method?.name
                     ? move.version_group_details[0].move_learn_method.name ===

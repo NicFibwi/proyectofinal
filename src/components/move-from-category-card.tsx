@@ -11,13 +11,7 @@ const getMoveListFromCategory = async (categoryUrl: string) => {
   return response.json() as Promise<IndependantMoveCategory>;
 };
 
-const getMoveInfo = async (moveUrl: string) => {
-  const response = await fetch(moveUrl);
-  if (!response.ok) {
-    throw new Error("Failed to fetch move info");
-  }
-  return response.json() as Promise<MoveInfo>;
-};
+
 
 export default function MoveCardList({ categoryUrl }: { categoryUrl: string }) {
   const {
@@ -28,15 +22,6 @@ export default function MoveCardList({ categoryUrl }: { categoryUrl: string }) {
     queryKey: ["moveInfo", categoryUrl],
     queryFn: () => getMoveListFromCategory(categoryUrl),
   });
-
-  //   const {
-  //     data: moveInfo,
-  //     isLoading,
-  //     isError,
-  //   } = useQuery({
-  //     queryKey: ["moveInfo", m],
-  //     queryFn: () => getMoveInfo(moveList?.moves[0].url),
-  //   });
 
   if (isLoading) {
     return (

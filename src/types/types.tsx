@@ -505,7 +505,7 @@ export interface MoveInfo {
   power: number;
   pp: number;
   priority: number;
-  // stat_changes:         any[];
+  stat_changes: StatChange[];
   super_contest_effect: ContestEffect;
   target: ContestType;
   pokemonType: Type;
@@ -555,4 +555,9 @@ export interface Meta {
 export interface Name {
   language: ContestType;
   name: string;
+}
+
+export interface StatChange {
+  change: number;
+  stat: ContestType;
 }

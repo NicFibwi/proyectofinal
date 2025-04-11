@@ -96,7 +96,7 @@ export default function PokemonDetailsPage({
     <div className="container h-full w-full">
       <div className="flex flex-row items-center justify-between mb-6">
         <div className="flex lg:w-1/5 flex-row items-center ml-6">
-          <Button onClick={() => router.push("/pokedex/")}>Back</Button>
+          <Button onClick={() => router.back()}>Back</Button>
         </div>
         <div className="flex lg:w-1/5 flex-row items-center justify-around ">
           <Button

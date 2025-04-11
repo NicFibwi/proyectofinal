@@ -12,16 +12,6 @@ const getMoveCategories = async () => {
   return response.json() as Promise<MoveCategory>;
 };
 
-const getPokemonTypes = async () => {
-  const response = await fetch("https://pokeapi.co/api/v2/type/");
-  if (!response.ok) {
-    throw new Error("Failed to fetch Pokémon types");
-  }
-  return response.json() as Promise<{
-    results: { name: string; url: string }[];
-  }>;
-};
-
 export default function MovesTablePage() {
   const {
     data: moveCategories,
@@ -30,15 +20,6 @@ export default function MovesTablePage() {
   } = useQuery({
     queryKey: ["moveCategories"],
     queryFn: getMoveCategories,
-  });
-
-  const {
-    data: pokemonTypes,
-    isLoading: isLoadingTypes,
-    isError: isErrorTypes,
-  } = useQuery({
-    queryKey: ["pokemonTypes"],
-    queryFn: getPokemonTypes,
   });
 
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -87,30 +68,6 @@ export default function MovesTablePage() {
           ))}
         </select>
       </div>
-
-      {/* Filter by Type */}
-      {/* <div className="mb-4">
-        <label
-          htmlFor="type-filter"
-          className="block text-sm font-medium text-gray-700"
-        >
-          Filter by Type:
-        </label>
-        <select
-          id="type-filter"
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-          value={selectedType || ""}
-          onChange={(e) => setSelectedType(e.target.value || null)}
-        >
-          <option value="">All Types</option>
-          {pokemonTypes?.results.map((type) => (
-            <option key={type.name} value={type.name}>
-              {type.name}
-            </option>
-          ))}
-        </select>
-      </div> */}
-
 
       {filteredByType?.map((category) => (
         <div key={category.name} className="mb-0 w-full">

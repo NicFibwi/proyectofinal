@@ -274,7 +274,8 @@ export default function PokemonSpeciesCard({
                       >
                         {entry.version
                           .replace(/-/g, " ")
-                          .replace(/Lets Go\s*/gi, "LG ")}
+                          .replace(/Lets Go\s*/gi, "LG ")
+                          .replace(/Ultra\s*/gi, "U ")}
                       </TabsTrigger>
                     );
                   })}
