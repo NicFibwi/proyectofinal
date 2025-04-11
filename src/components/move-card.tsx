@@ -7,7 +7,6 @@ import { Card, CardContent, CardTitle } from "~/components/ui/card";
 import { TypeBadge } from "./ui/typebadge";
 import Link from "next/link";
 
-
 const getMoveInfo = async (moveUrl: string) => {
   const response = await fetch(moveUrl);
   if (!response.ok) {
@@ -28,7 +27,7 @@ export function MoveCard({ moveUrl }: { moveUrl: string }) {
 
   return (
     <Link href={`/docs/moves/${moveInfo?.name}/`}>
-      <Card className="mb-2 w-full p-0">
+      <Card className="mb-2 w-full overflow-y-auto p-0">
         {isLoading && (
           <div className="text-muted-foreground flex h-10 items-center gap-2">
             <Loader2 className="h-4 w-4 animate-spin" />
@@ -67,6 +66,27 @@ export function MoveCard({ moveUrl }: { moveUrl: string }) {
             </div>
 
             <div className="flex w-1/6 items-center justify-center gap-1">
+              <span className="text-sm font-medium tabular-nums">
+                Power: {moveInfo.power ?? "—"}
+              </span>
+            </div>
+
+            <div className="flex w-1/6 items-center justify-center gap-1">
+              <span className="text-sm font-medium tabular-nums">
+                {" "}
+                Accuracy: {moveInfo.accuracy ? `${moveInfo.accuracy}%` : "—"}
+              </span>
+            </div>
+
+            {/* PP (hidden on small screens) */}
+            <div className="hidden w-1/6 items-center justify-center gap-1 sm:flex">
+              <span className="text-sm font-medium tabular-nums">
+                PP: {moveInfo.pp ?? "—"}
+              </span>
+            </div>
+
+            {/* Damage Class (hidden on small screens) */}
+            <div className="hidden w-1/6 items-center justify-center gap-1 sm:flex">
               {moveInfo?.damage_class?.name && (
                 <img
                   src={`/icons/${
@@ -82,29 +102,8 @@ export function MoveCard({ moveUrl }: { moveUrl: string }) {
                 />
               )}
             </div>
-
-            <div className="flex w-1/6 items-center justify-center gap-1">
-              <span className="text-sm font-medium tabular-nums">
-                Power: {moveInfo.power ?? "—"}
-              </span>
-            </div>
-
-            <div className="flex w-1/6 items-center justify-center gap-1">
-              <span className="text-sm font-medium tabular-nums">
-                {" "}
-                Accuracy: {moveInfo.accuracy ? `${moveInfo.accuracy}%` : "—"}
-              </span>
-            </div>
-
-            <div className="flex w-1/6 items-center justify-center gap-1">
-              <span className="text-sm font-medium tabular-nums">
-                PP: {moveInfo.pp ?? "—"}
-              </span>
-            </div>
           </div>
         )}
-
-        
       </Card>
     </Link>
   );

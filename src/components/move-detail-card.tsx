@@ -121,9 +121,11 @@ export default function MoveDetailCard({ name }: { name: string }) {
                 className="text-xs capitalize hover:bg-gray-500"
               >
                 {entry.version
-                  .replace(/-/g, " ")
-                  .replace(/Lets Go\s*/gi, "LG ")
-                  .replace(/Ultra\s*/gi, "U ")}
+                 .replace(/-/g, " ")
+                 .replace(/Lets Go\s*/gi, "LG ")
+                 .replace(/Ultra\s*/gi, "U ")
+                 .replace(/Omega\s*/gi, "O ")
+                 .replace(/Alpha\s*/gi, "A ")}
               </TabsTrigger>
             ))}
               </TabsList>

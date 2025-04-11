@@ -64,7 +64,7 @@ export default function ItemDetailCard({ name }: { name: string }) {
   return (
     <div className="container h-full w-full">
       <div className="mb-6 flex flex-row items-center justify-between">
-        <div className="ml-6 flex flex-row items-center lg:w-1/5">
+        <div className="sm:ml-6 flex flex-row items-center lg:w-1/5">
           <Button onClick={() => router.back()}>Back</Button>
         </div>
         <div className="flex flex-row items-center justify-around lg:w-1/5">
@@ -94,14 +94,20 @@ export default function ItemDetailCard({ name }: { name: string }) {
             <h5 className="text-lg font-bold capitalize">{item.name}</h5>
           </Card>
           <Card className="mb-6 flex h-auto w-full flex-col items-center justify-center">
-            <img
+          {item.sprites?.default ? (
+              <img
               src={item.sprites.default}
               alt={item.name}
               className="h-90 w-90"
               style={{
                 imageRendering: "pixelated", // Ensures the image is upscaled without blurring
               }}
-            />
+              />
+            ) : (
+              <div className="flex h-90 w-90 items-center justify-center text-4xl font-bold">
+              N/A
+              </div>
+            )}
           </Card>
         </div>
 
@@ -126,7 +132,9 @@ export default function ItemDetailCard({ name }: { name: string }) {
                     {entry.version
                       .replace(/-/g, " ")
                       .replace(/Lets Go\s*/gi, "LG ")
-                      .replace(/Ultra\s*/gi, "U ")}
+                      .replace(/Ultra\s*/gi, "U ")
+                      .replace(/Omega\s*/gi, "O ")
+                      .replace(/Alpha\s*/gi, "A ")}
                   </TabsTrigger>
                 ))}
               </TabsList>
