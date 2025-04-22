@@ -20,6 +20,7 @@ export default function MovesTablePage() {
   } = useQuery({
     queryKey: ["moveCategories"],
     queryFn: getMoveCategories,
+    staleTime: 1000 * 60 * 15,
   });
 
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);

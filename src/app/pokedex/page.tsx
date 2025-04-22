@@ -19,8 +19,7 @@ export default function PokedexPage() {
   } = useQuery({
     queryKey: ["pokemonlist"],
     queryFn: getAllPokemon,
-    staleTime: 1000 * 60 * 10, // 5 minutes
-    // cacheTime: 1000 * 60 * 10, // 10 minutes
+    staleTime: Infinity,
   });
 
   if (isLoading) {

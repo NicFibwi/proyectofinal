@@ -207,7 +207,7 @@ export default function PokemonMovesTable({ pokemon }: PokemonMovesTableProps) {
                       className="h-6 w-6"
                     />
                   )}
-                </TableCell>{" "}
+                </TableCell>
                 <TableCell>{moveInfo?.power ?? "N/A"}</TableCell>
                 <TableCell>{moveInfo?.accuracy ?? "N/A"}</TableCell>
                 <TableCell>

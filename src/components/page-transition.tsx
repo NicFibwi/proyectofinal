@@ -1,27 +1,27 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { usePathname } from "next/navigation"
-import { useEffect, useState } from "react"
+import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 
 export default function PageTransition({ children }: { children: React.ReactNode }) {
-  const pathname = usePathname()
-  const [isTransitioning, setIsTransitioning] = useState(false)
-  const [displayChildren, setDisplayChildren] = useState(children)
+  const [isTransitioning, setIsTransitioning] = useState(true); // Start with transitioning
+  const [displayChildren, setDisplayChildren] = useState(children);
 
   useEffect(() => {
-    // When the pathname changes, start the transition
-    setIsTransitioning(true)
-
-    // After a short delay, update the displayed children
+    // After a short delay, stop the transition
     const timeout = setTimeout(() => {
-      setDisplayChildren(children)
-      setIsTransitioning(false)
-    }, 300)
+      setIsTransitioning(false);
+    }, 300);
 
-    return () => clearTimeout(timeout)
-  }, [pathname, children])
+    return () => clearTimeout(timeout);
+  }, []); // Only run on mount
+
+  useEffect(() => {
+    // Update displayed children when the pathname changes
+    setDisplayChildren(children);
+  }, [children]);
 
   return (
     <div
@@ -31,6 +31,5 @@ export default function PageTransition({ children }: { children: React.ReactNode
     >
       {displayChildren}
     </div>
-  )
+  );
 }
-

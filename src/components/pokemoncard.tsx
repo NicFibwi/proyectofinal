@@ -29,6 +29,7 @@ export default function PokemonCard({ url }: { url: string }) {
   } = useQuery({
     queryKey: ["pokemon", url],
     queryFn: () => getPokemonDetails(url),
+    staleTime: 1000 * 60 * 15,
   });
 
   if (isLoading) {
@@ -55,7 +56,12 @@ export default function PokemonCard({ url }: { url: string }) {
         <Card>
           <CardHeader>
             <CardTitle className="flex flex-row items-center justify-between capitalize">
-              <div>{pokemon.name}</div>
+              <div>
+                {pokemon.name.replace(
+                  /-(Incarnate|Standard|Altered|Land|Plant|Normal|Green-Plumage|Two-Segment|Curly|Zero|Family-Of-Four|Male|Single-Strike|Full-Belly|Ice|Amped|Disguised|Red-Meteor|Solo|Midday|Baile|50|Average|Shield|Aria|Ordinary|Red-Striped)/gi,
+                  "",
+                )}
+              </div>
               <div className="text-muted-foreground">#{pokemon.id}</div>
             </CardTitle>
           </CardHeader>

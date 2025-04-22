@@ -3,10 +3,15 @@
 import { Badge } from "./ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import type { PokemonSpecies, Pokemon } from "../types/types";
 import { Progress } from "./ui/progress";
 import { TypeBadge } from "./ui/typebadge";
+import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
+import { Button } from "./ui/button";
+import { ChevronsUpDown } from "lucide-react";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "./ui/command";
+import { useRouter } from "next/navigation";
 
 interface PokemonSpeciesCardProps {
   speciesInfo: PokemonSpecies;
@@ -17,6 +22,10 @@ export default function PokemonSpeciesCard({
   speciesInfo,
   pokemonInfo,
 }: PokemonSpeciesCardProps) {
+  const router = useRouter(); // Initialize the router
+  const [open, setOpen] = useState(false); // State for Combobox open/close
+  const [selectedVariety, setSelectedVariety] = useState(""); // State for selected variety
+
   const englishEntries = useMemo(() => {
     const entries = speciesInfo.flavor_text_entries.filter(
       (entry) => entry.language.name === "en",
@@ -49,6 +58,12 @@ export default function PokemonSpeciesCard({
   const defaultTab =
     englishEntries.length > 0 ? englishEntries[0]?.version : "";
 
+    const handleVarietySelect = (variety: string) => {
+      setSelectedVariety(variety);
+      setOpen(false);
+      router.push(`/pokedex/${variety}`);
+    };
+
   return (
     <Card className="w-full border-none bg-transparent shadow-none">
       <CardTitle className="flex items-center justify-evenly gap-3 text-2xl">
@@ -64,6 +79,53 @@ export default function PokemonSpeciesCard({
       <CardContent className="p-6">
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           <div className="space-y-4">
+          <div>
+              <h3 className="text-lg font-bold">Varieties</h3>
+              <Popover open={open} onOpenChange={setOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    role="combobox"
+                    aria-expanded={open}
+                    className="w-[200px] justify-between"
+                  >
+                    {selectedVariety
+                      ? speciesInfo.varieties.find(
+                          (variety) => variety.pokemon.name === selectedVariety
+                        )?.pokemon.name
+                      : "Select variety..."}
+                    <ChevronsUpDown className="opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-[200px] p-0">
+                  <Command>
+                    <CommandInput placeholder="Search variety..." />
+                    <CommandList>
+                      <CommandEmpty>No variety found.</CommandEmpty>
+                      <CommandGroup>
+                        {speciesInfo.varieties.map((variety) => (
+                          <CommandItem
+                            key={variety.pokemon.name}
+                            value={variety.pokemon.name}
+                            onSelect={() => handleVarietySelect(variety.pokemon.name)}
+                          >
+                            {variety.pokemon.name}
+                            {/* <Check
+                              className={cn(
+                                "ml-auto",
+                                selectedVariety === variety.pokemon.name
+                                  ? "opacity-100"
+                                  : "opacity-0"
+                              )}
+                            /> */}
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
+              </Popover>
+            </div>
             <div>
               <h3 className="text-lg font-bold">Combat Info</h3>
               <div className="mt-2 space-y-2">
@@ -304,6 +366,8 @@ export default function PokemonSpeciesCard({
           </div>
         </div>
       </CardContent>
+      
     </Card>
   );
+  
 }

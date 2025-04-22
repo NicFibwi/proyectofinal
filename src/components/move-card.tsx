@@ -27,7 +27,7 @@ export function MoveCard({ moveUrl }: { moveUrl: string }) {
 
   return (
     <Link href={`/docs/moves/${moveInfo?.name}/`}>
-      <Card className="mb-2 w-full overflow-y-auto p-0">
+      <Card className="mb-2 h-15 w-full">
         {isLoading && (
           <div className="text-muted-foreground flex h-10 items-center gap-2">
             <Loader2 className="h-4 w-4 animate-spin" />
@@ -53,7 +53,7 @@ export function MoveCard({ moveUrl }: { moveUrl: string }) {
               </h4>
             </div>
 
-            <div className="flex w-1/6 items-center justify-center gap-1">
+            <div className="hidden w-1/6 items-center justify-center gap-1 sm:flex">
               <TypeBadge
                 type={{
                   slot: 0,
@@ -67,25 +67,22 @@ export function MoveCard({ moveUrl }: { moveUrl: string }) {
 
             <div className="flex w-1/6 items-center justify-center gap-1">
               <span className="text-sm font-medium tabular-nums">
-                Power: {moveInfo.power ?? "—"}
+                {`Power: ${moveInfo.power ?? "—"}`}
               </span>
             </div>
 
             <div className="flex w-1/6 items-center justify-center gap-1">
               <span className="text-sm font-medium tabular-nums">
-                {" "}
-                Accuracy: {moveInfo.accuracy ? `${moveInfo.accuracy}%` : "—"}
+                {`Accuracy: ${moveInfo.accuracy ?? "—"}`}
               </span>
             </div>
 
-            {/* PP (hidden on small screens) */}
             <div className="hidden w-1/6 items-center justify-center gap-1 sm:flex">
               <span className="text-sm font-medium tabular-nums">
                 PP: {moveInfo.pp ?? "—"}
               </span>
             </div>
 
-            {/* Damage Class (hidden on small screens) */}
             <div className="hidden w-1/6 items-center justify-center gap-1 sm:flex">
               {moveInfo?.damage_class?.name && (
                 <img

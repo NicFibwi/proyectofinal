@@ -57,7 +57,7 @@ export default function ItemsPage() {
   const { data, isLoading, isError } = useQuery<ItemInfo[]>({
     queryKey: ["items"],
     queryFn: fetchItems,
-    staleTime: 1000,
+    staleTime: 1000 * 60 * 15,
   });
 
   const [currentPage, setCurrentPage] = useState(1);

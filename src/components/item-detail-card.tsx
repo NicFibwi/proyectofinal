@@ -25,6 +25,7 @@ export default function ItemDetailCard({ name }: { name: string }) {
   } = useQuery({
     queryKey: ["itemdata", name],
     queryFn: () => getItemData(name),
+    staleTime: 1000 * 60 * 15,
   });
 
   // Filter English flavor text entries
@@ -64,7 +65,7 @@ export default function ItemDetailCard({ name }: { name: string }) {
   return (
     <div className="container h-full w-full">
       <div className="mb-6 flex flex-row items-center justify-between">
-        <div className="sm:ml-6 flex flex-row items-center lg:w-1/5">
+        <div className="flex flex-row items-center sm:ml-6 lg:w-1/5">
           <Button onClick={() => router.back()}>Back</Button>
         </div>
         <div className="flex flex-row items-center justify-around lg:w-1/5">
@@ -94,18 +95,18 @@ export default function ItemDetailCard({ name }: { name: string }) {
             <h5 className="text-lg font-bold capitalize">{item.name}</h5>
           </Card>
           <Card className="mb-6 flex h-auto w-full flex-col items-center justify-center">
-          {item.sprites?.default ? (
+            {item.sprites?.default ? (
               <img
-              src={item.sprites.default}
-              alt={item.name}
-              className="h-90 w-90"
-              style={{
-                imageRendering: "pixelated", // Ensures the image is upscaled without blurring
-              }}
+                src={item.sprites.default}
+                alt={item.name}
+                className="h-90 w-90"
+                style={{
+                  imageRendering: "pixelated", // Ensures the image is upscaled without blurring
+                }}
               />
             ) : (
               <div className="flex h-90 w-90 items-center justify-center text-4xl font-bold">
-              N/A
+                N/A
               </div>
             )}
           </Card>
@@ -116,43 +117,61 @@ export default function ItemDetailCard({ name }: { name: string }) {
           <Card className="mb-6 flex h-auto w-full flex-col items-center justify-center">
             <p className="p-4">{item.effect_entries[0]?.effect}</p>
             <p className="text-sm italic">
-              {item.effect_entries[0]?.short_effect}
+                {item.effect_entries[0]?.short_effect ? (
+                item.effect_entries[0].short_effect
+                ) : (
+                <span className="italic text-gray-500">
+                  No short entry found for {item.name}
+                </span>
+                )}
             </p>
           </Card>
 
-          <Card className="mb-6 flex h-auto w-full flex-col items-center justify-center">
-            <Tabs defaultValue={defaultTab} className="h-full w-full p-4">
+            <Card className="mb-6 flex h-auto w-full flex-col items-center justify-center">
+            {englishEntries.length > 0 ? (
+              <Tabs defaultValue={defaultTab} className="h-full w-full p-4">
               <TabsList className="mb-4 grid h-auto w-full grid-cols-3 flex-wrap">
                 {englishEntries.map((entry) => (
-                  <TabsTrigger
-                    key={entry.version}
-                    value={entry.version}
-                    className="text-xs capitalize hover:bg-gray-500"
-                  >
-                    {entry.version
-                      .replace(/-/g, " ")
-                      .replace(/Lets Go\s*/gi, "LG ")
-                      .replace(/Ultra\s*/gi, "U ")
-                      .replace(/Omega\s*/gi, "O ")
-                      .replace(/Alpha\s*/gi, "A ")}
-                  </TabsTrigger>
+                <TabsTrigger
+                  key={entry.version}
+                  value={entry.version}
+                  className="text-xs capitalize hover:bg-gray-500"
+                >
+                  {entry.version
+                  .replace(/-/g, " ")
+                  .replace(/Lets Go\s*/gi, "LG ")
+                  .replace(/Ultra\s*/gi, "U ")
+                  .replace(/Omega\s*/gi, "O ")
+                  .replace(/Alpha\s*/gi, "A ")}
+                </TabsTrigger>
                 ))}
               </TabsList>
               {englishEntries.map((entry) => (
                 <TabsContent
-                  key={entry.version}
-                  value={entry.version}
-                  className="mt-0"
+                key={entry.version}
+                value={entry.version}
+                className="mt-0"
                 >
-                  <Card className="w-full border-none bg-transparent shadow-none">
-                    <CardContent className="p-4">
-                      <p className="">{entry.text}</p>
-                    </CardContent>
-                  </Card>
+                <Card className="w-full border-none bg-transparent shadow-none">
+                  <CardContent className="p-4">
+                  {entry.text ? (
+                    <p className="">{entry.text}</p>
+                  ) : (
+                    <p className="italic text-gray-500">
+                    No data found on {item.name}
+                    </p>
+                  )}
+                  </CardContent>
+                </Card>
                 </TabsContent>
               ))}
-            </Tabs>
-          </Card>
+              </Tabs>
+            ) : (
+              <p className="italic text-gray-500">
+              No entries found on {item.name}
+              </p>
+            )}
+            </Card>
         </div>
       </div>
     </div>

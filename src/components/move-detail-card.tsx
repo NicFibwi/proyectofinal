@@ -30,6 +30,7 @@ export default function MoveDetailCard({ name }: { name: string }) {
   } = useQuery({
     queryKey: ["movedata", name],
     queryFn: () => getMoveData(name),
+    staleTime: 1000 * 60 * 15,
   });
 
   // Filter English flavor text entries
@@ -114,38 +115,40 @@ export default function MoveDetailCard({ name }: { name: string }) {
           <Card className="mb-6 flex h-auto w-full flex-col items-center justify-center">
             <Tabs defaultValue={defaultTab} className="h-full w-full p-4">
               <TabsList className="mb-4 grid h-auto w-full grid-cols-3 flex-wrap">
-            {englishEntries.map((entry) => (
-              <TabsTrigger
-                key={entry.version}
-                value={entry.version}
-                className="text-xs capitalize hover:bg-gray-500"
-              >
-                {entry.version
-                 .replace(/-/g, " ")
-                 .replace(/Lets Go\s*/gi, "LG ")
-                 .replace(/Ultra\s*/gi, "U ")
-                 .replace(/Omega\s*/gi, "O ")
-                 .replace(/Alpha\s*/gi, "A ")}
-              </TabsTrigger>
-            ))}
+                {englishEntries.map((entry) => (
+                  <TabsTrigger
+                    key={entry.version}
+                    value={entry.version}
+                    className="text-xs capitalize hover:bg-gray-500"
+                  >
+                    {entry.version
+                      .replace(/-/g, " ")
+                      .replace(/Lets Go\s*/gi, "LG ")
+                      .replace(/Ultra\s*/gi, "U ")
+                      .replace(/Omega\s*/gi, "O ")
+                      .replace(/Alpha\s*/gi, "A ")}
+                  </TabsTrigger>
+                ))}
               </TabsList>
               {englishEntries.map((entry) => (
-            <TabsContent
-              key={entry.version}
-              value={entry.version}
-              className="mt-0"
-            >
-              <Card className="w-full border-none bg-transparent shadow-none">
-                <CardContent className="p-4">
-                  <p>{entry.text}</p>
-                </CardContent>
-              </Card>
-            </TabsContent>
+                <TabsContent
+                  key={entry.version}
+                  value={entry.version}
+                  className="mt-0"
+                >
+                  <Card className="w-full border-none bg-transparent shadow-none">
+                    <CardContent className="p-4">
+                      <p>{entry.text}</p>
+                    </CardContent>
+                  </Card>
+                </TabsContent>
               ))}
             </Tabs>
           </Card>
 
-          {move.learned_by_pokemon.length > 0 && <MovePokemonList move={move} />}
+          {move.learned_by_pokemon.length > 0 && (
+            <MovePokemonList move={move} />
+          )}
         </div>
       </div>
     </div>
