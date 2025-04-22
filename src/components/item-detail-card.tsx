@@ -117,9 +117,7 @@ export default function ItemDetailCard({ name }: { name: string }) {
           <Card className="mb-6 flex h-auto w-full flex-col items-center justify-center">
             <p className="p-4">{item.effect_entries[0]?.effect}</p>
             <p className="text-sm italic">
-                {item.effect_entries[0]?.short_effect ? (
-                item.effect_entries[0].short_effect
-                ) : (
+                {item.effect_entries[0]?.short_effect ?? (
                 <span className="italic text-gray-500">
                   No short entry found for {item.name}
                 </span>
