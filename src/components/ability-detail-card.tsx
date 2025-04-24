@@ -1,49 +1,46 @@
 "use client";
-import type { MoveInfo } from "~/types/types";
+
+import type { AbilityInfo } from "~/types/types";
 import React, { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Button } from "./ui/button";
 import { useRouter } from "next/navigation";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
-import MoveInfoCard from "./move-info-card";
-import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "./ui/dialog";
-import StatModifiersTable from "./stat-modifier-table";
-import StatChangeDialog from "./stat-change-dialog";
-import MovePokemonList from "./move-pokemon-list";
+import AbilityPokemonList from "./ability-pokemon-list";
 
-const getMoveData = async (name: string): Promise<MoveInfo> => {
-  const response = await fetch("https://pokeapi.co/api/v2/move/" + name);
+const getAbilityInfo = async (name: string): Promise<AbilityInfo> => {
+  const response = await fetch("https://pokeapi.co/api/v2/ability/" + name);
   if (!response.ok) {
-    throw new Error("Failed to fetch item data");
+    throw new Error("Failed to fetch ability data");
   }
-  return response.json() as Promise<MoveInfo>;
+  return response.json() as Promise<AbilityInfo>;
 };
 
-export default function MoveDetailCard({ name }: { name: string }) {
+export default function AbilityDetailCard({ name }: { name: string }) {
   const router = useRouter();
 
   const {
-    data: move,
+    data: abilityInfo,
     isLoading,
     isError,
   } = useQuery({
-    queryKey: ["movedata", name],
-    queryFn: () => getMoveData(name),
+    queryKey: ["abilityInfo", name],
+    queryFn: () => getAbilityInfo(name),
     staleTime: 1000 * 60 * 15,
   });
 
   // Filter English flavor text entries
   const englishEntries = useMemo(() => {
     return (
-      move?.flavor_text_entries
+      abilityInfo?.flavor_text_entries
         ?.filter((entry) => entry.language.name === "en")
         .map((entry) => ({
           version: entry.version_group.name,
           text: entry.flavor_text.replace(/\f/g, " "),
         })) ?? []
     );
-  }, [move?.flavor_text_entries]);
+  }, [abilityInfo?.flavor_text_entries]);
 
   // Get the first tab to use as default
   const defaultTab =
@@ -57,11 +54,11 @@ export default function MoveDetailCard({ name }: { name: string }) {
     );
   }
 
-  if (isError || !move) {
+  if (isError || !abilityInfo) {
     return (
       <Card>
         <div className="flex h-32 items-center justify-center">
-          Error loading move.
+          Error loading ability.
         </div>
       </Card>
     );
@@ -76,16 +73,16 @@ export default function MoveDetailCard({ name }: { name: string }) {
         <div className="flex flex-row items-center justify-around lg:w-1/5">
           <Button
             onClick={() => {
-              const prevMoveId = move.id - 1;
-              router.push(`${prevMoveId}`);
+              const prevAbilityId = abilityInfo.id - 1;
+              router.push(`${prevAbilityId}`);
             }}
           >
             Previous
           </Button>
           <Button
             onClick={() => {
-              const nextMoveId = move.id + 1;
-              router.push(`${nextMoveId}`);
+              const nextAbilityId = abilityInfo.id + 1;
+              router.push(`${nextAbilityId}`);
             }}
           >
             Next
@@ -97,24 +94,31 @@ export default function MoveDetailCard({ name }: { name: string }) {
         {/* Sidebar Content */}
         <div className="flex w-full flex-col items-center justify-center sm:m-6 lg:w-1/3">
           <Card className="mb-6 flex h-auto w-full flex-col items-center justify-center">
-            <h5 className="text-lg font-bold capitalize">{move.name}</h5>
+            <h5 className="text-lg font-bold capitalize">{abilityInfo.name}</h5>
           </Card>
-          <MoveInfoCard move={move} />
+          {/* Pokémon with this Ability */}
+          {abilityInfo.pokemon.length > 0 && (
+            <AbilityPokemonList ability={abilityInfo} />
+          )}
         </div>
 
         {/* Main Content */}
         <div className="flex w-full flex-col sm:m-6 md:w-full lg:w-2/3">
+          {/* Effect Entries */}
           <Card className="mb-6 flex h-auto w-full flex-col items-center justify-center">
             <p className="p-4">
-              {move.effect_entries[0]?.effect ?? "No entry found for this move"}
+              {abilityInfo.effect_entries.find(
+                (entry) => entry.language.name === "en",
+              )?.effect ?? "No detailed effect available."}
             </p>
             <p className="text-sm italic">
-              {move.effect_entries[0]?.short_effect ??
-                "No short entry found for this move"}
+              {abilityInfo.effect_entries.find(
+                (entry) => entry.language.name === "en",
+              )?.short_effect ?? "No short effect available."}
             </p>
-            <StatChangeDialog />
           </Card>
 
+          {/* Flavor Text Entries */}
           <Card className="mb-6 flex h-auto w-full flex-col items-center justify-center">
             <Tabs defaultValue={defaultTab} className="h-full w-full p-4">
               <TabsList className="mb-4 grid h-auto w-full grid-cols-3 flex-wrap">
@@ -148,10 +152,6 @@ export default function MoveDetailCard({ name }: { name: string }) {
               ))}
             </Tabs>
           </Card>
-
-          {move.learned_by_pokemon.length > 0 && (
-            <MovePokemonList move={move} />
-          )}
         </div>
       </div>
     </div>

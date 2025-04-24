@@ -10,7 +10,14 @@ import { TypeBadge } from "./ui/typebadge";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { Button } from "./ui/button";
 import { ChevronsUpDown } from "lucide-react";
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "./ui/command";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "./ui/command";
 import { useRouter } from "next/navigation";
 
 interface PokemonSpeciesCardProps {
@@ -58,11 +65,11 @@ export default function PokemonSpeciesCard({
   const defaultTab =
     englishEntries.length > 0 ? englishEntries[0]?.version : "";
 
-    const handleVarietySelect = (variety: string) => {
-      setSelectedVariety(variety);
-      setOpen(false);
-      router.push(`/pokedex/${variety}`);
-    };
+  const handleVarietySelect = (variety: string) => {
+    setSelectedVariety(variety);
+    setOpen(false);
+    router.push(`/pokedex/${variety}`);
+  };
 
   return (
     <Card className="w-full border-none bg-transparent shadow-none">
@@ -79,7 +86,8 @@ export default function PokemonSpeciesCard({
       <CardContent className="p-6">
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           <div className="space-y-4">
-          <div>
+            
+            <div>
               <h3 className="text-lg font-bold">Varieties</h3>
               <Popover open={open} onOpenChange={setOpen}>
                 <PopoverTrigger asChild>
@@ -91,7 +99,7 @@ export default function PokemonSpeciesCard({
                   >
                     {selectedVariety
                       ? speciesInfo.varieties.find(
-                          (variety) => variety.pokemon.name === selectedVariety
+                          (variety) => variety.pokemon.name === selectedVariety,
                         )?.pokemon.name
                       : "Select variety..."}
                     <ChevronsUpDown className="opacity-50" />
@@ -107,7 +115,9 @@ export default function PokemonSpeciesCard({
                           <CommandItem
                             key={variety.pokemon.name}
                             value={variety.pokemon.name}
-                            onSelect={() => handleVarietySelect(variety.pokemon.name)}
+                            onSelect={() =>
+                              handleVarietySelect(variety.pokemon.name)
+                            }
                           >
                             {variety.pokemon.name}
                             {/* <Check
@@ -169,13 +179,18 @@ export default function PokemonSpeciesCard({
                           ability.is_hidden ? "text-gray-500" : ""
                         } list-disc`}
                       >
-                        {ability.is_hidden
-                          ? `${
-                              ability.ability.name.charAt(0).toUpperCase() +
-                              ability.ability.name.slice(1)
-                            }`
-                          : ability.ability.name.charAt(0).toUpperCase() +
-                            ability.ability.name.slice(1)}
+                        <a
+                          href={`/docs/abilities/${ability.ability.name}`}
+                          className=" hover:underline"
+                        >
+                          {ability.is_hidden
+                            ? `${
+                                ability.ability.name.charAt(0).toUpperCase() +
+                                ability.ability.name.slice(1)
+                              }`
+                            : ability.ability.name.charAt(0).toUpperCase() +
+                              ability.ability.name.slice(1)}
+                        </a>
                       </li>
                     ))}
                   </ul>
@@ -366,8 +381,6 @@ export default function PokemonSpeciesCard({
           </div>
         </div>
       </CardContent>
-      
     </Card>
   );
-  
 }

@@ -40,13 +40,6 @@ export default function MovesTablePage() {
 
   return (
     <div className="space-y-6">
-      <div className="animate-fade-in">
-        <h1 className="text-3xl font-bold tracking-tight">Pokédex</h1>
-        <p className="text-muted-foreground">
-          Database of essential information about Pokémon and game mechanics
-        </p>
-      </div>
-
       {/* Filter by Category */}
       <div className="mb-4">
         <label

@@ -132,10 +132,13 @@ export default function ItemsPage() {
 
   return (
     <div className="container mx-auto px-4 py-8">
+      <div className="mb-4">
+        <h1 className="text-3xl font-bold tracking-tight">Items</h1>
+        <p className="text-muted-foreground">
+          Detailed documentation on all items found in Pokémon games.
+        </p>
+      </div>
       <Card className="border-none shadow-sm">
-        <CardHeader className="pb-0">
-          <CardTitle className="text-2xl font-bold">Pokémon Items</CardTitle>
-        </CardHeader>
         <CardContent>
           {isLoading ? (
             <div className="space-y-3 py-4">Is loading...</div>

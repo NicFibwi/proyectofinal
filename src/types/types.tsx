@@ -561,3 +561,131 @@ export interface StatChange {
   change: number;
   stat: ContestType;
 }
+
+//return from ability
+export interface Ability {
+  count: number;
+  results: Result[];
+}
+
+export interface Result {
+  name: string;
+  url: string;
+}
+
+///return from ability/ id
+export interface AbilityInfo {
+  // effect_changes: any[];
+  effect_entries: EffectEntry[];
+  flavor_text_entries: FlavorTextEntry[];
+  generation: Generation;
+  id: number;
+  is_main_series: boolean;
+  name: string;
+  names: Name[];
+  pokemon: PokemonAbility[];
+}
+
+export interface EffectEntry {
+  effect: string;
+  language: Generation;
+  short_effect: string;
+}
+
+export interface Generation {
+  name: string;
+  url: string;
+}
+
+export interface Name {
+  language: Generation;
+  name: string;
+}
+
+export interface PokemonAbility {
+  is_hidden: boolean;
+  pokemon: Generation;
+  slot: number;
+}
+
+//All machines
+export interface AllMachines {
+  id:     number;
+  items:  Pocket[];
+  name:   string;
+  names:  Name[];
+  pocket: Pocket;
+}
+
+export interface Pocket {
+  name: string;
+  url:  string;
+}
+
+export interface Name {
+  language: Pocket;
+  name:     string;
+}
+
+//machine item
+export interface MachineItemInfo {
+  // attributes:          any[];
+  // baby_trigger_for:    null;
+  category:            Category;
+  cost:                number;
+  // effect_entries:      any[];
+  flavor_text_entries: FlavorTextEntry[];
+  fling_effect:        null;
+  fling_power:         number;
+  game_indices:        GameIndex[];
+  // held_by_pokemon:     any[];
+  id:                  number;
+  machines:            MachineElement[];
+  name:                string;
+  names:               Name[];
+  sprites:             Sprites;
+}
+
+export interface Category {
+  name: string;
+  url:  string;
+}
+
+export interface FlavorTextEntry {
+  language:      Category;
+  text:          string;
+  version_group: Category;
+}
+
+export interface GameIndex {
+  game_index: number;
+  generation: Category;
+}
+
+export interface MachineElement {
+  machine:       MachineMachine;
+  version_group: Category;
+}
+
+export interface MachineMachine {
+  url: string;
+}
+
+export interface Name {
+  language: Category;
+  name:     string;
+}
+
+
+//machine info
+export interface MachineInfo {
+  id:            number;
+  item:          Item;
+  move:          Item;
+  version_group: Item;
+}
+
+export interface Item {
+  name: string;
+  url:  string;
+}

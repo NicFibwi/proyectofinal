@@ -44,6 +44,7 @@ export default function ItemDetailCard({ name }: { name: string }) {
   const defaultTab =
     englishEntries.length > 0 ? englishEntries[0]?.version : "";
 
+    console.log(name)
   if (isLoading) {
     return (
       <Card>

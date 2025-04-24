@@ -94,7 +94,7 @@ export default function DocsPage() {
             <CardDescription>List of all pokémon abilities</CardDescription>
           </CardHeader>
           <CardFooter>
-            <Link href="/docs/ablities" className="w-full">
+            <Link href="/docs/abilities" className="w-full">
               <Button className="hover:bg-primary/90 w-full transition-all duration-200">
                 Explore
               </Button>

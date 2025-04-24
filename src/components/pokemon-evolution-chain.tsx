@@ -24,6 +24,9 @@ const getPokemonChain = async (url: string): Promise<SpeciesEvolutionChain> => {
 const getPokemonSpriteFromName = async (
   name: string,
 ): Promise<Sprites["front_default"]> => {
+  if (name.toLowerCase() === "darmanitan") {
+    name += "-standard";
+  }
   const response = await fetch("https://pokeapi.co/api/v2/pokemon/" + name);
   if (!response.ok) {
     throw new Error("Failed to fetch Pokémon data");
@@ -45,7 +48,47 @@ const getEvolvesToChain = async (chain: Chain): Promise<EvolutionData[]> => {
   const evolutionData: EvolutionData[] = [];
 
   // Get the current Pokémon's name and sprite
-  const name = chain.species.name;
+  let name = chain.species.name;
+
+  const suffixMap: Record<string, string> = {
+    thundurus: "-Incarnate",
+    landorus: "-Incarnate",
+    tornadus: "-Incarnate",
+    darmanitan: "-Standard",
+    giratina: "-Altered",
+    shaymin: "-Land",
+    wormadam: "-Plant",
+    deoxys: "-Normal",
+    squawkabilly: "-Green-Plumage",
+    dudunsparce: "-Two-Segment",
+    tatsugiri: "-Curly",
+    palafin: "-Zero",
+    maushold: "-Family-Of-Four",
+    meowstic: "-Male",
+    indeedee: "-Male",
+    basculegion: "-Male",
+    oinkologne: "-Male",
+    urshifu: "-Single-Strike",
+    morpeko: "-Full-Belly",
+    eiscue: "-Ice",
+    toxtricity: "-Amped",
+    mimikyu: "-Disguised",
+    minior: "-Red-Meteor",
+    wishiwashi: "-Solo",
+    lycanroc: "-Midday",
+    oricorio: "-Baile",
+    zygarde: "-50",
+    pumpkaboo: "-Average",
+    gourgeist: "-Average",
+    aegislash: "-Shield",
+    meloetta: "-Aria",
+    keldeo: "-Ordinary",
+    basculin: "-White-Striped",
+  };
+
+  if (suffixMap[name.toLowerCase()]) {
+    name += suffixMap[name.toLowerCase()];
+  }
   const sprite = await getPokemonSpriteFromName(name);
   evolutionData.push({ name, sprite });
 

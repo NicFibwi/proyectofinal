@@ -12,19 +12,14 @@
     · [x] typebadge (Types looking good)
     · [x] pokemon-evolution-chain (Visual representation of pokemon evolution chain)
     · [x] pokemon-species-info (Any info worth implementing into the page from /pokemon-species/ and /pokemon/)
-    · [ ] pokemon-info (Any info worth implementing into the page from /pokemon/)
+    · [x] pokemon-info (Any info worth implementing into the page from /pokemon/)
           Abilities, cries, height, id, name, types,
-    · [ ] pokemon-move-table (Table of all the moves the pokemon can learn)
-    · [ ]
-    · [ ]
-    · [ ]
-    · [ ]
-    · [ ]
-    · [ ]
-- [ ] Make mega-evolution page
-- [ ] Fetch Item data
-- [ ] Fetch Move data
-- [ ] Fetch Ability data
+    · [x] pokemon-move-table (Table of all the moves the pokemon can learn)
+- [x] Make pokemon variation page
+- [x] Fetch Item data
+- [x] Fetch Move data
+- [x] Fetch Ability data
+- [ ] Fetch machine data
 - [ ] Clerk
 - [ ] Posthog
 - [ ] Minigames
