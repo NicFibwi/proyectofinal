@@ -610,50 +610,43 @@ export interface PokemonAbility {
 
 //All machines
 export interface AllMachines {
-  id:     number;
-  items:  Pocket[];
-  name:   string;
-  names:  Name[];
-  pocket: Pocket;
+  count: number;
+  next: null;
+  previous: null;
+  results: Result[];
 }
 
-export interface Pocket {
-  name: string;
-  url:  string;
-}
-
-export interface Name {
-  language: Pocket;
-  name:     string;
+export interface Result {
+  url: string;
 }
 
 //machine item
 export interface MachineItemInfo {
   // attributes:          any[];
   // baby_trigger_for:    null;
-  category:            Category;
-  cost:                number;
+  category: Category;
+  cost: number;
   // effect_entries:      any[];
   flavor_text_entries: FlavorTextEntry[];
-  fling_effect:        null;
-  fling_power:         number;
-  game_indices:        GameIndex[];
+  fling_effect: null;
+  fling_power: number;
+  game_indices: GameIndex[];
   // held_by_pokemon:     any[];
-  id:                  number;
-  machines:            MachineElement[];
-  name:                string;
-  names:               Name[];
-  sprites:             Sprites;
+  id: number;
+  machines: MachineElement[];
+  name: string;
+  names: Name[];
+  sprites: Sprites;
 }
 
 export interface Category {
   name: string;
-  url:  string;
+  url: string;
 }
 
 export interface FlavorTextEntry {
-  language:      Category;
-  text:          string;
+  language: Category;
+  text: string;
   version_group: Category;
 }
 
@@ -663,7 +656,7 @@ export interface GameIndex {
 }
 
 export interface MachineElement {
-  machine:       MachineMachine;
+  machine: MachineMachine;
   version_group: Category;
 }
 
@@ -673,19 +666,18 @@ export interface MachineMachine {
 
 export interface Name {
   language: Category;
-  name:     string;
+  name: string;
 }
-
 
 //machine info
 export interface MachineInfo {
-  id:            number;
-  item:          Item;
-  move:          Item;
+  id: number;
+  item: Item;
+  move: Item;
   version_group: Item;
 }
 
 export interface Item {
   name: string;
-  url:  string;
+  url: string;
 }

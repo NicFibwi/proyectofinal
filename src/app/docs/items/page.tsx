@@ -38,6 +38,7 @@ const fetchItems = async (): Promise<ItemInfo[]> => {
   );
 
   const items: ItemInfo[] = [];
+
   for (const category of categories) {
     const categoryResponse = await fetch(category.url);
     if (!categoryResponse.ok) {
@@ -45,9 +46,24 @@ const fetchItems = async (): Promise<ItemInfo[]> => {
     }
 
     const categoryItems = (await categoryResponse.json()) as {
-      items: ItemInfo[];
+      items: { name: string; url: string }[];
     };
-    items.push(...categoryItems.items);
+
+    for (const item of categoryItems.items) {
+      const itemResponse = await fetch(item.url);
+      if (!itemResponse.ok) {
+        console.warn(`Failed to fetch item data for: ${item.name}`);
+      }
+
+      const itemData = (await itemResponse.json()) as ItemInfo;
+
+      if (
+        (itemData.effect_entries[0]?.short_effect?.length ?? 0 > 0) ||
+        (itemData.effect_entries[0]?.effect?.length ?? 0 > 0)
+      ) {
+        items.push(itemData);
+      }
+    }
   }
 
   return items;

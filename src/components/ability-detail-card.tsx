@@ -97,9 +97,11 @@ export default function AbilityDetailCard({ name }: { name: string }) {
             <h5 className="text-lg font-bold capitalize">{abilityInfo.name}</h5>
           </Card>
           {/* Pokémon with this Ability */}
-          {abilityInfo.pokemon.length > 0 && (
-            <AbilityPokemonList ability={abilityInfo} />
-          )}
+          <div className="hidden w-full sm:block">
+            {abilityInfo.pokemon.length > 0 && (
+              <AbilityPokemonList ability={abilityInfo} />
+            )}
+          </div>
         </div>
 
         {/* Main Content */}
@@ -152,6 +154,12 @@ export default function AbilityDetailCard({ name }: { name: string }) {
               ))}
             </Tabs>
           </Card>
+
+          <div className="block w-full sm:hidden">
+            {abilityInfo.pokemon.length > 0 && (
+              <AbilityPokemonList ability={abilityInfo} />
+            )}
+          </div>
         </div>
       </div>
     </div>

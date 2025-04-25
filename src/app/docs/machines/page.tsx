@@ -7,7 +7,7 @@ import type { AllMachines } from "~/types/types";
 
 const fetchAllMachines = async (): Promise<AllMachines> => {
   const response = await fetch(
-    `https://pokeapi.co/api/v2/item-category/all-machines`,
+    `https://pokeapi.co/api/v2/machine/?offset=0&limit=2102`,
   );
   if (!response.ok) {
     throw new Error("Failed to fetch all machines");
@@ -38,7 +38,7 @@ export default function MachinePage() {
       {isErrorMachines && <p>Error loading machines</p>}
       {allMachines && (
         <div>
-          {allMachines.items.map((machine) => (
+          {allMachines.results.map((machine) => (
             <MachineCard url={machine.url} key={machine.url} />
           ))}
         </div>

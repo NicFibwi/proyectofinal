@@ -116,14 +116,23 @@ export default function ItemDetailCard({ name }: { name: string }) {
         {/* Main Content */}
         <div className="flex w-full flex-col sm:m-6 md:w-full lg:w-2/3">
           <Card className="mb-6 flex h-auto w-full flex-col items-center justify-center">
-            <p className="p-4">{item.effect_entries[0]?.effect}</p>
-            <p className="text-sm italic">
+            {item.effect_entries[0]?.effect.startsWith("XXX new effect for") ||
+            item.effect_entries[0]?.short_effect.startsWith("XXX new effect for") ? (
+              <p className="italic text-gray-500">
+              Currently no entry on {item.name}
+              </p>
+            ) : (
+              <>
+              <p className="p-4">{item.effect_entries[0]?.effect}</p>
+              <p className="text-sm italic">
                 {item.effect_entries[0]?.short_effect ?? (
                 <span className="italic text-gray-500">
                   No short entry found for {item.name}
                 </span>
                 )}
-            </p>
+              </p>
+              </>
+            )}
           </Card>
 
             <Card className="mb-6 flex h-auto w-full flex-col items-center justify-center">

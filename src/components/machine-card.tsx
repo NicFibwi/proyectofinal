@@ -21,59 +21,74 @@ const getMachineInfo = async (url: string) => {
 
 export default function MachineCard({ url }: { url: string }) {
   const {
-    data: machineItemInfo,
+    data: machineInfo,
     isLoading,
     isError,
   } = useQuery({
     queryKey: ["machineInfo", url],
-    queryFn: () => getMachineItemInfo(url),
+    queryFn: () => getMachineInfo(url),
     staleTime: 1000 * 60 * 15,
   });
 
   const {
-    data: machineInfo,
+    data: machineItemInfo,
     isLoading: isLoadingMachineInfo,
     isError: isErrorMachineInfo,
   } = useQuery({
-    queryKey: ["machineItemInfo", machineItemInfo?.machines[0]?.machine.url],
+    queryKey: ["machineItemInfo", machineInfo?.item.url],
     queryFn: () => {
-      const machineUrl = machineItemInfo?.machines[0]?.machine.url;
-      if (!machineUrl) {
+      const machineItemUrl = machineInfo?.item.url;
+      if (!machineItemUrl) {
         throw new Error("Machine URL is undefined");
       }
-      return getMachineInfo(machineUrl);
+      return getMachineItemInfo(machineItemUrl);
     },
-    enabled: !!machineItemInfo,
+    enabled: !!machineInfo,
     staleTime: 1000 * 60 * 15,
   });
 
-  if (isLoading) {
-    return <Card className="p-4">Loading...</Card>;
+  if (isLoading || !machineInfo) {
+    return <Card className="p-4">Loading machine info</Card>;
   }
 
-  if (isError || !machineInfo) {
-    return <Card className="p-4">Failed to load machine info</Card>;
+  if (isError || isErrorMachineInfo) {
+    return (
+      <Card className="p-4">
+        <div className="text-destructive flex h-10 items-center gap-2">
+          <span>Error loading machine info</span>
+        </div>
+      </Card>
+    );
   }
 
   return (
     <Link href={`/docs/moves/${machineInfo.move.name}/`}>
-      <Card className="flex h-15 cursor-pointer flex-row items-center justify-between p-4">
-        <div className="flex w-1/3 justify-around">
-          <span className="w-1/2">Machine:</span>
-          <span className="w-1/2 capitalize">
-            {machineItemInfo?.name.toUpperCase()}
+      <Card className="mb-2 flex h-15 cursor-pointer flex-row items-center justify-between p-4">
+        <div className="flex w-1/3 items-center justify-around">
+          <span className="hidden w-1/2 sm:block">Machine:</span>
+          <span className="w-1/2 font-semibold capitalize">
+            {machineInfo.item.name.replaceAll("-", " ").toLocaleUpperCase()}
           </span>
         </div>
-        <div className="flex w-1/3 justify-around">
-          <span className="w-1/2">Move:</span>
-          <span className="w-1/2 capitalize">
+        <div className="flex w-1/3 items-center justify-around">
+          <span className="hidden w-1/3 sm:block">Move:</span>
+          <span className="w-2/3 font-semibold capitalize">
             {machineInfo.move.name.replaceAll("-", " ")}
           </span>
         </div>
-        <div className="flex w-1/3 justify-around">
-          <span className="w-1/2">Generation:</span>
-          <span className="w-1/2 capitalize">
-            {machineInfo.version_group.name.replaceAll("-", " / ")}
+        <div className="text-muted-foreground flex w-1/3 items-center justify-around">
+          <span className="w-1/2 text-right">
+            <span className="hidden sm:inline">Generation:</span>
+            <span className="sm:hidden">Gen:</span>
+          </span>
+          <span className="w-1/2 text-right font-semibold capitalize">
+            {machineInfo.version_group.name
+              .replaceAll("-", " ")
+              .replaceAll(/-/g, " ")
+              .replaceAll(/Lets Go\s*/gi, "LG ")
+              .replaceAll(/Ultra\s*/gi, "U ")
+              .replaceAll(/Omega\s*/gi, "O ")
+              .replaceAll(/Alpha\s*/gi, "A ")}
           </span>
         </div>
       </Card>
