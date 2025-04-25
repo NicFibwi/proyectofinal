@@ -34,37 +34,47 @@ const fetchItems = async (): Promise<ItemInfo[]> => {
 
   const categoryData = (await categoryResponse.json()) as ItemCategory;
   const categories = categoryData.results.filter(
-    (category: Result) => !category.url.includes("/37/"), // Skip "all-machines" category
+    (category: Result) => !category.url.includes("/37/"),
   );
 
   const items: ItemInfo[] = [];
 
-  for (const category of categories) {
+  // Fetch all categories in parallel
+  const categoryPromises = categories.map(async (category) => {
     const categoryResponse = await fetch(category.url);
     if (!categoryResponse.ok) {
-      throw new Error(`Failed to fetch items for category: ${category.name}`);
+      console.warn(`Failed to fetch items for category: ${category.name}`);
+      return [];
     }
 
     const categoryItems = (await categoryResponse.json()) as {
       items: { name: string; url: string }[];
     };
 
-    for (const item of categoryItems.items) {
+    // Fetch all items in parallel for this category
+    const itemPromises = categoryItems.items.map(async (item) => {
       const itemResponse = await fetch(item.url);
       if (!itemResponse.ok) {
         console.warn(`Failed to fetch item data for: ${item.name}`);
+        return null;
       }
 
       const itemData = (await itemResponse.json()) as ItemInfo;
-
       if (
         (itemData.effect_entries[0]?.short_effect?.length ?? 0 > 0) ||
         (itemData.effect_entries[0]?.effect?.length ?? 0 > 0)
       ) {
-        items.push(itemData);
+        return itemData;
       }
-    }
-  }
+      return null;
+    });
+
+    const resolvedItems = await Promise.all(itemPromises);
+    return resolvedItems.filter((item) => item !== null) as ItemInfo[];
+  });
+
+  const resolvedCategories = await Promise.all(categoryPromises);
+  resolvedCategories.forEach((categoryItems) => items.push(...categoryItems));
 
   return items;
 };
