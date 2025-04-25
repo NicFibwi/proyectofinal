@@ -24,6 +24,8 @@ import { Badge } from "~/components/ui/badge";
 import type { ItemCategory, ItemInfo, Result } from "~/types/types";
 import { useState } from "react";
 
+import { PromisePool } from "@supercharge/promise-pool";
+
 const fetchItems = async (): Promise<ItemInfo[]> => {
   const categoryResponse = await fetch(
     `https://pokeapi.co/api/v2/item-category/?offset=0&limit=54`,
@@ -51,39 +53,39 @@ const fetchItems = async (): Promise<ItemInfo[]> => {
       items: { name: string; url: string }[];
     };
 
-    // Fetch all items in parallel for this category
-    const itemPromises = categoryItems.items.map(async (item) => {
-      const itemResponse = await fetch(item.url);
-      if (!itemResponse.ok) {
-        console.warn(`Failed to fetch item data for: ${item.name}`);
+    const { results } = await PromisePool.withConcurrency(20)
+      .for(categoryItems.items)
+      .process(async (item) => {
+        const itemResponse = await fetch(item.url);
+        if (!itemResponse.ok) {
+          console.warn(`Failed to fetch item data for: ${item.name}`);
+          return null;
+        }
+
+        const itemData = (await itemResponse.json()) as ItemInfo;
+        if (
+          (itemData.effect_entries[0]?.short_effect?.length ?? 0 > 0) ||
+          (itemData.effect_entries[0]?.effect?.length ?? 0 > 0)
+        ) {
+          return itemData;
+        }
         return null;
-      }
+      });
 
-      const itemData = (await itemResponse.json()) as ItemInfo;
-      if (
-        (itemData.effect_entries[0]?.short_effect?.length ?? 0 > 0) ||
-        (itemData.effect_entries[0]?.effect?.length ?? 0 > 0)
-      ) {
-        return itemData;
-      }
-      return null;
-    });
-
-    const resolvedItems = await Promise.all(itemPromises);
-    return resolvedItems.filter((item) => item !== null) as ItemInfo[];
+    const resolvedItems = results.filter((item) => item !== null);
+    items.push(...resolvedItems);
   });
 
-  const resolvedCategories = await Promise.all(categoryPromises);
-  resolvedCategories.forEach((categoryItems) => items.push(...categoryItems));
+  await Promise.all(categoryPromises);
 
-  return items;
+  return items; // Ensure the function always returns the items array
 };
 
 export default function ItemsPage() {
   const { data, isLoading, isError } = useQuery<ItemInfo[]>({
     queryKey: ["items"],
     queryFn: fetchItems,
-    staleTime: 1000 * 60 * 15,
+    staleTime: 1000 * 60 * 30,
   });
 
   const [currentPage, setCurrentPage] = useState(1);
