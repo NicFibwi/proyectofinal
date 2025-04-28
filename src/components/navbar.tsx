@@ -27,6 +27,15 @@ import {
   Home,
   Menu,
 } from "lucide-react";
+import {
+  SignedIn,
+  SignedOut,
+  SignInButton,
+  SignUpButton,
+  UserButton,
+} from "@clerk/nextjs";
+import { ThemeProvider, useTheme } from "next-themes";
+import { dark } from "@clerk/themes";
 
 const navItems = [
   {
@@ -75,6 +84,7 @@ const navItems = [
 ];
 export default function Navbar() {
   const pathname = usePathname();
+  const currentTheme = useTheme();
 
   return (
     <header className="bg-background/95 supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50 w-full border-b backdrop-blur">
@@ -115,11 +125,21 @@ export default function Navbar() {
           </NavigationMenu>
         </div>
 
-        {/* Dropdown Menu for Mobile */}
-
         {/* Theme Toggle */}
-        <div className="flex flex-row mr-4">
+        <div className="mr-4 flex flex-row items-center">
           <ThemeToggle />
+          <div className="space-around flex items-center">
+            <SignedOut>
+              <SignInButton />
+            </SignedOut>
+            <SignedIn>
+              <UserButton
+                appearance={{
+                  baseTheme: currentTheme.theme === "dark" ? dark : undefined,
+                }}
+              />
+            </SignedIn>
+          </div>
           <div className="flex items-center gap-4 xl:hidden">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>

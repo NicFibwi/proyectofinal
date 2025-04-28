@@ -11,6 +11,7 @@ import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "./ui/dialog";
 import StatModifiersTable from "./stat-modifier-table";
 import StatChangeDialog from "./stat-change-dialog";
 import MovePokemonList from "./move-pokemon-list";
+import { formatGenerationName } from "~/lib/utils";
 
 const getMoveData = async (name: string): Promise<MoveInfo> => {
   const response = await fetch("https://pokeapi.co/api/v2/move/" + name);
@@ -124,12 +125,7 @@ export default function MoveDetailCard({ name }: { name: string }) {
                     value={entry.version}
                     className="text-xs capitalize hover:bg-gray-500"
                   >
-                    {entry.version
-                      .replace(/-/g, " ")
-                      .replace(/Lets Go\s*/gi, "LG ")
-                      .replace(/Ultra\s*/gi, "U ")
-                      .replace(/Omega\s*/gi, "O ")
-                      .replace(/Alpha\s*/gi, "A ")}
+                    {formatGenerationName(entry.version)}
                   </TabsTrigger>
                 ))}
               </TabsList>

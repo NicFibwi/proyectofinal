@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Button } from "./ui/button";
 import { useRouter } from "next/navigation";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
+import { formatGenerationName } from "~/lib/utils";
 
 const getItemData = async (name: string): Promise<ItemInfo> => {
   const response = await fetch("https://pokeapi.co/api/v2/item/" + name);
@@ -44,7 +45,7 @@ export default function ItemDetailCard({ name }: { name: string }) {
   const defaultTab =
     englishEntries.length > 0 ? englishEntries[0]?.version : "";
 
-    console.log(name)
+  console.log(name);
   if (isLoading) {
     return (
       <Card>
@@ -117,69 +118,66 @@ export default function ItemDetailCard({ name }: { name: string }) {
         <div className="flex w-full flex-col sm:m-6 md:w-full lg:w-2/3">
           <Card className="mb-6 flex h-auto w-full flex-col items-center justify-center">
             {item.effect_entries[0]?.effect.startsWith("XXX new effect for") ||
-            item.effect_entries[0]?.short_effect.startsWith("XXX new effect for") ? (
-              <p className="italic text-gray-500">
-              Currently no entry on {item.name}
+            item.effect_entries[0]?.short_effect.startsWith(
+              "XXX new effect for",
+            ) ? (
+              <p className="text-gray-500 italic">
+                Currently no entry on {item.name}
               </p>
             ) : (
               <>
-              <p className="p-4">{item.effect_entries[0]?.effect}</p>
-              <p className="text-sm italic">
-                {item.effect_entries[0]?.short_effect ?? (
-                <span className="italic text-gray-500">
-                  No short entry found for {item.name}
-                </span>
-                )}
-              </p>
+                <p className="p-4">{item.effect_entries[0]?.effect}</p>
+                <p className="text-sm italic">
+                  {item.effect_entries[0]?.short_effect ?? (
+                    <span className="text-gray-500 italic">
+                      No short entry found for {item.name}
+                    </span>
+                  )}
+                </p>
               </>
             )}
           </Card>
 
-            <Card className="mb-6 flex h-auto w-full flex-col items-center justify-center">
+          <Card className="mb-6 flex h-auto w-full flex-col items-center justify-center">
             {englishEntries.length > 0 ? (
               <Tabs defaultValue={defaultTab} className="h-full w-full p-4">
-              <TabsList className="mb-4 grid h-auto w-full grid-cols-3 flex-wrap">
+                <TabsList className="mb-4 grid h-auto w-full grid-cols-3 flex-wrap">
+                  {englishEntries.map((entry) => (
+                    <TabsTrigger
+                      key={entry.version}
+                      value={entry.version}
+                      className="text-xs capitalize hover:bg-gray-500"
+                    >
+                      {formatGenerationName(entry.version)}
+                    </TabsTrigger>
+                  ))}
+                </TabsList>
                 {englishEntries.map((entry) => (
-                <TabsTrigger
-                  key={entry.version}
-                  value={entry.version}
-                  className="text-xs capitalize hover:bg-gray-500"
-                >
-                  {entry.version
-                  .replace(/-/g, " ")
-                  .replace(/Lets Go\s*/gi, "LG ")
-                  .replace(/Ultra\s*/gi, "U ")
-                  .replace(/Omega\s*/gi, "O ")
-                  .replace(/Alpha\s*/gi, "A ")}
-                </TabsTrigger>
+                  <TabsContent
+                    key={entry.version}
+                    value={entry.version}
+                    className="mt-0"
+                  >
+                    <Card className="w-full border-none bg-transparent shadow-none">
+                      <CardContent className="p-4">
+                        {entry.text ? (
+                          <p className="">{entry.text}</p>
+                        ) : (
+                          <p className="text-gray-500 italic">
+                            No data found on {item.name}
+                          </p>
+                        )}
+                      </CardContent>
+                    </Card>
+                  </TabsContent>
                 ))}
-              </TabsList>
-              {englishEntries.map((entry) => (
-                <TabsContent
-                key={entry.version}
-                value={entry.version}
-                className="mt-0"
-                >
-                <Card className="w-full border-none bg-transparent shadow-none">
-                  <CardContent className="p-4">
-                  {entry.text ? (
-                    <p className="">{entry.text}</p>
-                  ) : (
-                    <p className="italic text-gray-500">
-                    No data found on {item.name}
-                    </p>
-                  )}
-                  </CardContent>
-                </Card>
-                </TabsContent>
-              ))}
               </Tabs>
             ) : (
-              <p className="italic text-gray-500">
-              No entries found on {item.name}
+              <p className="text-gray-500 italic">
+                No entries found on {item.name}
               </p>
             )}
-            </Card>
+          </Card>
         </div>
       </div>
     </div>

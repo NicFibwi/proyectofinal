@@ -8,6 +8,7 @@ import { Button } from "./ui/button";
 import { useRouter } from "next/navigation";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 import AbilityPokemonList from "./ability-pokemon-list";
+import { formatGenerationName } from "~/lib/utils";
 
 const getAbilityInfo = async (name: string): Promise<AbilityInfo> => {
   const response = await fetch("https://pokeapi.co/api/v2/ability/" + name);
@@ -130,12 +131,7 @@ export default function AbilityDetailCard({ name }: { name: string }) {
                     value={entry.version}
                     className="text-xs capitalize hover:bg-gray-500"
                   >
-                    {entry.version
-                      .replace(/-/g, " ")
-                      .replace(/Lets Go\s*/gi, "LG ")
-                      .replace(/Ultra\s*/gi, "U ")
-                      .replace(/Omega\s*/gi, "O ")
-                      .replace(/Alpha\s*/gi, "A ")}
+                    {formatGenerationName(entry.version)}
                   </TabsTrigger>
                 ))}
               </TabsList>

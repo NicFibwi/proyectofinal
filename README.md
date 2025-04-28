@@ -13,14 +13,17 @@
     · [x] pokemon-evolution-chain (Visual representation of pokemon evolution chain)
     · [x] pokemon-species-info (Any info worth implementing into the page from /pokemon-species/ and /pokemon/)
     · [x] pokemon-info (Any info worth implementing into the page from /pokemon/)
-          Abilities, cries, height, id, name, types,
+    Abilities, cries, height, id, name, types,
     · [x] pokemon-move-table (Table of all the moves the pokemon can learn)
 - [x] Make pokemon variation page
 - [x] Fetch Item data
 - [x] Fetch Move data
 - [x] Fetch Ability data
-- [ ] Fetch machine data
-- [ ] Clerk
+- [x] Fetch machine data
+- [x] Clerk
+- [ ] make format entry funciton
+- [ ] make color generation function
+- [ ] add icons
 - [ ] Posthog
 - [ ] Minigames
 - [ ] Teambuilder

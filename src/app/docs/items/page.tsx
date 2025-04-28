@@ -45,7 +45,7 @@ const fetchItems = async (): Promise<ItemInfo[]> => {
   const categoryPromises = categories.map(async (category) => {
     const categoryResponse = await fetch(category.url);
     if (!categoryResponse.ok) {
-      console.warn(`Failed to fetch items for category: ${category.name}`);
+      console.log(`Failed to fetch items for category: ${category.name}`);
       return [];
     }
 
@@ -58,7 +58,7 @@ const fetchItems = async (): Promise<ItemInfo[]> => {
       .process(async (item) => {
         const itemResponse = await fetch(item.url);
         if (!itemResponse.ok) {
-          console.warn(`Failed to fetch item data for: ${item.name}`);
+          console.log(`Failed to fetch item data for: ${item.name}`);
           return null;
         }
 
@@ -78,7 +78,7 @@ const fetchItems = async (): Promise<ItemInfo[]> => {
 
   await Promise.all(categoryPromises);
 
-  return items; // Ensure the function always returns the items array
+  return items;
 };
 
 export default function ItemsPage() {
@@ -106,7 +106,12 @@ export default function ItemsPage() {
       accessorKey: "name",
       header: "Item Name",
       cell: (info) => (
-        <div className="font-medium">{info.getValue() as string}</div>
+        <div className="font-medium">
+          {(info.getValue() as string)
+            .replace("Sp-", "Sp")
+            .replaceAll("-", " ")
+            .replace(/\b\w/g, (char) => char.toUpperCase())}
+        </div>
       ),
     },
     {
@@ -125,7 +130,7 @@ export default function ItemsPage() {
   ];
 
   const table = useReactTable({
-    data: paginatedData, // Use memoized paginated data
+    data: paginatedData,
     columns,
     getCoreRowModel: getCoreRowModel(),
   });

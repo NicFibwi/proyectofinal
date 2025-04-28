@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import type { MachineInfo, MachineItemInfo } from "~/types/types";
 import { Card } from "./ui/card";
 import Link from "next/link";
+import { formatGenerationName } from "~/lib/utils";
 
 const getMachineItemInfo = async (url: string) => {
   const response = await fetch(url);
@@ -82,13 +83,7 @@ export default function MachineCard({ url }: { url: string }) {
             <span className="sm:hidden">Gen:</span>
           </span>
           <span className="w-1/2 text-right font-semibold capitalize">
-            {machineInfo.version_group.name
-              .replaceAll("-", " ")
-              .replaceAll(/-/g, " ")
-              .replaceAll(/Lets Go\s*/gi, "LG ")
-              .replaceAll(/Ultra\s*/gi, "U ")
-              .replaceAll(/Omega\s*/gi, "O ")
-              .replaceAll(/Alpha\s*/gi, "A ")}
+            {formatGenerationName(machineInfo.version_group.name)}
           </span>
         </div>
       </Card>
