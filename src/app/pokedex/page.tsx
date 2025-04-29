@@ -115,7 +115,7 @@ interface Result {
   url: string;
 }
 
-export const getPokemonByType = async (type: string): Promise<PokemonList> => {
+const getPokemonByType = async (type: string): Promise<PokemonList> => {
   const response = await fetch(`https://pokeapi.co/api/v2/type/${type}`);
   if (!response.ok) {
     throw new Error("Failed to fetch Pokémon by type");
