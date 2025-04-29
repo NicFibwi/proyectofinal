@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState, useEffect, Suspense } from "react";
 import {
   type ColumnDef,
   flexRender,
@@ -90,7 +90,7 @@ const fetchItems = async (): Promise<ItemInfo[]> => {
   return items;
 };
 
-export default function ItemsPage() {
+function ItemsPageContent() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -385,5 +385,13 @@ export default function ItemsPage() {
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+export default function ItemsPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <ItemsPageContent />
+    </Suspense>
   );
 }

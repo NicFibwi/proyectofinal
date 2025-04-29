@@ -1,7 +1,7 @@
 "use client";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import type { PokemonList } from "~/types/types";
 import PokemonCard from "~/components/pokemoncard";
 import { Skeleton } from "~/components/ui/skeleton";
@@ -130,7 +130,7 @@ const getPokemonByType = async (type: string): Promise<PokemonList> => {
   };
 };
 
-export default function PokedexPage() {
+function PokedexPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [search, setSearch] = useState(searchParams.get("search") ?? "");
@@ -261,5 +261,13 @@ export default function PokedexPage() {
             ))}
       </div>
     </div>
+  );
+}
+
+export default function PokedexPage() {
+  return (
+    <Suspense fallback={<Skeleton className="h-32" />}>
+      <PokedexPageContent />
+    </Suspense>
   );
 }
