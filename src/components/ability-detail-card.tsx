@@ -8,7 +8,8 @@ import { Button } from "./ui/button";
 import { useRouter } from "next/navigation";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 import AbilityPokemonList from "./ability-pokemon-list";
-import { formatGenerationName } from "~/lib/utils";
+import { cn, formatGenerationName, GenTextColors } from "~/lib/utils";
+import { SquareChevronLeft, SquareChevronRight } from "lucide-react";
 
 const getAbilityInfo = async (name: string): Promise<AbilityInfo> => {
   const response = await fetch("https://pokeapi.co/api/v2/ability/" + name);
@@ -72,21 +73,27 @@ export default function AbilityDetailCard({ name }: { name: string }) {
           <Button onClick={() => router.back()}>Back</Button>
         </div>
         <div className="flex flex-row items-center justify-around lg:w-1/5">
-          <Button
-            onClick={() => {
-              const prevAbilityId = abilityInfo.id - 1;
-              router.push(`${prevAbilityId}`);
-            }}
-          >
-            Previous
-          </Button>
+          {abilityInfo.id > 1 && (
+            <Button
+              onClick={() => {
+                const prevAbilityId = abilityInfo.id - 1;
+                router.push(`${prevAbilityId}`);
+              }}
+              title="Previous Ability"
+            >
+              <SquareChevronLeft />#{abilityInfo.id - 1}
+            </Button>
+          )}
+
           <Button
             onClick={() => {
               const nextAbilityId = abilityInfo.id + 1;
               router.push(`${nextAbilityId}`);
             }}
+            title="Next Ability"
           >
-            Next
+            #{abilityInfo.id + 1}
+            <SquareChevronRight />
           </Button>
         </div>
       </div>
@@ -125,15 +132,26 @@ export default function AbilityDetailCard({ name }: { name: string }) {
           <Card className="mb-6 flex h-auto w-full flex-col items-center justify-center">
             <Tabs defaultValue={defaultTab} className="h-full w-full p-4">
               <TabsList className="mb-4 grid h-auto w-full grid-cols-3 flex-wrap">
-                {englishEntries.map((entry) => (
-                  <TabsTrigger
-                    key={entry.version}
-                    value={entry.version}
-                    className="text-xs capitalize hover:bg-gray-500"
-                  >
-                    {formatGenerationName(entry.version)}
-                  </TabsTrigger>
-                ))}
+                {englishEntries.map((entry) => {
+                  const color = GenTextColors[entry.version.toLowerCase()];
+                  if (!color) {
+                    console.log(
+                      `No color mapping found for version: ${entry.version}`,
+                    );
+                  }
+                  return (
+                    <TabsTrigger
+                      key={entry.version}
+                      value={entry.version}
+                      className={cn(
+                        "text-xs capitalize hover:bg-gray-500",
+                        color, // Apply the color dynamically
+                      )}
+                    >
+                      {formatGenerationName(entry.version)}
+                    </TabsTrigger>
+                  );
+                })}
               </TabsList>
               {englishEntries.map((entry) => (
                 <TabsContent

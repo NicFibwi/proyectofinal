@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { useMemo } from "react";
+import { useMemo, useState, useEffect } from "react";
 import {
   type ColumnDef,
   flexRender,
@@ -19,12 +19,21 @@ import {
   TableRow,
 } from "~/components/ui/table";
 import { Button } from "~/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
+import { Card, CardContent } from "~/components/ui/card";
 import { Badge } from "~/components/ui/badge";
 import type { ItemCategory, ItemInfo, Result } from "~/types/types";
-import { useState } from "react";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
 
 import { PromisePool } from "@supercharge/promise-pool";
+import { Input } from "~/components/ui/input";
+import { Search } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "~/components/ui/select";
 
 const fetchItems = async (): Promise<ItemInfo[]> => {
   const categoryResponse = await fetch(
@@ -82,24 +91,104 @@ const fetchItems = async (): Promise<ItemInfo[]> => {
 };
 
 export default function ItemsPage() {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
   const { data, isLoading, isError } = useQuery<ItemInfo[]>({
     queryKey: ["items"],
     queryFn: fetchItems,
     staleTime: 1000 * 60 * 30,
   });
 
-  const [currentPage, setCurrentPage] = useState(1);
+  // Get initial values from URL search params
+  const initialPage = searchParams.get("page")
+    ? Number.parseInt(searchParams.get("page")!, 10)
+    : 1;
+  const initialNameFilter = searchParams.get("name") ?? "";
+  const initialCategoryFilter = searchParams.get("category") ?? "";
+
+  const [currentPage, setCurrentPage] = useState(initialPage);
+  const [nameFilter, setNameFilter] = useState(initialNameFilter);
+  const [categoryFilter, setCategoryFilter] = useState(initialCategoryFilter);
+  const [uniqueCategories, setUniqueCategories] = useState<string[]>([]);
+
+  // Update URL when filters or pagination change
+  const updateSearchParams = (params: {
+    page?: number;
+    name?: string;
+    category?: string;
+  }) => {
+    const newSearchParams = new URLSearchParams(searchParams.toString());
+
+    // Update or remove parameters based on their values
+    if (params.page && params.page > 1) {
+      newSearchParams.set("page", params.page.toString());
+    } else if (params.page === 1) {
+      newSearchParams.delete("page");
+    }
+
+    if (params.name && params.name.trim() !== "") {
+      newSearchParams.set("name", params.name);
+    } else if (params.name === "") {
+      newSearchParams.delete("name");
+    }
+
+    if (params.category && params.category !== "") {
+      newSearchParams.set("category", params.category);
+    } else if (params.category === "") {
+      newSearchParams.delete("category");
+    }
+
+    // Update the URL without refreshing the page
+    router.push(`${pathname}?${newSearchParams.toString()}`, { scroll: false });
+  };
+
+  useEffect(() => {
+    if (data) {
+      const categories = [...new Set(data.map((item) => item.category.name))];
+      setUniqueCategories(categories.sort());
+    }
+  }, [data]);
+
   const itemsPerPage = 20;
 
-  const totalPages = data ? Math.ceil(data.length / itemsPerPage) : 0;
+  const totalPages = useMemo(() => {
+    if (!data) return 0;
+
+    const filtered = data.filter((item) => {
+      const nameMatch = item.name
+        .toLowerCase()
+        .includes(nameFilter.toLowerCase());
+      const categoryMatch = categoryFilter
+        ? item.category.name === categoryFilter
+        : true;
+      return nameMatch && categoryMatch;
+    });
+
+    return Math.ceil(filtered.length / itemsPerPage);
+  }, [data, nameFilter, categoryFilter]);
 
   // Memoize the sliced data
-  const paginatedData = useMemo(() => {
+  const filteredAndPaginatedData = useMemo(() => {
     if (!data) return [];
+
+    // Apply filters
+    const filtered = data.filter((item) => {
+      const nameMatch = item.name
+        .toLowerCase()
+        .includes(nameFilter.toLowerCase());
+      const categoryMatch = categoryFilter
+        ? item.category.name === categoryFilter
+        : true;
+      return nameMatch && categoryMatch;
+    });
+
+    // Apply pagination
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
-    return data.slice(startIndex, endIndex);
-  }, [data, currentPage]);
+    return filtered.slice(startIndex, endIndex);
+  }, [data, currentPage, nameFilter, categoryFilter]);
 
   const columns: ColumnDef<ItemInfo>[] = [
     {
@@ -130,7 +219,7 @@ export default function ItemsPage() {
   ];
 
   const table = useReactTable({
-    data: paginatedData,
+    data: filteredAndPaginatedData,
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
@@ -164,15 +253,53 @@ export default function ItemsPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="mb-4">
+    <div className="space-y-6">
+      <div className="animate-fade-in">
         <h1 className="text-3xl font-bold tracking-tight">Items</h1>
         <p className="text-muted-foreground">
-          Detailed documentation on all items found in Pokémon games.
+          Database of essential information about in-game Pokémon items
         </p>
       </div>
       <Card className="border-none shadow-sm">
         <CardContent>
+          <div className="mb-4 flex flex-col gap-4 md:flex-row">
+            <div className="relative flex-1">
+              <Search className="text-muted-foreground absolute top-2.5 left-2 h-4 w-4" />
+              <Input
+                placeholder="Search by item name..."
+                value={nameFilter}
+                onChange={(e) => {
+                  const newValue = e.target.value;
+                  setNameFilter(newValue);
+                  setCurrentPage(1); // Reset to first page on filter change
+                  updateSearchParams({ name: newValue, page: 1 });
+                }}
+                className="pl-8"
+              />
+            </div>
+            <Select
+              value={categoryFilter}
+              onValueChange={(value) => {
+                setCategoryFilter(value);
+                setCurrentPage(1); // Reset to first page on filter change
+                updateSearchParams({ category: value, page: 1 });
+              }}
+            >
+              <SelectTrigger className="w-full md:w-[200px]">
+                <SelectValue placeholder="All Categories" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Categories</SelectItem>
+                {uniqueCategories.map((category) => (
+                  <SelectItem key={category} value={category}>
+                    {category
+                      .replace(/-/g, " ")
+                      .replace(/\b\w/g, (c) => c.toUpperCase())}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
           {isLoading ? (
             <div className="space-y-3 py-4">Is loading...</div>
           ) : (
@@ -230,17 +357,25 @@ export default function ItemsPage() {
                 <Button
                   variant="outline"
                   disabled={currentPage === 1}
-                  onClick={() => setCurrentPage((prev) => prev - 1)}
+                  onClick={() => {
+                    const newPage = currentPage - 1;
+                    setCurrentPage(newPage);
+                    updateSearchParams({ page: newPage });
+                  }}
                 >
                   Previous
                 </Button>
                 <span>
-                  Page {currentPage} of {totalPages}
+                  Page {currentPage} of {totalPages || 1}
                 </span>
                 <Button
                   variant="outline"
-                  disabled={currentPage === totalPages}
-                  onClick={() => setCurrentPage((prev) => prev + 1)}
+                  disabled={currentPage === totalPages || totalPages === 0}
+                  onClick={() => {
+                    const newPage = currentPage + 1;
+                    setCurrentPage(newPage);
+                    updateSearchParams({ page: newPage });
+                  }}
                 >
                   Next
                 </Button>

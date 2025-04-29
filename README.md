@@ -21,7 +21,7 @@
 - [x] Fetch Ability data
 - [x] Fetch machine data
 - [x] Clerk
-- [ ] make format entry funciton
+- [x] make format entry funciton
 - [ ] make color generation function
 - [ ] add icons
 - [ ] Posthog

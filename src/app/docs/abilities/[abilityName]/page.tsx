@@ -8,7 +8,6 @@ export default function AbilityPage({
   params: Promise<{ abilityName: string }>;
 }) {
   const { abilityName } = use(paramsPromise); // Re
-  console.log(abilityName);
 
   return <AbilityDetailCard name={abilityName} />;
 }

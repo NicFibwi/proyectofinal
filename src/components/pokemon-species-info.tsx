@@ -21,51 +21,11 @@ import {
 import { useRouter } from "next/navigation";
 import { cn } from "~/lib/utils";
 import { formatGenerationName } from "~/lib/utils";
-
+import { GenTextColors } from "~/lib/utils";
 interface PokemonSpeciesCardProps {
   speciesInfo: PokemonSpecies;
   pokemonInfo: Pokemon;
 }
-
-const GenTextColors: Record<string, string> = {
-  emerald: "!text-emerald-500",
-  red: "!text-red-600",
-  blue: "!text-sky-500",
-  yellow: "!text-yellow-500",
-  gold: "!text-amber-500",
-  silver: "!text-slate-500",
-  crystal: "!text-cyan-500",
-  ruby: "!text-red-500",
-  sapphire: "!text-blue-500",
-  firered: "!text-red-700",
-  leafgreen: "!text-green-500",
-  diamond: "!text-teal-500",
-  pearl: "!text-pink-500",
-  platinum: "!text-blue-500",
-  heartgold: "!text-amber-500",
-  soulsilver: "!text-slate-500",
-  black: "text-black dark:text-gray-400",
-  white: "text-gray-500 dark:text-white",
-  "black-2": "text-black dark:text-gray-400",
-  "white-2": "text-gray-500 dark:text-white",
-  x: "!text-blue-500",
-  y: "!text-rose-500",
-  "omega-ruby": "!text-red-500",
-  "alpha-sapphire": "!text-blue-500",
-  "lets-go-pikachu": "!text-yellow-500",
-  "lets-go-eevee": "!text-amber-700",
-  sword: "!text-blue-500",
-  shield: "!text-purple-500",
-  "legends-arceus": "!text-amber-500",
-  scarlet: "!text-red-500",
-  violet: "!text-purple-500",
-  "brilliant-diamond": "!text-blue-500",
-  "shining-pearl": "!text-pink-500",
-  "ultra-sun": "!text-yellow-600",
-  "ultra-moon": "!text-purple-700",
-  sun: "!text-yellow-300",
-  moon: "!text-purple-300",
-};
 
 export default function PokemonSpeciesCard({
   speciesInfo,
@@ -128,40 +88,42 @@ export default function PokemonSpeciesCard({
       <CardContent className="p-6">
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           <div className="space-y-4">
-            <div>
-              <h3 className="text-lg font-bold">Varieties</h3>
-              <Popover open={open} onOpenChange={setOpen}>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    role="combobox"
-                    aria-expanded={open}
-                    className="w-[200px] justify-between"
-                  >
-                    {selectedVariety
-                      ? speciesInfo.varieties.find(
-                          (variety) => variety.pokemon.name === selectedVariety,
-                        )?.pokemon.name
-                      : "Select variety..."}
-                    <ChevronsUpDown className="opacity-50" />
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-[200px] p-0">
-                  <Command>
-                    <CommandInput placeholder="Search variety..." />
-                    <CommandList>
-                      <CommandEmpty>No variety found.</CommandEmpty>
-                      <CommandGroup>
-                        {speciesInfo.varieties.map((variety) => (
-                          <CommandItem
-                            key={variety.pokemon.name}
-                            value={variety.pokemon.name}
-                            onSelect={() =>
-                              handleVarietySelect(variety.pokemon.name)
-                            }
-                          >
-                            {variety.pokemon.name}
-                            {/* <Check
+            {speciesInfo.varieties.length > 1 && (
+              <div>
+                <h3 className="text-lg font-bold">Varieties</h3>
+                <Popover open={open} onOpenChange={setOpen}>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      role="combobox"
+                      aria-expanded={open}
+                      className="w-[200px] justify-between"
+                    >
+                      {selectedVariety
+                        ? speciesInfo.varieties.find(
+                            (variety) =>
+                              variety.pokemon.name === selectedVariety,
+                          )?.pokemon.name
+                        : "Select variety..."}
+                      <ChevronsUpDown className="opacity-50" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-[200px] p-0">
+                    <Command>
+                      <CommandInput placeholder="Search variety..." />
+                      <CommandList>
+                        <CommandEmpty>No variety found.</CommandEmpty>
+                        <CommandGroup>
+                          {speciesInfo.varieties.map((variety) => (
+                            <CommandItem
+                              key={variety.pokemon.name}
+                              value={variety.pokemon.name}
+                              onSelect={() =>
+                                handleVarietySelect(variety.pokemon.name)
+                              }
+                            >
+                              {variety.pokemon.name}
+                              {/* <Check
                               className={cn(
                                 "ml-auto",
                                 selectedVariety === variety.pokemon.name
@@ -169,14 +131,15 @@ export default function PokemonSpeciesCard({
                                   : "opacity-0"
                               )}
                             /> */}
-                          </CommandItem>
-                        ))}
-                      </CommandGroup>
-                    </CommandList>
-                  </Command>
-                </PopoverContent>
-              </Popover>
-            </div>
+                            </CommandItem>
+                          ))}
+                        </CommandGroup>
+                      </CommandList>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
+              </div>
+            )}
             <div>
               <h3 className="text-lg font-bold">Combat Info</h3>
               <div className="mt-2 space-y-2">
@@ -390,7 +353,6 @@ export default function PokemonSpeciesCard({
                         `No color mapping found for version: ${entry.version}`,
                       );
                     }
-                    console.log(entry.version.toLowerCase());
                     return (
                       <TabsTrigger
                         key={entry.version}

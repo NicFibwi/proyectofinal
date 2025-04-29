@@ -26,6 +26,8 @@ import {
   Gamepad2,
   Home,
   Menu,
+  CircleUserRound,
+  Blocks,
 } from "lucide-react";
 import {
   SignedIn,
@@ -65,7 +67,7 @@ const navItems = [
   {
     name: "Team Builder",
     href: "/team-builder",
-    icon: <Users className="mr-2 h-4 w-4" />,
+    icon: <Blocks className="mr-2 h-4 w-4" />,
     description: "Pokémon team creator and editor with advanced customization",
   },
   {
@@ -130,7 +132,16 @@ export default function Navbar() {
           <ThemeToggle />
           <div className="space-around flex items-center">
             <SignedOut>
-              <SignInButton />
+              <SignInButton>
+                <Button
+                  variant="ghost"
+                  className="h-8 w-20 p-2 border-2"
+                  title="Sign In"
+                >
+                  <span>Sign in</span>
+                  <CircleUserRound />
+                </Button>
+              </SignInButton>
             </SignedOut>
             <SignedIn>
               <UserButton

@@ -6,7 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Button } from "./ui/button";
 import { useRouter } from "next/navigation";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
-import { formatGenerationName } from "~/lib/utils";
+import { cn, formatGenerationName } from "~/lib/utils";
+import { GenTextColors } from "~/lib/utils";
 
 const getItemData = async (name: string): Promise<ItemInfo> => {
   const response = await fetch("https://pokeapi.co/api/v2/item/" + name);
@@ -45,7 +46,6 @@ export default function ItemDetailCard({ name }: { name: string }) {
   const defaultTab =
     englishEntries.length > 0 ? englishEntries[0]?.version : "";
 
-  console.log(name);
   if (isLoading) {
     return (
       <Card>
@@ -142,15 +142,26 @@ export default function ItemDetailCard({ name }: { name: string }) {
             {englishEntries.length > 0 ? (
               <Tabs defaultValue={defaultTab} className="h-full w-full p-4">
                 <TabsList className="mb-4 grid h-auto w-full grid-cols-3 flex-wrap">
-                  {englishEntries.map((entry) => (
-                    <TabsTrigger
-                      key={entry.version}
-                      value={entry.version}
-                      className="text-xs capitalize hover:bg-gray-500"
-                    >
-                      {formatGenerationName(entry.version)}
-                    </TabsTrigger>
-                  ))}
+                  {englishEntries.map((entry) => {
+                    const color = GenTextColors[entry.version.toLowerCase()];
+                    if (!color) {
+                      console.log(
+                        `No color mapping found for version: ${entry.version}`,
+                      );
+                    }
+                    return (
+                      <TabsTrigger
+                        key={entry.version}
+                        value={entry.version}
+                        className={cn(
+                          "text-xs capitalize hover:bg-gray-500",
+                          color, // Apply the color dynamically
+                        )}
+                      >
+                        {formatGenerationName(entry.version)}
+                      </TabsTrigger>
+                    );
+                  })}
                 </TabsList>
                 {englishEntries.map((entry) => (
                   <TabsContent

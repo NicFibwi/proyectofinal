@@ -12,6 +12,7 @@ import type { Pokemon } from "~/types/types";
 import Image from "next/image";
 import { HoverCardEffect } from "./hover-card-effect";
 import Link from "next/link";
+import { Skeleton } from "./ui/skeleton";
 
 const getPokemonDetails = async (url: string): Promise<Pokemon> => {
   const response = await fetch(url);
@@ -29,15 +30,11 @@ export default function PokemonCard({ url }: { url: string }) {
   } = useQuery({
     queryKey: ["pokemon", url],
     queryFn: () => getPokemonDetails(url),
-    staleTime: 1000 * 60 * 15,
+    staleTime: Infinity,
   });
 
   if (isLoading) {
-    return (
-      <Card>
-        <div className="flex h-32 items-center justify-center">Loading...</div>
-      </Card>
-    );
+    return <Skeleton className="h-" />;
   }
 
   if (isError || !pokemon) {

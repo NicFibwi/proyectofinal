@@ -11,7 +11,7 @@ import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "./ui/dialog";
 import StatModifiersTable from "./stat-modifier-table";
 import StatChangeDialog from "./stat-change-dialog";
 import MovePokemonList from "./move-pokemon-list";
-import { formatGenerationName } from "~/lib/utils";
+import { cn, formatGenerationName, GenTextColors } from "~/lib/utils";
 
 const getMoveData = async (name: string): Promise<MoveInfo> => {
   const response = await fetch("https://pokeapi.co/api/v2/move/" + name);
@@ -119,15 +119,26 @@ export default function MoveDetailCard({ name }: { name: string }) {
           <Card className="mb-6 flex h-auto w-full flex-col items-center justify-center">
             <Tabs defaultValue={defaultTab} className="h-full w-full p-4">
               <TabsList className="mb-4 grid h-auto w-full grid-cols-3 flex-wrap">
-                {englishEntries.map((entry) => (
-                  <TabsTrigger
-                    key={entry.version}
-                    value={entry.version}
-                    className="text-xs capitalize hover:bg-gray-500"
-                  >
-                    {formatGenerationName(entry.version)}
-                  </TabsTrigger>
-                ))}
+                {englishEntries.map((entry) => {
+                  const color = GenTextColors[entry.version.toLowerCase()];
+                  if (!color) {
+                    console.log(
+                      `No color mapping found for version: ${entry.version}`,
+                    );
+                  }
+                  return (
+                    <TabsTrigger
+                      key={entry.version}
+                      value={entry.version}
+                      className={cn(
+                        "text-xs capitalize hover:bg-gray-500",
+                        color, // Apply the color dynamically
+                      )}
+                    >
+                      {formatGenerationName(entry.version)}
+                    </TabsTrigger>
+                  );
+                })}
               </TabsList>
               {englishEntries.map((entry) => (
                 <TabsContent
