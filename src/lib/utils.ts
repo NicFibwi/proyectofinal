@@ -12,7 +12,9 @@ export function formatGenerationName(gen: string) {
     .replace(/Lets Go\s*/gi, "LG ")
     .replace(/Ultra\s*/gi, "U ")
     .replace(/Omega\s*/gi, "O ")
-    .replace(/Alpha\s*/gi, "A ");
+    .replace(/Alpha\s*/gi, "A ")
+    .replace(/Brilliant\s*/gi, "B ")
+    .replace(/Shining\s*/gi, "S ");
 
   return formattedGen;
 }

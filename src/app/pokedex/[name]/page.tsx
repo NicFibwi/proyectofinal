@@ -11,6 +11,7 @@ import PokemonEvolutionChain from "~/components/pokemon-evolution-chain";
 import PokemonMovesTable from "~/components/pokemon-move-list";
 import { Button } from "~/components/ui/button";
 import { useRouter } from "next/navigation";
+import NavigationButtons from "~/components/navigation-buttons";
 
 const getPokemonData = async (name: string): Promise<Pokemon> => {
   const response = await fetch("https://pokeapi.co/api/v2/pokemon/" + name);
@@ -35,8 +36,6 @@ export default function PokemonDetailsPage({
 }) {
   const params = React.use(paramsPromise); // Unwrap the params Promise
   const { name } = params;
-
-  const router = useRouter(); // Use the useRouter hook
 
   const {
     data: pokemon,
@@ -82,7 +81,7 @@ export default function PokemonDetailsPage({
     base_stat: stat.base_stat,
     color: "#FFFFFF",
   }));
-  
+
   const spriteImages = [
     pokemon.sprites.other?.["official-artwork"].front_default,
     pokemon.sprites.other?.["official-artwork"].front_shiny,
@@ -94,29 +93,7 @@ export default function PokemonDetailsPage({
 
   return (
     <div className="container h-full w-full">
-      <div className="flex flex-row items-center justify-between mb-6">
-        <div className="flex lg:w-1/5 flex-row items-center ml-6">
-          <Button onClick={() => router.back()}>Back</Button>
-        </div>
-        <div className="flex lg:w-1/5 flex-row items-center justify-around ">
-          <Button
-            onClick={() => {
-              const prevPokemonId = pokemon.id === 1 ? 1025 : pokemon.id - 1;
-              router.push(`/pokedex/${prevPokemonId}`);
-            }}
-          >
-            Previous
-          </Button>
-          <Button
-            onClick={() => {
-              const nextPokemonId = (pokemon.id % 1025) + 1;
-              router.push(`/pokedex/${nextPokemonId}`);
-            }}
-          >
-            Next
-          </Button>
-        </div>
-      </div>
+      <NavigationButtons id={pokemon.id} route={`/pokedex`} limit={1025} />
 
       <div className="container flex flex-col items-start lg:flex-row">
         {/* Sidebar Content */}

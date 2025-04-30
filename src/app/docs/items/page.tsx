@@ -280,16 +280,20 @@ function ItemsPageContent() {
             <Select
               value={categoryFilter}
               onValueChange={(value) => {
-                setCategoryFilter(value);
+                setCategoryFilter(value === "all" ? "" : value); // Handle "all" as no filter
                 setCurrentPage(1); // Reset to first page on filter change
-                updateSearchParams({ category: value, page: 1 });
+                updateSearchParams({
+                  category: value === "all" ? "" : value,
+                  page: 1,
+                });
               }}
             >
               <SelectTrigger className="w-full md:w-[200px]">
                 <SelectValue placeholder="All Categories" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Categories</SelectItem>
+                <SelectItem value="all">All Categories</SelectItem>{" "}
+                {/* Use "all" instead of an empty string */}
                 {uniqueCategories.map((category) => (
                   <SelectItem key={category} value={category}>
                     {category
@@ -323,7 +327,7 @@ function ItemsPageContent() {
                     ))}
                   </TableHeader>
                   <TableBody>
-                    {table.getRowModel().rows.length ? (
+                    {table.getRowModel().rows.length ? (      
                       table.getRowModel().rows.map((row) => (
                         <TableRow
                           key={row.id}

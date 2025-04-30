@@ -1,3 +1,5 @@
+"use client";
+
 import { useQuery } from "@tanstack/react-query";
 import type { MachineInfo, MachineItemInfo } from "~/types/types";
 import { Card } from "./ui/card";
@@ -12,47 +14,56 @@ const getMachineItemInfo = async (url: string) => {
   return response.json() as Promise<MachineItemInfo>;
 };
 
-const getMachineInfo = async (url: string) => {
-  const response = await fetch(url);
-  if (!response.ok) {
-    throw new Error(`Failed to fetch machine info from ${url}`);
-  }
-  return response.json() as Promise<MachineInfo>;
-};
+interface MachineCardProps {
+  url?: string;
+  machineInfo?: MachineInfo;
+}
 
-export default function MachineCard({ url }: { url: string }) {
+export default function MachineCard({ url, machineInfo }: MachineCardProps) {
+  // If machineInfo is provided directly, use it
+  // Otherwise fetch it using the URL
   const {
-    data: machineInfo,
-    isLoading,
-    isError,
-  } = useQuery({
+    data: fetchedMachineInfo,
+    isLoading: isLoadingMachine,
+    isError: isErrorMachine,
+  } = useQuery<MachineInfo>({
     queryKey: ["machineInfo", url],
-    queryFn: () => getMachineInfo(url),
+    queryFn: () => {
+      if (!url) throw new Error("Machine URL is required");
+      return fetch(url).then((response) => {
+        if (!response.ok) throw new Error("Failed to fetch machine info");
+        return response.json();
+      });
+    },
+    enabled: !!url && !machineInfo,
     staleTime: 1000 * 60 * 15,
   });
+
+  // Use either the provided machineInfo or the fetched one
+  const machine = machineInfo ?? fetchedMachineInfo;
 
   const {
     data: machineItemInfo,
     isLoading: isLoadingMachineInfo,
     isError: isErrorMachineInfo,
   } = useQuery({
-    queryKey: ["machineItemInfo", machineInfo?.item.url],
+    queryKey: ["machineItemInfo", machine?.item.url],
     queryFn: () => {
-      const machineItemUrl = machineInfo?.item.url;
+      const machineItemUrl = machine?.item.url;
       if (!machineItemUrl) {
         throw new Error("Machine URL is undefined");
       }
       return getMachineItemInfo(machineItemUrl);
     },
-    enabled: !!machineInfo,
+    enabled: !!machine,
     staleTime: 1000 * 60 * 15,
   });
 
-  if (isLoading || !machineInfo) {
+  if ((isLoadingMachine && !machineInfo) || !machine) {
     return <Card className="p-4">Loading machine info</Card>;
   }
 
-  if (isError || isErrorMachineInfo) {
+  if (isErrorMachine || isErrorMachineInfo) {
     return (
       <Card className="p-4">
         <div className="text-destructive flex h-10 items-center gap-2">
@@ -63,18 +74,18 @@ export default function MachineCard({ url }: { url: string }) {
   }
 
   return (
-    <Link href={`/docs/moves/${machineInfo.move.name}/`}>
-      <Card className="mb-2 flex h-15 cursor-pointer flex-row items-center justify-between p-4">
+    <Link href={`/docs/moves/${machine.move.name}/`}>
+      <Card className="hover:bg-accent/50 mb-2 flex h-15 cursor-pointer flex-row items-center justify-between p-4 transition-colors">
         <div className="flex w-1/3 items-center justify-around">
           <span className="hidden w-1/2 sm:block">Machine:</span>
           <span className="w-1/2 font-semibold capitalize">
-            {machineInfo.item.name.replaceAll("-", " ").toLocaleUpperCase()}
+            {machine.item.name.replaceAll("-", " ").toLocaleUpperCase()}
           </span>
         </div>
         <div className="flex w-1/3 items-center justify-around">
           <span className="hidden w-1/3 sm:block">Move:</span>
           <span className="w-2/3 font-semibold capitalize">
-            {machineInfo.move.name.replaceAll("-", " ")}
+            {machine.move.name.replaceAll("-", " ")}
           </span>
         </div>
         <div className="text-muted-foreground flex w-1/3 items-center justify-around">
@@ -83,7 +94,7 @@ export default function MachineCard({ url }: { url: string }) {
             <span className="sm:hidden">Gen:</span>
           </span>
           <span className="w-1/2 text-right font-semibold capitalize">
-            {formatGenerationName(machineInfo.version_group.name)}
+            {formatGenerationName(machine.version_group.name)}
           </span>
         </div>
       </Card>

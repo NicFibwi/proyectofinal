@@ -4,12 +4,10 @@ import type { AbilityInfo } from "~/types/types";
 import React, { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
-import { Button } from "./ui/button";
-import { useRouter } from "next/navigation";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 import AbilityPokemonList from "./ability-pokemon-list";
 import { cn, formatGenerationName, GenTextColors } from "~/lib/utils";
-import { SquareChevronLeft, SquareChevronRight } from "lucide-react";
+import NavigationButtons from "./navigation-buttons";
 
 const getAbilityInfo = async (name: string): Promise<AbilityInfo> => {
   const response = await fetch("https://pokeapi.co/api/v2/ability/" + name);
@@ -20,8 +18,6 @@ const getAbilityInfo = async (name: string): Promise<AbilityInfo> => {
 };
 
 export default function AbilityDetailCard({ name }: { name: string }) {
-  const router = useRouter();
-
   const {
     data: abilityInfo,
     isLoading,
@@ -68,35 +64,11 @@ export default function AbilityDetailCard({ name }: { name: string }) {
 
   return (
     <div className="container h-full w-full">
-      <div className="mb-6 flex flex-row items-center justify-between">
-        <div className="ml-6 flex flex-row items-center lg:w-1/5">
-          <Button onClick={() => router.back()}>Back</Button>
-        </div>
-        <div className="flex flex-row items-center justify-around lg:w-1/5">
-          {abilityInfo.id > 1 && (
-            <Button
-              onClick={() => {
-                const prevAbilityId = abilityInfo.id - 1;
-                router.push(`${prevAbilityId}`);
-              }}
-              title="Previous Ability"
-            >
-              <SquareChevronLeft />#{abilityInfo.id - 1}
-            </Button>
-          )}
-
-          <Button
-            onClick={() => {
-              const nextAbilityId = abilityInfo.id + 1;
-              router.push(`${nextAbilityId}`);
-            }}
-            title="Next Ability"
-          >
-            #{abilityInfo.id + 1}
-            <SquareChevronRight />
-          </Button>
-        </div>
-      </div>
+      <NavigationButtons
+        id={abilityInfo.id}
+        route={"/docs/abilities"}
+        limit={367}
+      />
 
       <div className="container flex flex-col items-start lg:flex-row">
         {/* Sidebar Content */}

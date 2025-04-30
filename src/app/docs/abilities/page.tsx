@@ -23,6 +23,8 @@ export default function AbilitiesListPage() {
     queryKey: ["abilityInfo"],
     queryFn: () => getAllAbilities(),
   });
+
+  console.log(abilityList?.results.length);
   return (
     <div className="container h-full w-full">
        <div className="mb-4">

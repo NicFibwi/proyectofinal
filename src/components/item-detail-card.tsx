@@ -66,30 +66,6 @@ export default function ItemDetailCard({ name }: { name: string }) {
 
   return (
     <div className="container h-full w-full">
-      <div className="mb-6 flex flex-row items-center justify-between">
-        <div className="flex flex-row items-center sm:ml-6 lg:w-1/5">
-          <Button onClick={() => router.back()}>Back</Button>
-        </div>
-        <div className="flex flex-row items-center justify-around lg:w-1/5">
-          <Button
-            onClick={() => {
-              const prevItemId = item.id - 1;
-              router.push(`${prevItemId}`);
-            }}
-          >
-            Previous
-          </Button>
-          <Button
-            onClick={() => {
-              const nextItemId = item.id + 1;
-              router.push(`${nextItemId}`);
-            }}
-          >
-            Next
-          </Button>
-        </div>
-      </div>
-
       <div className="container flex flex-col items-start lg:flex-row">
         {/* Sidebar Content */}
         <div className="flex w-full flex-col items-center justify-center sm:m-6 lg:w-1/3">
