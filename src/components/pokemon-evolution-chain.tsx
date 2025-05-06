@@ -12,7 +12,7 @@ import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import Image from "next/image";
 // Fetch the evolution chain data
-const getPokemonChain = async (url: string): Promise<SpeciesEvolutionChain> => {
+export const getPokemonChain = async (url: string): Promise<SpeciesEvolutionChain> => {
   const response = await fetch(url);
   if (!response.ok) {
     throw new Error("Failed to fetch Pokémon data");

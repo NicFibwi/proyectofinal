@@ -6,6 +6,7 @@ import { Loader2, AlertCircle, Zap, Target, Repeat } from "lucide-react";
 import { Card, CardContent, CardTitle } from "~/components/ui/card";
 import { TypeBadge } from "./ui/typebadge";
 import Link from "next/link";
+import { typeColors } from "./ui/typebadge"; // Import typeColors from TypeBadge
 
 const getMoveInfo = async (moveUrl: string) => {
   const response = await fetch(moveUrl);
@@ -45,7 +46,14 @@ export function MoveCard({ moveUrl }: { moveUrl: string }) {
         {moveInfo && (
           <div className="flex h-full w-full items-center justify-around">
             <div className="flex w-1/6 items-center justify-center gap-1">
-              <h4 className="min-w-28 text-base font-semibold capitalize">
+              <h4
+                className={`min-w-28 rounded-md px-2 py-1 text-base font-semibold capitalize ${
+                  typeColors[moveInfo.type.name.toLowerCase()] &&
+                  "sm:bg-gray-300 sm:text-black"
+                } ${
+                  typeColors[moveInfo.type.name.toLowerCase()] ?? "bg-gray-300"
+                }`}
+              >
                 {moveInfo.name
                   .replace("-", " ")
                   .replace("--special", "")
@@ -67,7 +75,17 @@ export function MoveCard({ moveUrl }: { moveUrl: string }) {
 
             <div className="flex w-1/6 items-center justify-center gap-1">
               <span className="text-sm font-medium tabular-nums">
-                {`Power: ${moveInfo.power ?? "—"}`}
+                <span
+                  className={`${
+                    moveInfo.damage_class.name === "special"
+                      ? "text-blue-500"
+                      : moveInfo.damage_class.name === "physical"
+                        ? "text-orange-500"
+                        : ""
+                  }`}
+                >
+                  {`Power: ${moveInfo.power ?? "—"}`}
+                </span>
               </span>
             </div>
 

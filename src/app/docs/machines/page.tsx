@@ -71,7 +71,7 @@ function MachinePageContent() {
     queryFn: async () => {
       if (!allMachines?.results) return [];
 
-      const { results } = await PromisePool.withConcurrency(20) // Set concurrency limit
+      const { results } = await PromisePool.withConcurrency(50) // Set concurrency limit
         .for(allMachines.results)
         .process(async (machine) => {
           try {

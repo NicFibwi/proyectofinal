@@ -12,6 +12,7 @@ import StatModifiersTable from "./stat-modifier-table";
 import StatChangeDialog from "./stat-change-dialog";
 import MovePokemonList from "./move-pokemon-list";
 import { cn, formatGenerationName, GenTextColors } from "~/lib/utils";
+import NavigationButtons from "./navigation-buttons";
 
 const getMoveData = async (name: string): Promise<MoveInfo> => {
   const response = await fetch("https://pokeapi.co/api/v2/move/" + name);
@@ -70,29 +71,7 @@ export default function MoveDetailCard({ name }: { name: string }) {
 
   return (
     <div className="container h-full w-full">
-      <div className="mb-6 flex flex-row items-center justify-between">
-        <div className="ml-6 flex flex-row items-center lg:w-1/5">
-          <Button onClick={() => router.back()}>Back</Button>
-        </div>
-        <div className="flex flex-row items-center justify-around lg:w-1/5">
-          <Button
-            onClick={() => {
-              const prevMoveId = move.id - 1;
-              router.push(`${prevMoveId}`);
-            }}
-          >
-            Previous
-          </Button>
-          <Button
-            onClick={() => {
-              const nextMoveId = move.id + 1;
-              router.push(`${nextMoveId}`);
-            }}
-          >
-            Next
-          </Button>
-        </div>
-      </div>
+      <NavigationButtons id={move.id} route={"/docs/moves"} limit={816} />
 
       <div className="container flex flex-col items-start lg:flex-row">
         {/* Sidebar Content */}

@@ -93,7 +93,7 @@ export default function MachineCard({ url, machineInfo }: MachineCardProps) {
             <span className="hidden sm:inline">Generation:</span>
             <span className="sm:hidden">Gen:</span>
           </span>
-          <span className="w-1/2 text-right font-semibold capitalize">
+          <span className="w-1/2 text-right font-semibold capitalize text-xs md:text-lg">
             {formatGenerationName(machine.version_group.name)}
           </span>
         </div>

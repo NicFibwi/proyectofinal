@@ -1,6 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
-import type { IndependantMoveCategory, MoveInfo } from "~/types/types";
+import type { IndependantMoveCategory } from "~/types/types";
 import { MoveCard } from "./move-card";
 
 const getMoveListFromCategory = async (categoryUrl: string) => {
@@ -11,15 +10,19 @@ const getMoveListFromCategory = async (categoryUrl: string) => {
   return response.json() as Promise<IndependantMoveCategory>;
 };
 
-
-
-export default function MoveCardList({ categoryUrl }: { categoryUrl: string }) {
+export default function MoveCardList({
+  categoryUrl,
+  nameFilter = "",
+}: {
+  categoryUrl: string;
+  nameFilter?: string;
+}) {
   const {
     data: moveList,
     isLoading,
     isError,
   } = useQuery({
-    queryKey: ["moveInfo", categoryUrl],
+    queryKey: ["moveInfo", categoryUrl, nameFilter],
     queryFn: () => getMoveListFromCategory(categoryUrl),
   });
 
@@ -37,9 +40,26 @@ export default function MoveCardList({ categoryUrl }: { categoryUrl: string }) {
     );
   }
 
+  // Filter moves by name if nameFilter is provided
+  const filteredMoves = nameFilter
+    ? moveList.moves.filter((move) =>
+        move.name.toLowerCase().includes(nameFilter.toLowerCase()),
+      )
+    : moveList.moves;
+
+  if (filteredMoves.length === 0) {
+    return (
+      <div className="container h-auto w-full">
+        <div className="text-muted-foreground py-4 text-sm">
+          No moves found in this category matching &quot;{nameFilter}&quot;.
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="container h-auto w-full">
-      {moveList.moves.map((move) => (
+      {filteredMoves.map((move) => (
         <MoveCard key={move.name} moveUrl={move.url} />
       ))}
     </div>

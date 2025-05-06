@@ -6,7 +6,7 @@ export interface TypeBadgeProps {
   type: Type; // Use the Type interface from your types file
 }
 
-const typeColors: Record<string, string> = {
+export const typeColors: Record<string, string> = {
   normal: "bg-gray-400",
   fire: "bg-red-500",
   water: "bg-blue-500",

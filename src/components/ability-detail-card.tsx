@@ -113,7 +113,7 @@ export default function AbilityDetailCard({ name }: { name: string }) {
                   }
                   return (
                     <TabsTrigger
-                      key={entry.version}
+                      key={entry.text + entry.version}
                       value={entry.version}
                       className={cn(
                         "text-xs capitalize hover:bg-gray-500",
