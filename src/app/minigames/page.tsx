@@ -1,9 +1,14 @@
 "use client";
+import { CircleHelp, Keyboard, Shuffle } from "lucide-react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { HoverCardEffect } from "~/components/hover-card-effect";
+import { Button } from "~/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "~/components/ui/card";
@@ -16,40 +21,136 @@ export default function MinigamesPage() {
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Minigames</h1>
         <p className="text-muted-foreground">
-          Pokémon-based minigames with new activities every day
+          Play Pokémon-based minigames to pass the time!
         </p>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>Daily Challenges</CardTitle>
-          <CardDescription>
-            New Pokémon-based activities every day
-          </CardDescription>
+          <CardTitle>Unlimited minigames</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="text-muted-foreground p-8 text-center">
-            Daily challenges interface will be implemented here
+          <div className="flex flex-col gap-4 md:flex-row md:justify-evenly">
+            {/* <HoverCardEffect key={"pokedle"} className="w-full"> */}
+            <Card className="h-45 max-w-sm flex-1">
+              <CardHeader>
+                <div className="flex items-center gap-2">
+                  <div className="animate-float">
+                    <Keyboard />
+                  </div>
+                  <CardTitle>Pokedle</CardTitle>
+                </div>
+                <CardDescription>
+                  Guess a random pokemon based with info from your own guesses.
+                </CardDescription>
+              </CardHeader>
+              <CardFooter>
+                <Link href="/minigames/pokedle" className="w-full">
+                  <Button className="hover:bg-primary/90 w-full transition-all duration-200">
+                    Play
+                  </Button>
+                </Link>
+              </CardFooter>
+            </Card>
+            {/* </HoverCardEffect> */}
+
+            <Card className="h-45 max-w-sm flex-1">
+              <CardHeader>
+                <div className="flex items-center gap-2">
+                  <div className="animate-float">
+                    <CircleHelp />
+                  </div>
+                  <CardTitle>Who&apos;s That Pokémon?</CardTitle>
+                </div>
+                <CardDescription>
+                  Test your knowledge by guessing the Pokémon silhouette.
+                </CardDescription>
+              </CardHeader>
+              <CardFooter>
+                <Link href="/minigames/whosthatpokemon" className="w-full">
+                  <Button className="hover:bg-primary/90 w-full transition-all duration-200">
+                    Play
+                  </Button>
+                </Link>
+              </CardFooter>
+            </Card>
+
+            {/* <HoverCardEffect key={"randomon"} className="w-full"> */}
+            <Card className="h-45 max-w-sm flex-1">
+              <CardHeader>
+                <div className="flex items-center gap-2">
+                  <div className="animate-float">
+                    <Shuffle />
+                  </div>
+                  <CardTitle>Rando-Mon</CardTitle>
+                </div>
+                <CardDescription>
+                  Create a pokemon based on random pokemon&apos;s attributes, and
+                  defeat a random opponent.
+                </CardDescription>
+              </CardHeader>
+              <CardFooter>
+                <Link href="/minigames/randomon" className="w-full">
+                  <Button className="hover:bg-primary/90 w-full transition-all duration-200">
+                    Play
+                  </Button>
+                </Link>
+              </CardFooter>
+            </Card>
+            {/* </HoverCardEffect> */}
           </div>
-          <button
-            className="btn btn-primary"
-            onClick={() => router.push("/minigames/pokedle")}
-          >
-            Play Pokedle
-          </button>
         </CardContent>
       </Card>
 
       <Card>
         <CardHeader>
-          <CardTitle>Share Results</CardTitle>
-          <CardDescription>
-            Share your minigame results with friends and the community
-          </CardDescription>
+          <CardTitle>Daily minigames</CardTitle>
+          <CardDescription>COMING SOON</CardDescription>
         </CardHeader>
+
         <CardContent>
-          <div className="text-muted-foreground p-8 text-center">
-            Results sharing functionality will be implemented here
+          <div className="flex flex-col gap-4 md:flex-row md:justify-evenly">
+            <Card className="h-45 max-w-sm flex-1">
+              <CardHeader>
+                <div className="flex items-center gap-2">
+                  <div className="animate-float">
+                    <Keyboard />
+                  </div>
+                  <CardTitle>Daily Pokedle</CardTitle>
+                </div>
+              </CardHeader>
+              <CardFooter>
+                <Link href="" className="w-full cursor-not-allowed">
+                  <Button
+                    className="hover:bg-primary/90 w-full cursor-not-allowed transition-all duration-200"
+                    disabled
+                  >
+                    Play
+                  </Button>
+                </Link>
+              </CardFooter>
+            </Card>
+
+            <Card className="h-45 max-w-sm flex-1">
+              <CardHeader>
+                <div className="flex items-center gap-2">
+                  <div className="animate-float">
+                    <CircleHelp />
+                  </div>
+                  <CardTitle>Daily Who&apos;s That Pokémon?</CardTitle>
+                </div>
+              </CardHeader>
+              <CardFooter>
+                <Link href="" className="w-full cursor-not-allowed">
+                  <Button
+                    className="hover:bg-primary/90 w-full cursor-not-allowed transition-all duration-200"
+                    disabled
+                  >
+                    Play
+                  </Button>
+                </Link>
+              </CardFooter>
+            </Card>
           </div>
         </CardContent>
       </Card>

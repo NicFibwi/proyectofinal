@@ -1,96 +1,150 @@
 "use client";
 import { useQuery } from "@tanstack/react-query";
-import type { Pokemon, PokemonSpecies } from "~/types/types";
+import type React from "react";
+
+import { useState, useEffect, useCallback } from "react";
 import { Input } from "./ui/input";
-import { useState } from "react";
 import { Card } from "./ui/card";
 import { ChevronDown, ChevronUp } from "lucide-react";
-import { TypeBadge } from "./ui/typebadge";
+import { Button } from "./ui/button";
 
-const getPokemonList = async (): Promise<Pokemon[]> => {
-  const response = await fetch("https://pokeapi.co/api/v2/pokemon?limit=1025");
-  if (!response.ok) {
-    throw new Error("Failed to fetch Pokémon list");
-  }
-  const data = await response.json() as { results: Pokemon[] }; // Parse the response as JSON
-  return data.results; // Return the 'results' array
-};
+import type {
+  Pokemon,
+  PokemonSpecies,
+  SpeciesEvolutionChain,
+} from "~/types/types";
+import Link from "next/link";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "./ui/dialog";
+import { Label } from "./ui/label";
+import { useRouter } from "next/navigation";
 
-const getPokemonData = async (name: string): Promise<Pokemon> => {
-  const response = await fetch("https://pokeapi.co/api/v2/pokemon/" + name);
-  if (!response.ok) {
-    throw new Error("Failed to fetch Pokémon data");
+// Cache for evolution data to reduce API calls
+const evolutionCache = new Map<
+  string,
+  { stage: number; isFinalEvo: boolean }
+>();
+
+// Analyze evolution chain and return stage and final evolution status
+const analyzeEvolution = async (url: string, pokemonName: string) => {
+  // Check cache first
+  const cacheKey = `${url}:${pokemonName}`;
+  if (evolutionCache.has(cacheKey)) {
+    return evolutionCache.get(cacheKey)!;
   }
-  return response.json() as Promise<Pokemon>;
-};
-const getPokemonSpeciesData = async (url: string): Promise<PokemonSpecies> => {
+
   const response = await fetch(url);
   if (!response.ok) {
-    throw new Error("Failed to fetch Pokémon species data");
+    throw new Error("Failed to fetch evolution chain");
   }
-  return response.json() as Promise<PokemonSpecies>;
-};
 
-const getRandomPokemon = async (): Promise<Pokemon> => {
-  const randomId = Math.floor(Math.random() * 1025) + 1;
-  return getPokemonData(randomId.toString());
-};
+  const evoChain = (await response.json()) as SpeciesEvolutionChain;
+  let stage = 0;
+  let isFinalEvo = false;
 
-const romanToArabic = (roman: string): number => {
-  const romanMap: Record<string, number> = {
-    I: 1,
-    II: 2,
-    III: 3,
-    IV: 4,
-    V: 5,
-    VI: 6,
-    VII: 7,
-    VIII: 8,
-    IX: 9,
-    X: 10,
-    XI: 11,
-    XII: 12,
-    XIII: 13,
-    XIV: 14,
-    XV: 15,
-  };
-  return romanMap[roman.toUpperCase()] ?? 0;
-};
+  // First stage check
+  if (evoChain.chain.species.name === pokemonName) {
+    stage = 1;
+    isFinalEvo = evoChain.chain.evolves_to.length === 0;
+  } else {
+    // Second stage check
+    for (const evo of evoChain.chain.evolves_to) {
+      if (evo.species.name === pokemonName) {
+        stage = 2;
+        isFinalEvo = evo.evolves_to.length === 0;
+        break;
+      }
 
-export default function PokemonWordle() {
-  const {
-    data: pokemonList,
-    isLoading: isLoadingPokemonList,
-    isError: isErrorPokemonList,
-  } = useQuery({
-    queryKey: ["pokemonList"],
-    queryFn: () => getPokemonList(),
-  });
+      // Third stage check
+      for (const evo2 of evo.evolves_to) {
+        if (evo2.species.name === pokemonName) {
+          stage = 3;
+          isFinalEvo = true; // Third stage is always final
+          break;
+        }
+      }
 
-  const [guess, setGuess] = useState("");
-  const [guesses, setGuesses] = useState<
-    { pokemon: Pokemon; species: PokemonSpecies }[]
-  >([]);
-  const [isCorrect, setIsCorrect] = useState(false);
-  const [targetPokemon, setTargetPokemon] = useState<Pokemon | null>(null);
-  const [targetPokemonSpecies, setTargetPokemonSpecies] =
-    useState<PokemonSpecies | null>(null);
-
-  const fetchNewRandomPokemon = async () => {
-    try {
-      const newPokemon = await getRandomPokemon();
-      const speciesData = await getPokemonSpeciesData(newPokemon.species.url);
-
-      setTargetPokemon(newPokemon);
-      setTargetPokemonSpecies(speciesData);
-      setGuesses([]);
-      setIsCorrect(false);
-    } catch (error) {
-      console.error("Failed to fetch new random Pokémon:", error);
+      if (stage > 0) break; // Exit if we found the Pokémon
     }
-  };
+  }
 
-  const suffixMap: Record<string, string> = {
+  // If we couldn't determine the stage, default to 1
+  if (stage === 0) {
+    console.warn(
+      `Could not determine evolution stage for ${pokemonName}, defaulting to 1`,
+    );
+    stage = 1;
+  }
+
+  // Cache the result
+  const result = { stage, isFinalEvo };
+  evolutionCache.set(cacheKey, result);
+  return result;
+};
+
+// API functions
+const api = {
+  async getPokemonList(): Promise<Pokemon[]> {
+    const response = await fetch(
+      "https://pokeapi.co/api/v2/pokemon?limit=1025",
+    );
+    if (!response.ok) throw new Error("Failed to fetch Pokémon list");
+    const data = (await response.json()) as { results: Pokemon[] };
+    return data.results;
+  },
+
+  async getPokemonData(nameOrId: string): Promise<Pokemon> {
+    const response = await fetch(
+      `https://pokeapi.co/api/v2/pokemon/${nameOrId}`,
+    );
+    if (!response.ok) throw new Error("Failed to fetch Pokémon data");
+    return response.json() as Promise<Pokemon>;
+  },
+
+  async getPokemonSpeciesData(url: string): Promise<PokemonSpecies> {
+    const response = await fetch(url);
+    if (!response.ok) throw new Error("Failed to fetch Pokémon species data");
+    return response.json() as Promise<PokemonSpecies>;
+  },
+
+  async getRandomPokemon(): Promise<Pokemon> {
+    const randomId = Math.floor(Math.random() * 1025) + 1;
+    return this.getPokemonData(randomId.toString());
+  },
+};
+
+// Helper functions
+const helpers = {
+  romanToArabic(roman: string): number {
+    const romanMap: Record<string, number> = {
+      I: 1,
+      II: 2,
+      III: 3,
+      IV: 4,
+      V: 5,
+      VI: 6,
+      VII: 7,
+      VIII: 8,
+      IX: 9,
+      X: 10,
+      XI: 11,
+      XII: 12,
+      XIII: 13,
+      XIV: 14,
+      XV: 15,
+    };
+    return romanMap[roman.toUpperCase()] ?? 0;
+  },
+
+  // Map for Pokémon with form suffixes
+  suffixMap: {
     thundurus: "-Incarnate",
     landorus: "-Incarnate",
     tornadus: "-Incarnate",
@@ -124,30 +178,260 @@ export default function PokemonWordle() {
     meloetta: "-Aria",
     keldeo: "-Ordinary",
     basculin: "-White-Striped",
-  };
+  } as Record<string, string>,
 
-  // Function to get the full name of a Pokémon
-  const getFullPokemonName = (name: string): string => {
+  // Get full name with form suffix if needed
+  getFullPokemonName(name: string): string {
     const baseName = name.toLowerCase();
-    return suffixMap[baseName] ? `${baseName}${suffixMap[baseName]}` : baseName;
-  };
+    return this.suffixMap[baseName]
+      ? `${baseName}${this.suffixMap[baseName]}`
+      : baseName;
+  },
 
-  // Function to get the display name of a Pokémon
-  const getDisplayPokemonName = (name: string): string => {
-    const baseName = Object.keys(suffixMap).find((key) =>
+  // Get display name without form suffix
+  getDisplayPokemonName(name: string): string {
+    const baseName = Object.keys(this.suffixMap).find((key) =>
       name.toLowerCase().startsWith(key),
     );
     return baseName ?? name;
+  },
+
+  // Extract generation number from generation name
+  getGenerationNumber(generationName: string): number {
+    return this.romanToArabic(
+      generationName.replace("generation-", "").toUpperCase(),
+    );
+  },
+
+  // Format generation name for display
+  formatGenerationName(generationName: string): string {
+    return generationName
+      .split("-")
+      .map((word, index) =>
+        index === 1
+          ? word.toUpperCase()
+          : word.charAt(0).toUpperCase() + word.slice(1),
+      )
+      .join(" ");
+  },
+};
+
+// Type for a guessed Pokémon with all its data
+type GuessedPokemon = {
+  pokemon: Pokemon;
+  species: PokemonSpecies;
+  evoStage: number;
+  isFinalEvo: boolean;
+};
+
+// Type for game state to be stored in localStorage
+type GameState = {
+  guesses: GuessedPokemon[];
+  isCorrect: boolean;
+  targetPokemon: Pokemon | null;
+  targetPokemonSpecies: PokemonSpecies | null;
+  targetPokemonEvoStage: number | null;
+  targetPokemonIsFinalEvo: boolean | null;
+};
+
+export default function PokemonWordle() {
+  // Fetch Pokémon list for autocomplete
+  const { data: pokemonList, isLoading: isLoadingPokemonList } = useQuery({
+    queryKey: ["pokemonList"],
+    queryFn: () => api.getPokemonList(),
+  });
+
+  // Game state
+  const [guess, setGuess] = useState("");
+  const [guesses, setGuesses] = useState<GuessedPokemon[]>([]);
+  const [isCorrect, setIsCorrect] = useState<boolean>(false);
+  const [targetPokemon, setTargetPokemon] = useState<Pokemon | null>(null);
+  const [targetPokemonSpecies, setTargetPokemonSpecies] =
+    useState<PokemonSpecies | null>(null);
+  const [targetPokemonEvoStage, setTargetPokemonEvoStage] = useState<
+    number | null
+  >(null);
+  const [targetPokemonIsFinalEvo, setTargetPokemonIsFinalEvo] = useState<
+    boolean | null
+  >(null);
+  const [hasMounted, setHasMounted] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const router = useRouter();
+
+  // Set hasMounted to true after the component mounts
+  useEffect(() => {
+    setHasMounted(true);
+  }, []);
+
+  // Save game state to localStorage
+  const saveGameState = useCallback(() => {
+    if (!hasMounted) return;
+
+    const gameState: GameState = {
+      guesses,
+      isCorrect,
+      targetPokemon,
+      targetPokemonSpecies,
+      targetPokemonEvoStage,
+      targetPokemonIsFinalEvo,
+    };
+
+    Object.entries(gameState).forEach(([key, value]) => {
+      if (value !== null && value !== undefined) {
+        localStorage.setItem(
+          `pokemonWordle${key.charAt(0).toUpperCase() + key.slice(1)}`,
+          JSON.stringify(value),
+        );
+      }
+    });
+  }, [
+    hasMounted,
+    guesses,
+    isCorrect,
+    targetPokemon,
+    targetPokemonSpecies,
+    targetPokemonEvoStage,
+    targetPokemonIsFinalEvo,
+  ]);
+
+  // Load game state from localStorage
+  const loadGameState = useCallback(() => {
+    if (!hasMounted) return false;
+
+    try {
+      const guessesStr = localStorage.getItem("pokemonWordleGuesses");
+      const isCorrectStr = localStorage.getItem("pokemonWordleIsCorrect");
+      const targetStr = localStorage.getItem("pokemonWordleTarget");
+      const speciesStr = localStorage.getItem("pokemonWordleTargetSpecies");
+      const evoStageStr = localStorage.getItem("pokemonWordleTargetEvoStage");
+      const isFinalEvoStr = localStorage.getItem(
+        "pokemonWordleTargetIsFinalEvo",
+      );
+
+      let stateLoaded = false;
+
+      if (guessesStr) {
+        setGuesses(JSON.parse(guessesStr) as GuessedPokemon[]);
+        stateLoaded = true;
+      }
+
+      if (isCorrectStr) {
+        setIsCorrect(JSON.parse(isCorrectStr) as boolean);
+        stateLoaded = true;
+      }
+
+      if (targetStr) {
+        setTargetPokemon(JSON.parse(targetStr) as Pokemon);
+        stateLoaded = true;
+      }
+
+      if (speciesStr) {
+        setTargetPokemonSpecies(JSON.parse(speciesStr) as PokemonSpecies);
+        stateLoaded = true;
+      }
+
+      if (evoStageStr) {
+        const stage: number = JSON.parse(evoStageStr) as number;
+        console.log(`Loaded evolution stage: ${stage}`);
+        setTargetPokemonEvoStage(stage);
+        stateLoaded = true;
+      }
+
+      if (isFinalEvoStr) {
+        setTargetPokemonIsFinalEvo(JSON.parse(isFinalEvoStr) as boolean);
+        stateLoaded = true;
+      }
+
+      return stateLoaded;
+    } catch (error) {
+      console.error("Error loading game state from localStorage:", error);
+      return false;
+    }
+  }, [hasMounted]);
+
+  // Load data from localStorage after component has mounted
+  useEffect(() => {
+    if (hasMounted) {
+      const stateLoaded = loadGameState();
+      if (!stateLoaded) {
+        void fetchNewRandomPokemon();
+      }
+    }
+  }, [hasMounted, loadGameState]);
+
+  // Save state to localStorage whenever it changes
+  useEffect(() => {
+    saveGameState();
+  }, [
+    guesses,
+    isCorrect,
+    targetPokemon,
+    targetPokemonSpecies,
+    targetPokemonEvoStage,
+    targetPokemonIsFinalEvo,
+    saveGameState,
+  ]);
+
+  // Fetch a new random Pokémon
+  const fetchNewRandomPokemon = async () => {
+    try {
+      const newPokemon = await api.getRandomPokemon();
+      const speciesData = await api.getPokemonSpeciesData(
+        newPokemon.species.url,
+      );
+
+      // Get evolution data in a single call
+      const { stage, isFinalEvo } = await analyzeEvolution(
+        speciesData.evolution_chain.url,
+        newPokemon.name,
+      );
+
+      console.log(
+        `New Pokémon: ${newPokemon.name}, Stage: ${stage}, Final Evo: ${isFinalEvo}`,
+      );
+
+      // Update state with new Pokémon
+      setTargetPokemon(newPokemon);
+      setTargetPokemonSpecies(speciesData);
+      setTargetPokemonEvoStage(stage);
+      setTargetPokemonIsFinalEvo(isFinalEvo);
+      setGuesses([]);
+      setIsCorrect(false);
+
+      // Clear localStorage for guesses when starting a new game
+      if (hasMounted) {
+        localStorage.removeItem("pokemonWordleGuesses");
+
+        // Explicitly save the new values to localStorage
+        localStorage.setItem("pokemonWordleTarget", JSON.stringify(newPokemon));
+        localStorage.setItem(
+          "pokemonWordleTargetSpecies",
+          JSON.stringify(speciesData),
+        );
+        localStorage.setItem(
+          "pokemonWordleTargetEvoStage",
+          JSON.stringify(stage),
+        );
+        localStorage.setItem(
+          "pokemonWordleTargetIsFinalEvo",
+          JSON.stringify(isFinalEvo),
+        );
+        localStorage.setItem("pokemonWordleIsCorrect", JSON.stringify(false));
+      }
+    } catch (error) {
+      console.error("Failed to fetch new random Pokémon:", error);
+    }
   };
 
+  // Handle guess submission
   const handleKeyDown = async (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter" && guess.trim() !== "") {
-      // Check if the Pokémon has already been guessed
+      const fullName = helpers.getFullPokemonName(guess.trim());
+
+      // Check if already guessed
       if (
         guesses.some(
-          (g) =>
-            g.pokemon.name.toLowerCase() ===
-            getFullPokemonName(guess.trim()).toLowerCase(),
+          (g) => g.pokemon.name.toLowerCase() === fullName.toLowerCase(),
         )
       ) {
         alert("You have already guessed this Pokémon!");
@@ -155,239 +439,320 @@ export default function PokemonWordle() {
       }
 
       try {
-        // Convert the user's input to the full Pokémon name
-        const fullName = getFullPokemonName(guess);
-
-        // Fetch Pokémon data for the entered guess
-        const guessedPokemon = await getPokemonData(fullName);
-
-        // Fetch Pokémon species data
-        const speciesData = await getPokemonSpeciesData(
+        // Fetch Pokémon data
+        const guessedPokemon = await api.getPokemonData(fullName);
+        const speciesData = await api.getPokemonSpeciesData(
           guessedPokemon.species.url,
         );
 
-        // Add both Pokémon and species data to the list of guesses
+        // Get evolution data
+        const { stage, isFinalEvo } = await analyzeEvolution(
+          speciesData.evolution_chain.url,
+          guessedPokemon.name,
+        );
+
+        // Add to guesses
         setGuesses((prevGuesses) => [
           ...prevGuesses,
-          { pokemon: guessedPokemon, species: speciesData },
+          {
+            pokemon: guessedPokemon,
+            species: speciesData,
+            evoStage: stage,
+            isFinalEvo,
+          },
         ]);
 
-        // Check if the guess is correct
+        // Check if correct
         if (
           guessedPokemon.name.toLowerCase() ===
           targetPokemon?.name.toLowerCase()
         ) {
           setIsCorrect(true);
-        } else {
-          setIsCorrect(false);
         }
       } catch (error) {
         console.error("Failed to fetch Pokémon data for the guess:", error);
       }
 
-      // Clear the input field
       setGuess("");
     }
   };
 
+  // Render comparison indicator (up/down arrow or nothing if correct)
+  const renderComparisonIndicator = (
+    guessValue: number | undefined,
+    targetValue: number | undefined,
+  ) => {
+    if (guessValue === targetValue) return null;
+    if (targetValue === undefined || guessValue === undefined) return null;
+
+    return targetValue > guessValue ? (
+      <ChevronUp className="ml-1" />
+    ) : (
+      <ChevronDown className="ml-1" />
+    );
+  };
+
+  // If the component hasn't mounted yet, return a loading state
+  if (!hasMounted) {
+    return (
+      <div className="flex w-full justify-center p-8">
+        Loading Pokémon Wordle...
+      </div>
+    );
+  }
+
   return (
     <div className="flex w-full flex-col items-center">
-      <button
-        onClick={fetchNewRandomPokemon}
-        className="mb-4 rounded bg-blue-500 px-4 py-2 text-white"
-      >
-        Create New Random Pokémon
-      </button>
-
-      {targetPokemon && <p>{targetPokemon.id}</p>}
-
-      <Input
-        id="guess-pokemon-name"
-        placeholder="Enter Pokémon name"
-        value={guess}
-        onChange={(e) => setGuess(e.target.value)}
-        onKeyDown={handleKeyDown}
-        list="pokemon-suggestions"
-      />
-      {guess.trim() !== "" && (
-        <datalist
-          id="pokemon-suggestions"
-          style={{
-            maxHeight: "50px",
-            overflowY: "auto",
-          }}
-        >
-          {pokemonList
-            ?.filter((pokemon) =>
-              getDisplayPokemonName(pokemon.name)
-                .toLowerCase()
-                .startsWith(guess.toLowerCase()),
-            )
-            .map((pokemon) => (
-              <option
-                key={pokemon.name}
-                value={getDisplayPokemonName(pokemon.name)}
-              />
-            ))}
-        </datalist>
+      {targetPokemon && (
+        <div className="text-muted-foreground mb-4 text-sm">
+          Debug - Target: {targetPokemon.name}, Stage: {targetPokemonEvoStage},
+          Final: {targetPokemonIsFinalEvo ? "Yes" : "No"}
+        </div>
       )}
 
+      <div className="mb-4 flex w-full max-w-3xl flex-row justify-around">
+        <Input
+          id="guess-pokemon-name"
+          placeholder="Enter Pokémon name"
+          value={guess}
+          onChange={(e) => setGuess(e.target.value)}
+          onKeyDown={handleKeyDown}
+          list="pokemon-suggestions"
+          className="mr-4 mb-2"
+        />
+
+        {guess.trim() !== "" && (
+          <datalist id="pokemon-suggestions">
+            {pokemonList
+              ?.filter((pokemon) =>
+                helpers
+                  .getDisplayPokemonName(pokemon.name)
+                  .toLowerCase()
+                  .startsWith(guess.toLowerCase()),
+              )
+              .slice(0, 10) // Limit suggestions for better performance
+              .map((pokemon) => (
+                <option
+                  key={pokemon.name}
+                  value={helpers.getDisplayPokemonName(pokemon.name)}
+                />
+              ))}
+          </datalist>
+        )}
+        <Button
+          onClick={fetchNewRandomPokemon}
+          className="mb-4"
+          variant="default"
+        >
+          New Random Pokémon
+        </Button>
+      </div>
+
       {isCorrect ? (
-        <p className="text-green-500">
-          Correct! The Pokémon is {targetPokemon?.name}.
-        </p>
-      ) : guesses.length > 0 ? (
-        <p className="text-red-500">Incorrect! Try again.</p>
+        <Dialog
+          open={isOpen}
+          onOpenChange={(open) => !open && setIsOpen(false)}
+        >
+          <DialogTrigger asChild>
+            <Button className="hidden">Open Modal</Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-[425px]">
+            <DialogHeader>
+              <DialogTitle>
+                Correct! The pokemon was {targetPokemon?.name.toUpperCase()}
+              </DialogTitle>
+              <DialogDescription className="flex flex-col items-center">
+                <span># Tries: {guesses.length}</span>
+                <img
+                  src={
+                    targetPokemon?.sprites.other?.["official-artwork"]
+                      .front_default
+                  }
+                  alt="pokemon-picture"
+                  className="mt-4 flex h-60 w-60 items-center justify-center rounded-lg border border-gray-300 shadow-md"
+                />
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter>
+              <Button onClick={fetchNewRandomPokemon}>Play again</Button>
+              <Button onClick={() => router.push("/minigames/randomon")}>
+                Play Rando-Mon
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      ) : guesses.length > 0 && !isCorrect ? (
+        <p className="mb-4 text-red-500">Incorrect! Try again.</p>
       ) : null}
 
-      <div className="mt-4 w-full">
-        {guesses.map((pokemon, index) => (
-          <Card
-            key={index}
-            className="mb-2 flex w-full flex-row items-center justify-between p-4"
-          >
-            <div>
-              <img
-                src={pokemon.pokemon.sprites.front_default}
-                alt={pokemon.pokemon.name}
-                className="h-16 w-16"
-              />
-            </div>
-            <div className="flex flex-col items-start rounded p-1">
-              <span>ID: {pokemon.pokemon.id}</span>
-              <span>Name: {pokemon.pokemon.name}</span>
-              <span>Guess: #{guesses.indexOf(pokemon) + 1}</span>
-            </div>
+      {isCorrect && guesses.length > 0 && (
+        <Button onClick={() => setIsOpen(true)} className="mt-4">
+          Show Congratulations
+        </Button>
+      )}
 
-            <div
-              className={`flex flex-row items-center rounded p-1 ${
-                romanToArabic(
-                  (targetPokemonSpecies?.generation.name ?? "")
-                    .replace("generation-", "")
-                    .toUpperCase(),
-                ) ===
-                romanToArabic(
-                  pokemon.species.generation.name
-                    .replace("generation-", "")
-                    .toUpperCase(),
-                )
-                  ? "bg-green-500"
-                  : romanToArabic(
-                        (targetPokemonSpecies?.generation.name ?? "")
-                          .replace("generation-", "")
-                          .toUpperCase(),
-                      ) >
-                      romanToArabic(
-                        pokemon.species.generation.name
-                          .replace("generation-", "")
-                          .toUpperCase(),
-                      )
-                    ? "bg-red-500"
-                    : "bg-red-500"
-              }`}
-            >
-              {pokemon.species.generation.name
-                .replace("generation-", "Generation ")
-                .replace(/\b(\w)/g, (char) => char.toUpperCase())}
-              {romanToArabic(
-                (targetPokemonSpecies?.generation.name ?? "")
-                  .replace("generation-", "")
-                  .toUpperCase(),
-              ) !==
-                romanToArabic(
-                  pokemon.species.generation.name
-                    .replace("generation-", "")
-                    .toUpperCase(),
-                ) &&
-                (romanToArabic(
-                  (targetPokemonSpecies?.generation.name ?? "")
-                    .replace("generation-", "")
-                    .toUpperCase(),
-                ) >
-                romanToArabic(
-                  pokemon.species.generation.name
-                    .replace("generation-", "")
-                    .toUpperCase(),
-                ) ? (
-                  <ChevronUp />
-                ) : (
-                  <ChevronDown />
-                ))}
-            </div>
+      <div className="mt-4 w-full max-w-4xl space-y-3">
+        {[...guesses].reverse().map((guess, index) => {
+          const targetGenNum = helpers.getGenerationNumber(
+            targetPokemonSpecies?.generation.name ?? "",
+          );
+          const guessGenNum = helpers.getGenerationNumber(
+            guess.species.generation.name,
+          );
 
-            <div
-              className={`flex flex-row items-center rounded p-1 ${
-                pokemon?.pokemon.types[0]?.type?.name ===
-                targetPokemon?.types[0]?.type?.name
-                  ? "bg-green-500"
-                  : pokemon?.pokemon.types[0]?.type?.name ===
-                      targetPokemon?.types[1]?.type?.name
-                    ? "bg-orange-500"
-                    : "bg-red-500"
-              }`}
+          return (
+            <Card
+              key={index}
+              className="grid grid-cols-1 gap-3 p-4 md:grid-cols-2 lg:grid-cols-3"
             >
-              Type 1:
-              {" " + pokemon.pokemon.types[0]?.type.name?.toLowerCase()}
-            </div>
+              <Link
+                href={`/pokedex/${guess?.pokemon.name ?? ""}/`}
+                target="_blank"
+              >
+                <div className="flex items-center space-x-3">
+                  <img
+                    src={
+                      guess.pokemon.sprites.front_default || "/placeholder.svg"
+                    }
+                    alt={guess.pokemon.name}
+                    className="h-16 w-16"
+                  />
+                  <div className="flex flex-col capitalize">
+                    <span className="font-semibold">{guess.pokemon.name}</span>
+                    <span className="text-muted-foreground text-sm">
+                      ID: {guess.pokemon.id}
+                    </span>
+                    <span className="text-muted-foreground text-sm">
+                      Guess #{guesses.length - index}
+                    </span>
+                  </div>
+                </div>
+              </Link>
 
-            <div
-              className={`flex flex-row items-center rounded p-1 ${
-                !targetPokemon?.types[1]
-                  ? !pokemon?.pokemon.types[1]
-                    ? "bg-green-500"
-                    : pokemon?.pokemon.types[1]?.type?.name ===
-                        targetPokemon?.types[0]?.type?.name
-                      ? "bg-orange-500"
-                      : "bg-red-500"
-                  : pokemon?.pokemon.types[1]?.type?.name ===
-                      targetPokemon?.types[1]?.type?.name
-                    ? "bg-green-500"
-                    : pokemon?.pokemon.types[1]?.type?.name ===
-                        targetPokemon?.types[0]?.type?.name
-                      ? "bg-orange-500"
-                      : "bg-red-500"
-              }`}
-            >
-              Type 2:
-              {" " +
-                (pokemon.pokemon.types[1]?.type.name?.toLowerCase() ?? "none")}
-            </div>
+              <div className="grid grid-cols-2 gap-2">
+                {/* Generation */}
+                <div
+                  className={`flex items-center justify-between rounded p-2 text-sm ${
+                    targetGenNum === guessGenNum
+                      ? "bg-green-500 text-white"
+                      : "bg-red-500 text-white"
+                  }`}
+                >
+                  <div className="flex items-center">
+                    {helpers.formatGenerationName(
+                      guess.species.generation.name,
+                    )}
+                    {renderComparisonIndicator(guessGenNum, targetGenNum)}
+                  </div>
+                </div>
 
-            <div
-              className={`flex flex-row items-center rounded p-1 ${
-                targetPokemon?.weight === pokemon.pokemon.weight
-                  ? "bg-green-500"
-                  : "bg-red-500"
-              }`}
-            >
-              Weight:
-              {(pokemon.pokemon.weight / 10).toFixed(2)} kg
-              {targetPokemon?.weight !== pokemon.pokemon.weight &&
-                (targetPokemon?.weight !== undefined && targetPokemon.weight > pokemon.pokemon.weight ? (
-                  <ChevronUp />
-                ) : (
-                  <ChevronDown />
-                ))}
-            </div>
+                {/* Evolution Stage */}
+                <div
+                  className={`flex items-center justify-between rounded p-2 text-sm ${
+                    guess.evoStage === targetPokemonEvoStage
+                      ? "bg-green-500 text-white"
+                      : "bg-red-500 text-white"
+                  }`}
+                >
+                  <span>Evo Stage</span>
+                  <div className="flex items-center">
+                    {guess.evoStage}
+                    {renderComparisonIndicator(
+                      guess.evoStage,
+                      targetPokemonEvoStage ?? undefined,
+                    )}
+                  </div>
+                </div>
 
-            <div
-              className={`flex flex-row items-center rounded p-1 ${
-                targetPokemon?.height === pokemon.pokemon.height
-                  ? "bg-green-500"
-                  : "bg-red-500"
-              }`}
-            >
-              Height:
-              {(pokemon.pokemon.height / 10).toFixed(2)} m
-              {targetPokemon?.height !== pokemon.pokemon.height &&
-                (targetPokemon?.height !== undefined && targetPokemon.height > pokemon.pokemon.height ? (
-                  <ChevronUp />
-                ) : (
-                  <ChevronDown />
-                ))}
-            </div>
-          </Card>
-        ))}
+                {/* Type 1 */}
+                <div
+                  className={`flex items-center justify-between rounded p-2 text-sm capitalize ${
+                    guess.pokemon.types[0]?.type?.name ===
+                    targetPokemon?.types[0]?.type?.name
+                      ? "bg-green-500 text-white"
+                      : guess.pokemon.types[0]?.type?.name ===
+                          targetPokemon?.types[1]?.type?.name
+                        ? "bg-orange-500 text-white"
+                        : "bg-red-500 text-white"
+                  }`}
+                >
+                  <span>Type 1</span>
+                  <span>{guess.pokemon.types[0]?.type.name}</span>
+                </div>
+
+                {/* Type 2 */}
+                <div
+                  className={`flex items-center justify-between rounded p-2 text-sm capitalize ${
+                    !targetPokemon?.types[1]
+                      ? !guess.pokemon.types[1]
+                        ? "bg-green-500 text-white"
+                        : "bg-red-500 text-white"
+                      : guess.pokemon.types[1]?.type?.name ===
+                          targetPokemon?.types[1]?.type?.name
+                        ? "bg-green-500 text-white"
+                        : guess.pokemon.types[1]?.type?.name ===
+                            targetPokemon?.types[0]?.type?.name
+                          ? "bg-orange-500 text-white"
+                          : "bg-red-500 text-white"
+                  }`}
+                >
+                  <span>Type 2</span>
+                  <span>{guess.pokemon.types[1]?.type.name ?? "none"}</span>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2">
+                {/* Weight */}
+                <div
+                  className={`flex items-center justify-between rounded p-2 text-sm ${
+                    targetPokemon?.weight === guess.pokemon.weight
+                      ? "bg-green-500 text-white"
+                      : "bg-red-500 text-white"
+                  }`}
+                >
+                  <span>Kg</span>
+                  <div className="flex items-center">
+                    {(guess.pokemon.weight / 10).toFixed(2)}
+                    {renderComparisonIndicator(
+                      guess.pokemon.weight,
+                      targetPokemon?.weight,
+                    )}
+                  </div>
+                </div>
+
+                {/* Height */}
+                <div
+                  className={`flex items-center justify-between rounded p-2 text-sm ${
+                    targetPokemon?.height === guess.pokemon.height
+                      ? "bg-green-500 text-white"
+                      : "bg-red-500 text-white"
+                  }`}
+                >
+                  <span>Meter</span>
+                  <div className="flex items-center">
+                    {(guess.pokemon.height / 10).toFixed(2)}
+                    {renderComparisonIndicator(
+                      guess.pokemon.height,
+                      targetPokemon?.height,
+                    )}
+                  </div>
+                </div>
+
+                {/* Is Final Evolution */}
+                <div
+                  className={`col-span-2 flex items-center justify-between rounded p-2 text-sm ${
+                    guess.isFinalEvo === targetPokemonIsFinalEvo
+                      ? "bg-green-500 text-white"
+                      : "bg-red-500 text-white"
+                  }`}
+                >
+                  <span>Final Evolution</span>
+                  <span>{guess.isFinalEvo ? "Yes" : "No"}</span>
+                </div>
+              </div>
+            </Card>
+          );
+        })}
       </div>
     </div>
   );

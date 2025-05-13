@@ -1,6 +1,9 @@
 "use client";
 import { useQuery } from "@tanstack/react-query";
+import { useSearchParams, useRouter } from "next/navigation";
+import { useState, useEffect, Suspense } from "react";
 import { AlertCircle, Loader2 } from "lucide-react";
+import { Input } from "~/components/ui/input"; // Assuming shadcn Input component is here
 import { AbilityCard } from "~/components/ability-card";
 import type { Ability, AbilityInfo } from "~/types/types";
 
@@ -14,7 +17,7 @@ const getAllAbilities = async (): Promise<Ability> => {
   return response.json() as Promise<Ability>;
 };
 
-export default function AbilitiesListPage() {
+function AbilitiesListPageContent() {
   const {
     data: abilityList,
     isLoading,
@@ -22,16 +25,43 @@ export default function AbilitiesListPage() {
   } = useQuery({
     queryKey: ["abilityInfo"],
     queryFn: () => getAllAbilities(),
+    staleTime: 1000 * 60 * 60, // 1 hour
   });
 
-  console.log(abilityList?.results.length);
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const [searchQuery, setSearchQuery] = useState(
+    searchParams.get("search") ?? "",
+  );
+
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (searchQuery) {
+      params.set("search", searchQuery);
+    }
+    router.replace(`?${params.toString()}`);
+  }, [searchQuery, router]);
+
+  const filteredAbilities = abilityList?.results.filter((ability) =>
+    ability.name
+      .toLowerCase()
+      .includes(searchQuery.toLowerCase().replace(/\s+/g, "-")),
+  );
+
   return (
     <div className="container h-full w-full">
-       <div className="mb-4">
+      <div className="mb-4">
         <h1 className="text-3xl font-bold tracking-tight">Abilities</h1>
         <p className="text-muted-foreground">
           Detailed documentation on all pokemon abilities
         </p>
+      </div>
+      <div className="mb-4">
+        <Input
+          placeholder="Search abilities..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
       </div>
       <div className="container w-full">
         {isLoading && (
@@ -46,10 +76,18 @@ export default function AbilitiesListPage() {
             <span>Error loading ability info</span>
           </div>
         )}
-        {abilityList?.results.map((ability) => (
+        {filteredAbilities?.map((ability) => (
           <AbilityCard key={ability.name} abilityUrl={ability.url} />
         ))}
       </div>
     </div>
+  );
+}
+
+export default function AbilitiesListPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <AbilitiesListPageContent />
+    </Suspense>
   );
 }

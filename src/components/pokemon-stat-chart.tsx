@@ -69,7 +69,7 @@ export function PokemonStatsChart({ stats, id }: PokemonStatsChartProps) {
   }, [stats, id]);
 
   return (
-    <Card className="w-full border-none bg-transparent shadow-none">
+    <Card className="h-full w-full border-none bg-transparent shadow-none">
       <CardHeader>
         <div className="flex items-center gap-4">
           <CardTitle>
@@ -79,9 +79,9 @@ export function PokemonStatsChart({ stats, id }: PokemonStatsChartProps) {
           </CardTitle>
         </div>
       </CardHeader>
-      <CardContent>
+      <CardContent className="flex h-full w-full items-center justify-start">
         <ChartContainer
-          className="flex h-auto items-center justify-start"
+          className="flex h-full w-full items-center justify-start"
           config={{}}
         >
           <ResponsiveContainer

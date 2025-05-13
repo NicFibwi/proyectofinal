@@ -34,7 +34,7 @@ export default function PokemonCard({ url }: { url: string }) {
   });
 
   if (isLoading) {
-    return <Skeleton className="h-" />;
+    return <Skeleton className="" />;
   }
 
   if (isError || !pokemon) {

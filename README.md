@@ -22,8 +22,8 @@
 - [x] Fetch machine data
 - [x] Clerk
 - [x] make format entry funciton
-- [ ] make color generation function
-- [ ] add icons
+- [x] make color generation function
+- [x] add icons
 - [ ] Posthog
 - [ ] Minigames
 - [ ] Teambuilder
