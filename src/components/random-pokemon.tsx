@@ -315,6 +315,7 @@ export default function RandomPokemon() {
                   href={`/pokedex/${pokemon.name}`}
                   target="_blank"
                   rel="noopener noreferrer"
+                  className="h-full w-full"
                 >
                   <img
                     src={pokemon.sprites.front_default || "/placeholder.svg"}
