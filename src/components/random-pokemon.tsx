@@ -31,7 +31,6 @@ import {
   DialogTitle,
 } from "~/components/ui/dialog";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
 
 const getPokemonData = async (name: string): Promise<Pokemon> => {
   const response = await fetch("https://pokeapi.co/api/v2/pokemon/" + name);
@@ -305,27 +304,25 @@ export default function RandomPokemon() {
                     YOUR POKEMON:
                   </h1>
                 </CardHeader>
+
+                <h1 className="text-lg font-bold">
+                  {pokemon.name.charAt(0).toUpperCase() + pokemon.name.slice(1)}
+                </h1>
+              </Card>
+
+              <Card className="mb-2 flex w-full items-center justify-center">
                 <Link
                   href={`/pokedex/${pokemon.name}`}
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  <h1 className="text-lg font-bold">
-                    {pokemon.name.charAt(0).toUpperCase() +
-                      pokemon.name.slice(1)}
-                  </h1>
+                  <img
+                    src={pokemon.sprites.front_default || "/placeholder.svg"}
+                    alt={pokemon.name}
+                    className="h-100 w-100 md:h-full md:w-full"
+                    style={{ imageRendering: "pixelated" }}
+                  />
                 </Link>
-              </Card>
-
-              <Card className="mb-2 w-full">
-                <Image
-                  src={pokemon.sprites.front_default || "/placeholder.svg"}
-                  alt={pokemon.name}
-                  className="md:h-full md:w-full"
-                  style={{ imageRendering: "pixelated" }}
-                  height={100}
-                  width={100}
-                />
               </Card>
 
               <Button

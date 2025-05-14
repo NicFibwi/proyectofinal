@@ -11,7 +11,7 @@ import Link from "next/link";
 import { Button } from "./ui/button";
 import { PromisePool } from "@supercharge/promise-pool";
 import { RefreshCw } from "lucide-react";
-import Image from "next/image";
+
 const getAllLegendaries = async (): Promise<Pokemon[]> => {
   const allPokemon = await fetch(
     "https://pokeapi.co/api/v2/pokemon?limit=1025",
@@ -168,27 +168,33 @@ export default function RandomLegendary() {
               </Button>
             </div>
           </div>
-          <Link href={`/pokedex/${legendary.name}/`} target="_blank">
-            <div className="flex h-70 w-70 flex-col items-center justify-center">
-              <h3 className="mb-2 text-lg font-bold capitalize">
-                {legendary.name.includes("-") &&
-                !legendary.name.startsWith("tapu") &&
-                (legendary.name.split("-")[1] ?? "").length > 3
-                  ? `${legendary.name.split("-")[0]} (${legendary.name.split("-").slice(1).join(" ")})`.replaceAll(
-                      "-",
-                      " ",
-                    )
-                  : legendary.name.replaceAll("-", " ")}
-              </h3>
-              <Image
+
+          <div className="flex h-70 w-70 flex-col items-center justify-center">
+            <h3 className="mb-2 text-lg font-bold capitalize">
+              {legendary.name.includes("-") &&
+              !legendary.name.startsWith("tapu") &&
+              (legendary.name.split("-")[1] ?? "").length > 3
+                ? `${legendary.name.split("-")[0]} (${legendary.name.split("-").slice(1).join(" ")})`.replaceAll(
+                    "-",
+                    " ",
+                  )
+                : legendary.name.replaceAll("-", " ")}
+            </h3>
+            <Link href={`/pokedex/${legendary.name}/`} target="_blank">
+              <img
                 src={legendary.sprites.front_default || "/placeholder.svg"}
                 alt={legendary.name}
                 style={{ imageRendering: "pixelated" }}
-                height={60}
-                width={60}
+                className="h-60 w-60"
               />
+            </Link>
+            <div className="mb-2 block lg:hidden">
+              <Button onClick={getRandomLegendary}>
+                <RefreshCw className="mr-2 h-4 w-4" />
+                New Opponent
+              </Button>
             </div>
-          </Link>
+          </div>
 
           <div className="flex flex-row items-center justify-center gap-2">
             {legendary.types.map((type) => (
@@ -198,6 +204,7 @@ export default function RandomLegendary() {
               />
             ))}
           </div>
+
           <div className="flex h-70 w-70 items-center justify-center">
             <PokemonStatsChart
               stats={formattedStats}

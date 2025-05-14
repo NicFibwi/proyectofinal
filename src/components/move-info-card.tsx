@@ -1,7 +1,7 @@
 import type { MoveInfo } from "~/types/types";
 import { Card, CardContent, CardTitle } from "./ui/card";
 import { TypeBadge } from "./ui/typebadge";
-import Image from "next/image";
+
 export default function MoveInfoCard({ move }: { move: MoveInfo }) {
   return (
     <Card className="mb-6 flex h-auto w-full flex-col items-center justify-center">
@@ -61,7 +61,7 @@ export default function MoveInfoCard({ move }: { move: MoveInfo }) {
               <span className="flex flex-row capitalize">
                 {move?.damage_class?.name}
                 {move?.damage_class?.name && (
-                  <Image
+                  <img
                     src={`/icons/${
                       move.damage_class.name === "status"
                         ? "status_move_icon"
@@ -71,8 +71,7 @@ export default function MoveInfoCard({ move }: { move: MoveInfo }) {
                     }.png`}
                     alt={`${move.damage_class.name} icon`}
                     loading="lazy"
-                    height={6}
-                    width={6}
+                    className="h-6 w-6"
                   />
                 )}
               </span>
