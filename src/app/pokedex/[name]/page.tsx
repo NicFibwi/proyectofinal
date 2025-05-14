@@ -9,8 +9,7 @@ import { SpriteCarousel } from "~/components/sprite-carousel";
 import PokemonSpeciesInfo from "~/components/pokemon-species-info";
 import PokemonEvolutionChain from "~/components/pokemon-evolution-chain";
 import PokemonMovesTable from "~/components/pokemon-move-list";
-import { Button } from "~/components/ui/button";
-import { useRouter } from "next/navigation";
+
 import NavigationButtons from "~/components/navigation-buttons";
 
 const getPokemonData = async (name: string): Promise<Pokemon> => {

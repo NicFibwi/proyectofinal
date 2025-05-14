@@ -1,41 +1,41 @@
-"use client"
+"use client";
 
-import type React from "react"
-import { useState, useRef } from "react"
-import { cn } from "~/lib/utils"
+import type React from "react";
+import { useState, useRef } from "react";
+import { cn } from "~/lib/utils";
 
 interface HoverCardEffectProps {
-  children: React.ReactNode
-  className?: string
+  children: React.ReactNode;
+  className?: string;
 }
 
 export function HoverCardEffect({ children, className }: HoverCardEffectProps) {
-  const [position, setPosition] = useState({ x: 0, y: 0 })
-  const [opacity, setOpacity] = useState(0)
-  const [isHovering, setIsHovering] = useState(false)
-  const cardRef = useRef<HTMLDivElement>(null)
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [opacity, setOpacity] = useState(0);
+  // const [isHovering, setIsHovering] = useState(false)
+  const cardRef = useRef<HTMLDivElement>(null);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!cardRef.current) return
+    if (!cardRef.current) return;
 
-    const rect = cardRef.current.getBoundingClientRect()
+    const rect = cardRef.current.getBoundingClientRect();
 
     // Calculate position relative to the card
     setPosition({
       x: e.clientX - rect.left,
       y: e.clientY - rect.top,
-    })
-  }
+    });
+  };
 
   const handleMouseEnter = () => {
-    setIsHovering(true)
-    setOpacity(1)
-  }
+    // setIsHovering(true)
+    setOpacity(1);
+  };
 
   const handleMouseLeave = () => {
-    setIsHovering(false)
-    setOpacity(0)
-  }
+    // setIsHovering(false)
+    setOpacity(0);
+  };
 
   return (
     <div
@@ -57,6 +57,5 @@ export function HoverCardEffect({ children, className }: HoverCardEffectProps) {
       {/* Card content */}
       <div className="relative z-10">{children}</div>
     </div>
-  )
+  );
 }
-

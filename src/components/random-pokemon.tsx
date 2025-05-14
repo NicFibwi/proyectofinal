@@ -5,7 +5,12 @@ import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader } from "./ui/card";
 import { TypeBadge } from "./ui/typebadge";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
-import { Check, ChevronsUpDown, SquareArrowOutUpRight } from "lucide-react";
+import {
+  Check,
+  ChevronsUpDown,
+  RefreshCw,
+  SquareArrowOutUpRight,
+} from "lucide-react";
 import {
   Command,
   CommandEmpty,
@@ -20,10 +25,13 @@ import RandomLegendary from "./random-legendary";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "~/components/ui/dialog";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 const getPokemonData = async (name: string): Promise<Pokemon> => {
   const response = await fetch("https://pokeapi.co/api/v2/pokemon/" + name);
@@ -87,14 +95,12 @@ export default function RandomPokemon() {
   const [specialAttack, setSpecialAttack] = useState<number>();
   const [specialDefense, setSpecialDefense] = useState<number>();
   const [speed, setSpeed] = useState<number>();
-  const [customPokemon, setCustomPokemon] = useState<Pokemon | null>(null);
   const [open, setOpen] = useState(false);
   const [openMove, setopenMove] = useState(false);
   const [value, setValue] = useState("");
-  const [valueMove, setValueMove] = useState("");
   const [isMovesetTurn, setIsMovesetTurn] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [dialogShown, setDialogShown] = useState(false);
+  // const [dialogShown, setDialogShown] = useState(false);
   const isAllAttributesDefined =
     hp !== undefined &&
     attack !== undefined &&
@@ -193,9 +199,9 @@ export default function RandomPokemon() {
           setSpeed(parsedState.speed);
 
           // Set dialog shown state to prevent dialog from appearing on reload
-          if (parsedState.isAllAttributesDefined) {
-            setDialogShown(true);
-          }
+          // if (parsedState.isAllAttributesDefined) {
+          //   setDialogShown(true);
+          // }
         }
       } catch (error) {
         console.error("Error parsing saved game state:", error);
@@ -217,9 +223,7 @@ export default function RandomPokemon() {
     setSpecialAttack(undefined);
     setSpecialDefense(undefined);
     setSpeed(undefined);
-    setCustomPokemon(null);
     setValue("");
-    setValueMove("");
     setIsMovesetTurn(false);
     setValue(""); // Reset the selected ability value
     void getRandomPokemon().then((randomPokemon) => setPokemon(randomPokemon));
@@ -243,17 +247,20 @@ export default function RandomPokemon() {
       {/* Dialog */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent>
-          <DialogHeader>
-            <DialogTitle>All Attributes Set</DialogTitle>
+          <DialogHeader className="flex flex-col items-center">
+            <DialogTitle>All attributes set!</DialogTitle>
+            <DialogDescription className="flex flex-col items-center">
+              All attributes have been successfully set!
+            </DialogDescription>
           </DialogHeader>
-          <div className="py-4">
-            <p>All attributes have been successfully set!</p>
-            {/* implement Want to ask Pokemaster for his verdict? */}
-            <div className="flex w-full flex-row justify-end">
-              <Button
-                onClick={() => router.push("/minigames/pokedle/")}
-                className="mr-2"
-              >
+
+          <DialogFooter>
+            <div className="flex h-full w-full flex-col justify-around space-y-2 sm:flex-row">
+              <Button onClick={() => router.push("/minigames/whosthatpokemon")}>
+                Play Whos That Pokémon
+              </Button>
+
+              <Button onClick={() => router.push("/minigames/pokedle")}>
                 Play Pokedle
               </Button>
               <Button
@@ -262,12 +269,11 @@ export default function RandomPokemon() {
                     resetStates();
                   }
                 }}
-                className="w-20 bg-red-500 text-white hover:bg-red-600"
               >
                 Play again
               </Button>
             </div>
-          </div>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
 
@@ -312,11 +318,13 @@ export default function RandomPokemon() {
               </Card>
 
               <Card className="mb-2 w-full">
-                <img
+                <Image
                   src={pokemon.sprites.front_default || "/placeholder.svg"}
                   alt={pokemon.name}
-                  className="h-100 w-100 md:h-full md:w-full"
+                  className="md:h-full md:w-full"
                   style={{ imageRendering: "pixelated" }}
+                  height={100}
+                  width={100}
                 />
               </Card>
 
@@ -327,19 +335,11 @@ export default function RandomPokemon() {
                   setIsAvailable(true);
                   setIsMovesetTurn(false);
                   setValue("");
-                  // {
-                  //   if (
-                  //     ability === undefined ||
-                  //     (value !== "" && ability !== "")
-                  //   ) {
-                  //     setValue("");
-                  //   }
-                  // }
-                  // console.log("Ability" + ability);
-                  // console.log("value" + value);
                 }}
                 className={`w-full ${!isAvailable || (isMovesetTurn && moveset.length > 0) ? "animate-pulse bg-yellow-500" : ""}`}
               >
+                {" "}
+                <RefreshCw className="mr-2 h-4 w-4" />
                 Generate random Pokémon
               </Button>
             </div>
@@ -684,7 +684,6 @@ export default function RandomPokemon() {
                                         ...prev,
                                         currentValue,
                                       ]);
-                                      setValueMove("");
                                       setIsMovesetTurn(true);
                                     }
                                     setopenMove(false);
@@ -770,10 +769,9 @@ export default function RandomPokemon() {
           {/* reset */}
           <div className="flex w-full flex-row justify-end">
             {isAllAttributesDefined && !dialogOpen && (
-              <Button
-                onClick={() => setDialogOpen(true)}
-                className="mr-2 w-40"
-              ></Button>
+              <Button onClick={() => setDialogOpen(true)} className="mr-2 w-40">
+                All attributes set
+              </Button>
             )}
 
             <Button

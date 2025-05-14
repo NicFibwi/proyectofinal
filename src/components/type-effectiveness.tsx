@@ -2,7 +2,7 @@
 
 import React, { useMemo } from "react";
 import { useTheme } from "next-themes";
-import { ChevronDown, ChevronUp, Minus, Shield, Swords } from "lucide-react";
+
 import { TypeBadge } from "./ui/typebadge";
 import { cn } from "~/lib/utils";
 
@@ -243,7 +243,7 @@ const TypeEffectivenessTable: React.FC<TypeEffectivenessTableProps> = ({
     ];
 
     return groups;
-  }, [pokemonTypes, isDark]);
+  }, [isDark, calculateEffectiveness]);
 
   return (
     <div

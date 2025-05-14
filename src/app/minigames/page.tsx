@@ -1,8 +1,6 @@
 "use client";
 import { CircleHelp, Keyboard, Shuffle } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { HoverCardEffect } from "~/components/hover-card-effect";
 import { Button } from "~/components/ui/button";
 import {
   Card,
@@ -14,8 +12,6 @@ import {
 } from "~/components/ui/card";
 
 export default function MinigamesPage() {
-  const router = useRouter();
-
   return (
     <div className="space-y-6">
       <div>
@@ -85,8 +81,8 @@ export default function MinigamesPage() {
                   <CardTitle>Rando-Mon</CardTitle>
                 </div>
                 <CardDescription>
-                  Create a pokemon based on random pokemon&apos;s attributes, and
-                  defeat a random opponent.
+                  Create a pokemon based on random pokemon&apos;s attributes,
+                  and defeat a random opponent.
                 </CardDescription>
               </CardHeader>
               <CardFooter>

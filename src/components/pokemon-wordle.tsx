@@ -5,7 +5,7 @@ import type React from "react";
 import { useState, useEffect, useCallback } from "react";
 import { Input } from "./ui/input";
 import { Card } from "./ui/card";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { ChevronDown, ChevronUp, RefreshCw } from "lucide-react";
 import { Button } from "./ui/button";
 
 import type {
@@ -23,7 +23,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "./ui/dialog";
-import { Label } from "./ui/label";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 
 // Cache for evolution data to reduce API calls
@@ -236,7 +236,7 @@ type GameState = {
 
 export default function PokemonWordle() {
   // Fetch Pokémon list for autocomplete
-  const { data: pokemonList, isLoading: isLoadingPokemonList } = useQuery({
+  const { data: pokemonList } = useQuery({
     queryKey: ["pokemonList"],
     queryFn: () => api.getPokemonList(),
   });
@@ -256,6 +256,8 @@ export default function PokemonWordle() {
   >(null);
   const [hasMounted, setHasMounted] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+
+  const [isGivenUp, setIsGivenUp] = useState(false);
   const router = useRouter();
 
   // Set hasMounted to true after the component mounts
@@ -397,6 +399,8 @@ export default function PokemonWordle() {
       setTargetPokemonIsFinalEvo(isFinalEvo);
       setGuesses([]);
       setIsCorrect(false);
+      setIsGivenUp(false);
+      setIsOpen(false); // Close the dialog if it's open
 
       // Clear localStorage for guesses when starting a new game
       if (hasMounted) {
@@ -468,6 +472,7 @@ export default function PokemonWordle() {
           targetPokemon?.name.toLowerCase()
         ) {
           setIsCorrect(true);
+          setIsOpen(true); // Automatically open the dialog
         }
       } catch (error) {
         console.error("Failed to fetch Pokémon data for the guess:", error);
@@ -503,22 +508,27 @@ export default function PokemonWordle() {
 
   return (
     <div className="flex w-full flex-col items-center">
-      {targetPokemon && (
+      {/* {targetPokemon && (
         <div className="text-muted-foreground mb-4 text-sm">
           Debug - Target: {targetPokemon.name}, Stage: {targetPokemonEvoStage},
-          Final: {targetPokemonIsFinalEvo ? "Yes" : "No"}
+          Final: {targetPokemonIsFinalEvo ? "Yes" : "No"} 
         </div>
-      )}
+      )} */}
 
       <div className="mb-4 flex w-full max-w-3xl flex-row justify-around">
         <Input
           id="guess-pokemon-name"
-          placeholder="Enter Pokémon name"
+          placeholder={
+            isCorrect || isGivenUp
+              ? `Its ${targetPokemon?.name}`
+              : "Guess the Pokémon"
+          }
           value={guess}
           onChange={(e) => setGuess(e.target.value)}
           onKeyDown={handleKeyDown}
           list="pokemon-suggestions"
           className="mr-4 mb-2"
+          disabled={isCorrect || isGivenUp} // Disable input if game is over
         />
 
         {guess.trim() !== "" && (
@@ -540,55 +550,75 @@ export default function PokemonWordle() {
           </datalist>
         )}
         <Button
-          onClick={fetchNewRandomPokemon}
+          onClick={() => {
+            if (!isCorrect && guesses.length > 0) {
+              setIsGivenUp(true);
+              setIsOpen(true); // Ensure the dialog opens
+            } else {
+              void fetchNewRandomPokemon(); // Fetch a new Pokémon
+            }
+          }}
           className="mb-4"
           variant="default"
         >
-          New Random Pokémon
+          <RefreshCw className="mr-2 h-4 w-4" />
+          {!isCorrect && guesses.length > 0 ? "Give Up" : "New Pokémon"}
         </Button>
       </div>
 
-      {isCorrect ? (
-        <Dialog
-          open={isOpen}
-          onOpenChange={(open) => !open && setIsOpen(false)}
-        >
-          <DialogTrigger asChild>
-            <Button className="hidden">Open Modal</Button>
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-[425px]">
-            <DialogHeader>
-              <DialogTitle>
-                Correct! The pokemon was {targetPokemon?.name.toUpperCase()}
-              </DialogTitle>
-              <DialogDescription className="flex flex-col items-center">
-                <span># Tries: {guesses.length}</span>
-                <img
-                  src={
-                    targetPokemon?.sprites.other?.["official-artwork"]
-                      .front_default
-                  }
-                  alt="pokemon-picture"
-                  className="mt-4 flex h-60 w-60 items-center justify-center rounded-lg border border-gray-300 shadow-md"
-                />
-              </DialogDescription>
-            </DialogHeader>
-            <DialogFooter>
-              <Button onClick={fetchNewRandomPokemon}>Play again</Button>
+      <Dialog
+        open={isOpen} // Ensure the dialog is controlled by the isOpen state
+        onOpenChange={(open) => setIsOpen(open)} // Update state when dialog is closed
+      >
+        <DialogTrigger asChild>
+          <Button className="hidden">Open Modal</Button>
+        </DialogTrigger>
+        <DialogContent>
+          <DialogHeader className="flex flex-col items-center">
+            <DialogTitle>
+              {isCorrect ? (
+                <>
+                  Correct! The pokemon was {targetPokemon?.name.toUpperCase()}
+                </>
+              ) : (
+                <span className="text-red-500">
+                  The pokemon was {targetPokemon?.name.toUpperCase()}
+                </span>
+              )}
+            </DialogTitle>
+            <DialogDescription className="flex flex-col items-center">
+              <span># Tries: {guesses.length}</span>
+              <Image
+                src={
+                  targetPokemon?.sprites.other?.["official-artwork"]
+                    .front_default ?? "/placeholder.svg"
+                }
+                alt="pokemon-picture"
+                className="mt-4 flex items-center justify-center rounded-lg border border-gray-300 shadow-md"
+                height={60}
+                width={60}
+              />
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <div className="flex flex-col space-y-2 sm:flex-row">
+              <Button onClick={() => router.push("/minigames/whosthatpokemon")}>
+                Play Whos That Pokémon
+              </Button>
+
               <Button onClick={() => router.push("/minigames/randomon")}>
                 Play Rando-Mon
               </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-      ) : guesses.length > 0 && !isCorrect ? (
-        <p className="mb-4 text-red-500">Incorrect! Try again.</p>
-      ) : null}
+              <Button onClick={fetchNewRandomPokemon}>Play again</Button>
+            </div>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
-      {isCorrect && guesses.length > 0 && (
-        <Button onClick={() => setIsOpen(true)} className="mt-4">
-          Show Congratulations
-        </Button>
+      {!isCorrect && guesses.length > 0 && (
+        <div className="mb-4 text-sm text-red-600">
+          Incorrect, you have guessed {guesses.length} times.
+        </div>
       )}
 
       <div className="mt-4 w-full max-w-4xl space-y-3">
@@ -610,7 +640,7 @@ export default function PokemonWordle() {
                 target="_blank"
               >
                 <div className="flex items-center space-x-3">
-                  <img
+                  <Image
                     src={
                       guess.pokemon.sprites.front_default || "/placeholder.svg"
                     }
@@ -753,6 +783,12 @@ export default function PokemonWordle() {
             </Card>
           );
         })}
+
+        {(isCorrect || isGivenUp) && (
+          <Button onClick={() => setIsOpen(true)} className="mt-4">
+            Show modal
+          </Button>
+        )}
       </div>
     </div>
   );

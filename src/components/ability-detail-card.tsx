@@ -3,7 +3,7 @@
 import type { AbilityInfo } from "~/types/types";
 import React, { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+import { Card, CardContent } from "./ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 import AbilityPokemonList from "./ability-pokemon-list";
 import { cn, formatGenerationName, GenTextColors } from "~/lib/utils";

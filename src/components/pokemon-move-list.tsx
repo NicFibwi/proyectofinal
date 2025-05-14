@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   Table,
   TableBody,
@@ -14,6 +14,7 @@ import { type Pokemon } from "../types/types";
 import { type MoveInfo } from "../types/types";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 const getMoveInfo = async (moveName: string): Promise<MoveInfo> => {
   const response = await fetch("https://pokeapi.co/api/v2/move/" + moveName);
@@ -195,7 +196,7 @@ export default function PokemonMovesTable({ pokemon }: PokemonMovesTableProps) {
                 </TableCell>
                 <TableCell>
                   {moveInfo?.damage_class?.name && (
-                    <img
+                    <Image
                       src={`/icons/${
                         moveInfo.damage_class.name === "status"
                           ? "status_move_icon"
@@ -204,7 +205,8 @@ export default function PokemonMovesTable({ pokemon }: PokemonMovesTableProps) {
                             : "special_move_icon"
                       }.png`}
                       alt={`${moveInfo.damage_class.name} icon`}
-                      className="h-6 w-6"
+                      height={6}
+                      width={6}
                     />
                   )}
                 </TableCell>

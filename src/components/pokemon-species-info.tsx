@@ -1,7 +1,7 @@
 "use client";
 
 import { Badge } from "./ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+import { Card, CardContent, CardTitle } from "./ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 import { useMemo, useState } from "react";
 import type { PokemonSpecies, Pokemon } from "../types/types";
@@ -9,7 +9,7 @@ import { Progress } from "./ui/progress";
 import { TypeBadge } from "./ui/typebadge";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { Button } from "./ui/button";
-import { ChevronsUpDown } from "lucide-react";
+import { ChevronsUpDown, EyeOff } from "lucide-react";
 import {
   Command,
   CommandEmpty,
@@ -22,6 +22,7 @@ import { useRouter } from "next/navigation";
 import { cn } from "~/lib/utils";
 import { formatGenerationName } from "~/lib/utils";
 import { GenTextColors } from "~/lib/utils";
+import Link from "next/link";
 interface PokemonSpeciesCardProps {
   speciesInfo: PokemonSpecies;
   pokemonInfo: Pokemon;
@@ -183,18 +184,14 @@ export default function PokemonSpeciesCard({
                           ability.is_hidden ? "text-gray-500" : ""
                         } list-disc`}
                       >
-                        <a
+                        <Link
                           href={`/docs/abilities/${ability.ability.name}`}
-                          className="hover:underline"
+                          className="flex items-center gap-2 hover:underline"
                         >
-                          {ability.is_hidden
-                            ? `${
-                                ability.ability.name.charAt(0).toUpperCase() +
-                                ability.ability.name.slice(1)
-                              }`
-                            : ability.ability.name.charAt(0).toUpperCase() +
-                              ability.ability.name.slice(1)}
-                        </a>
+                          {ability.is_hidden && <EyeOff className="h-4 w-4"/>}
+                          {ability.ability.name.charAt(0).toUpperCase() +
+                            ability.ability.name.slice(1)}
+                        </Link>
                       </li>
                     ))}
                   </ul>

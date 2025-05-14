@@ -1,10 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
 import { Card, CardContent, CardTitle } from "./ui/card";
-import { Button } from "./ui/button";
-import { Dialog, DialogTrigger, DialogContent } from "./ui/dialog";
-import { DialogTitle } from "./ui/dialog";
 
 export default function StatModifiersTable() {
   const statGrowthTable = [

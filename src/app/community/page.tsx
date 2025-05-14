@@ -1,59 +1,69 @@
-  "use client";
-  import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
-  } from "~/components/ui/card";
-  import { Tabs, TabsList, TabsTrigger, TabsContent } from "~/components/ui/tabs";
+"use client"
 
-  export default function CommunityPage() {
-    return (
-      <div className="space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Community</h1>
-          <p className="text-muted-foreground">
-            Share teams with the community to improve competitive strategy
-          </p>
-        </div>
-        <Card>
-          <CardHeader>
-            <CardTitle>Team Sharing</CardTitle>
-            <CardDescription>
-              Share your teams and discover teams from other trainers
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Tabs defaultValue="pokemon">
-              <TabsList>
-                <TabsTrigger value="pokemon">Pokemon X</TabsTrigger>
-                <TabsTrigger value="discover">Discover Teams</TabsTrigger>
-              </TabsList>
-              <TabsContent value="pokemon">
-                <div className="flex justify-center p-4"></div>
-              </TabsContent>
-              <TabsContent value="discover">
-                <div className="text-muted-foreground p-8 text-center">
-                  Discover teams from other trainers will be implemented here
-                </div>
-              </TabsContent>
-            </Tabs>
-            ;
-          </CardContent>
-        </Card>
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/card"
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "~/components/ui/tabs"
 
-        {/* <Card>
-          <CardHeader>
-            <CardTitle>Strategy Discussions</CardTitle>
-            <CardDescription>Discuss competitive strategies with the community</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="p-8 text-center text-muted-foreground">
-              Strategy discussion forum will be implemented here
-            </div>
-          </CardContent>
-        </Card> */}
+export default function CommunityPage() {
+  return (
+    <div className="space-y-4 px-3 py-4 sm:space-y-5 md:space-y-6 md:px-6 lg:px-8">
+      <div className="max-w-3xl">
+        <h1 className="text-2xl font-bold tracking-tight sm:text-2xl md:text-3xl">Community</h1>
+        <p className="text-sm text-muted-foreground sm:text-base">
+          Share teams with the community to improve competitive strategy
+        </p>
       </div>
-    );
-  }
+      <Card className="overflow-hidden">
+        <CardHeader className="px-4 py-4 md:px-6">
+          <CardTitle className="text-xl md:text-2xl">Community posts</CardTitle>
+          <CardDescription className="text-sm sm:text-base">
+            Check out what information valuable members of the Pokémon community are sharing
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="px-3 pb-4 md:px-6">
+          <Tabs defaultValue="pokemon">
+            <TabsList className="mb-4 flex w-full flex-wrap gap-2">
+              <TabsTrigger value="pokemon" className="flex-1 text-sm sm:text-base">
+                Pokemon X
+              </TabsTrigger>
+              <TabsTrigger value="leaks" className="flex-1 text-sm sm:text-base">
+                Pokemon Leaks
+              </TabsTrigger>
+              <TabsTrigger value="tiempo" className="flex-1 text-sm sm:text-base">
+                Poke Tiempo
+              </TabsTrigger>
+            </TabsList>
+            <div className="rounded-lg border">
+              <TabsContent value="pokemon">
+                <iframe
+                  src="https://widgets.sociablekit.com/twitter-feed/iframe/25556800"
+                  width="100%"
+                  height="500"
+                  className="h-[400px] rounded-lg sm:h-[500px] md:h-[600px] lg:h-[800px]"
+                  title="Pokemon X Twitter Feed"
+                ></iframe>
+              </TabsContent>
+              <TabsContent value="leaks">
+                <iframe
+                  src="https://widgets.sociablekit.com/twitter-feed/iframe/25556835"
+                  width="100%"
+                  height="500"
+                  className="h-[400px] rounded-lg sm:h-[500px] md:h-[600px] lg:h-[800px]"
+                  title="Pokemon Leaks Twitter Feed"
+                ></iframe>
+              </TabsContent>
+              <TabsContent value="tiempo">
+                <iframe
+                  src="https://widgets.sociablekit.com/twitter-feed/iframe/25556839"
+                  width="100%"
+                  height="500"
+                  className="h-[400px] rounded-lg sm:h-[500px] md:h-[600px] lg:h-[800px]"
+                  title="Poke Tiempo Twitter Feed"
+                ></iframe>
+              </TabsContent>
+            </div>
+          </Tabs>
+        </CardContent>
+      </Card>
+    </div>
+  )
+}

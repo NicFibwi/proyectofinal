@@ -4,14 +4,15 @@ import { useQuery } from "@tanstack/react-query";
 import { useState, useEffect } from "react";
 import type { Pokemon, PokemonSpecies } from "~/types/types";
 import { Card, CardHeader } from "./ui/card";
-import { Skeleton } from "./ui/skeleton";
+
 import { PokemonStatsChart } from "./pokemon-stat-chart";
 import { TypeBadge } from "./ui/typebadge";
 import Link from "next/link";
 import { Button } from "./ui/button";
-
+import { PromisePool } from "@supercharge/promise-pool";
+import { RefreshCw } from "lucide-react";
+import Image from "next/image";
 const getAllLegendaries = async (): Promise<Pokemon[]> => {
-  // Fetch All Pokemon, and then for each their species-info, and check if isLegendary istrue or isMythical is True, if so, add to array
   const allPokemon = await fetch(
     "https://pokeapi.co/api/v2/pokemon?limit=1025",
   );
@@ -19,23 +20,26 @@ const getAllLegendaries = async (): Promise<Pokemon[]> => {
   const allPokemonData = (await allPokemon.json()) as {
     results: { name: string; url: string }[];
   };
+
   const allLegendaries: Pokemon[] = [];
 
-  for (const pokemon of allPokemonData.results) {
-    const pokemonDetails = await fetch(pokemon.url);
-    const pokemonSpecies = await fetch(
-      pokemon.url.replace("pokemon", "pokemon-species"),
-    );
+  await PromisePool.for(allPokemonData.results)
+    .withConcurrency(100)
+    .process(async (pokemon) => {
+      const pokemonDetails = await fetch(pokemon.url);
+      const pokemonSpecies = await fetch(
+        pokemon.url.replace("pokemon", "pokemon-species"),
+      );
 
-    const speciesData = (await pokemonSpecies.json()) as PokemonSpecies;
-    const detailsData = (await pokemonDetails.json()) as Pokemon;
+      const speciesData = (await pokemonSpecies.json()) as PokemonSpecies;
+      const detailsData = (await pokemonDetails.json()) as Pokemon;
 
-    if (speciesData.is_legendary || speciesData.is_mythical) {
-      allLegendaries.push({
-        ...detailsData,
-      });
-    }
-  }
+      if (speciesData.is_legendary || speciesData.is_mythical) {
+        allLegendaries.push({
+          ...detailsData,
+        });
+      }
+    });
 
   return allLegendaries;
 };
@@ -107,9 +111,9 @@ export default function RandomLegendary() {
           const varietyName = speciesData.varieties[randomForm]?.pokemon?.name;
 
           if (varietyName) {
-            const varietyData = await fetch(
+            const varietyData = (await fetch(
               `https://pokeapi.co/api/v2/pokemon/${varietyName}`,
-            ).then((res) => res.json()) as Pokemon;
+            ).then((res) => res.json())) as Pokemon;
 
             setLegendary(varietyData);
             console.log(
@@ -155,8 +159,14 @@ export default function RandomLegendary() {
               OPPONENT POKEMON:
             </h1>
           </CardHeader>
-          <div className="hidden md:block">
+          <div className="hidden lg:block">
             <h1 className="text-lg font-bold">OPPONENT:</h1>
+            <div>
+              <Button onClick={getRandomLegendary} className="w-full md:w-auto">
+                <RefreshCw className="mr-2 h-4 w-4" />
+                New Opponent
+              </Button>
+            </div>
           </div>
           <Link href={`/pokedex/${legendary.name}/`} target="_blank">
             <div className="flex h-70 w-70 flex-col items-center justify-center">
@@ -170,11 +180,12 @@ export default function RandomLegendary() {
                     )
                   : legendary.name.replaceAll("-", " ")}
               </h3>
-              <img
+              <Image
                 src={legendary.sprites.front_default || "/placeholder.svg"}
                 alt={legendary.name}
-                className="h-60 w-60"
                 style={{ imageRendering: "pixelated" }}
+                height={60}
+                width={60}
               />
             </div>
           </Link>
@@ -193,11 +204,6 @@ export default function RandomLegendary() {
               id={legendary.id}
               name={legendary.name}
             />
-          </div>
-          <div>
-            <Button onClick={getRandomLegendary} className="w-full md:w-auto">
-              New Opponent
-            </Button>
           </div>
         </Card>
       )}

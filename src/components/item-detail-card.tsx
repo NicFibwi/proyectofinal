@@ -2,12 +2,12 @@
 import type { ItemInfo } from "~/types/types";
 import React, { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
-import { Button } from "./ui/button";
-import { useRouter } from "next/navigation";
+import { Card, CardContent} from "./ui/card";
+
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 import { cn, formatGenerationName } from "~/lib/utils";
 import { GenTextColors } from "~/lib/utils";
+import Image from "next/image";
 
 const getItemData = async (name: string): Promise<ItemInfo> => {
   const response = await fetch("https://pokeapi.co/api/v2/item/" + name);
@@ -18,7 +18,6 @@ const getItemData = async (name: string): Promise<ItemInfo> => {
 };
 
 export default function ItemDetailCard({ name }: { name: string }) {
-  const router = useRouter();
 
   const {
     data: item,
@@ -74,10 +73,11 @@ export default function ItemDetailCard({ name }: { name: string }) {
           </Card>
           <Card className="mb-6 flex h-auto w-full flex-col items-center justify-center">
             {item.sprites?.default ? (
-              <img
+              <Image
                 src={item.sprites.default}
                 alt={item.name}
-                className="h-90 w-90"
+                height={90}
+                width={90}
                 style={{
                   imageRendering: "pixelated", // Ensures the image is upscaled without blurring
                 }}

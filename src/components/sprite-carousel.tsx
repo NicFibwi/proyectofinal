@@ -2,7 +2,7 @@
 
 import React from "react";
 import { useState, useEffect } from "react";
-
+import Image from "next/image";
 interface SpriteCarrouselProps {
   images: string[];
 }
@@ -26,11 +26,12 @@ export function SpriteCarousel({ images }: SpriteCarrouselProps) {
             index === currentIndex ? "opacity-100" : "opacity-0"
           }`}
         >
-          <img
+          <Image
             src={image}
             alt={`Sprite ${index + 1}`}
-            className="h-full w-full object-contain "
+            className="h-full w-full object-contain"
             style={{ imageRendering: "pixelated" }}
+            fill
           />
         </div>
       ))}

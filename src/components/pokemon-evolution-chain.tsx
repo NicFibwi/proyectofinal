@@ -11,8 +11,11 @@ import type {
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import Image from "next/image";
+
 // Fetch the evolution chain data
-export const getPokemonChain = async (url: string): Promise<SpeciesEvolutionChain> => {
+export const getPokemonChain = async (
+  url: string,
+): Promise<SpeciesEvolutionChain> => {
   const response = await fetch(url);
   if (!response.ok) {
     throw new Error("Failed to fetch Pokémon data");
@@ -257,10 +260,12 @@ export default function PokemonEvolutionChain({ url }: { url: string }) {
                     <CardTitle className="capitalize">
                       {evolution.name}
                     </CardTitle>
-                    <img
+                    <Image
                       src={evolution.sprite}
                       alt={evolution.name}
-                      className="h-24 w-24 object-contain"
+                      className="object-contain"
+                      height={24}
+                      width={24}
                     />
                   </CardContent>
                 </Card>

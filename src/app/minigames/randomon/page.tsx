@@ -1,6 +1,4 @@
-import Image from "next/image";
 import RandomPokemon from "~/components/random-pokemon";
-import { Input } from "~/components/ui/input";
 
 export default function RandomonPage() {
   return (

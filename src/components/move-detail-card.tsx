@@ -2,13 +2,11 @@
 import type { MoveInfo } from "~/types/types";
 import React, { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
-import { Button } from "./ui/button";
-import { useRouter } from "next/navigation";
+import { Card, CardContent } from "./ui/card";
+
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 import MoveInfoCard from "./move-info-card";
-import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "./ui/dialog";
-import StatModifiersTable from "./stat-modifier-table";
+
 import StatChangeDialog from "./stat-change-dialog";
 import MovePokemonList from "./move-pokemon-list";
 import { cn, formatGenerationName, GenTextColors } from "~/lib/utils";
@@ -23,8 +21,6 @@ const getMoveData = async (name: string): Promise<MoveInfo> => {
 };
 
 export default function MoveDetailCard({ name }: { name: string }) {
-  const router = useRouter();
-
   const {
     data: move,
     isLoading,

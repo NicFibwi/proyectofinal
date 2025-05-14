@@ -24,96 +24,72 @@ import { cn } from "~/lib/utils";
 import { Input } from "~/components/ui/input";
 
 const pokemonTypes = [
-  {
-    value: "",
-    label: "All",
-  },
-  {
-    value: "normal",
-    label: "Normal",
-  },
-  {
-    value: "fire",
-    label: "Fire",
-  },
-  {
-    value: "water",
-    label: "Water",
-  },
-  {
-    value: "electric",
-    label: "Electric",
-  },
-  {
-    value: "grass",
-    label: "Grass",
-  },
-  {
-    value: "ice",
-    label: "Ice",
-  },
-  {
-    value: "fighting",
-    label: "Fighting",
-  },
-  {
-    value: "poison",
-    label: "Poison",
-  },
-  {
-    value: "ground",
-    label: "Ground",
-  },
-  {
-    value: "flying",
-    label: "Flying",
-  },
-  {
-    value: "psychic",
-    label: "Psychic",
-  },
-  {
-    value: "bug",
-    label: "Bug",
-  },
-  {
-    value: "rock",
-    label: "Rock",
-  },
-  {
-    value: "ghost",
-    label: "Ghost",
-  },
-  {
-    value: "dragon",
-    label: "Dragon",
-  },
-  {
-    value: "dark",
-    label: "Dark",
-  },
-  {
-    value: "steel",
-    label: "Steel",
-  },
-  {
-    value: "fairy",
-    label: "Fairy",
-  },
+  { value: "", label: "All" },
+  { value: "normal", label: "Normal" },
+  { value: "fire", label: "Fire" },
+  { value: "water", label: "Water" },
+  { value: "electric", label: "Electric" },
+  { value: "grass", label: "Grass" },
+  { value: "ice", label: "Ice" },
+  { value: "fighting", label: "Fighting" },
+  { value: "poison", label: "Poison" },
+  { value: "ground", label: "Ground" },
+  { value: "flying", label: "Flying" },
+  { value: "psychic", label: "Psychic" },
+  { value: "bug", label: "Bug" },
+  { value: "rock", label: "Rock" },
+  { value: "ghost", label: "Ghost" },
+  { value: "dragon", label: "Dragon" },
+  { value: "dark", label: "Dark" },
+  { value: "steel", label: "Steel" },
+  { value: "fairy", label: "Fairy" },
 ];
+
+const pokemonGenerations = [
+  { value: "1", label: "I" },
+  { value: "2", label: "II" },
+  { value: "3", label: "III" },
+  { value: "4", label: "IV" },
+  { value: "5", label: "V" },
+  { value: "6", label: "VI" },
+  { value: "7", label: "VII" },
+  { value: "8", label: "VIII" },
+  { value: "9", label: "IX" },
+];
+
+const getPokemonByGeneration = async (
+  generation: string,
+): Promise<PokemonList> => {
+  const generationEndpoints: Record<string, string> = {
+    "1": "https://pokeapi.co/api/v2/pokemon?offset=0&limit=151",
+    "2": "https://pokeapi.co/api/v2/pokemon?offset=151&limit=100",
+    "3": "https://pokeapi.co/api/v2/pokemon?offset=251&limit=135",
+    "4": "https://pokeapi.co/api/v2/pokemon?offset=386&limit=107",
+    "5": "https://pokeapi.co/api/v2/pokemon?offset=493&limit=156",
+    "6": "https://pokeapi.co/api/v2/pokemon?offset=649&limit=72",
+    "7": "https://pokeapi.co/api/v2/pokemon?offset=721&limit=88",
+    "8": "https://pokeapi.co/api/v2/pokemon?offset=809&limit=96",
+    "9": "https://pokeapi.co/api/v2/pokemon?offset=905&limit=120",
+  };
+
+  const endpoint = generationEndpoints[generation];
+  if (!endpoint) {
+    throw new Error(`Invalid generation: ${generation}`);
+  }
+  const response = await fetch(endpoint);
+  if (!response.ok) {
+    throw new Error("Failed to fetch Pokémon by generation");
+  }
+
+  return (await response.json()) as PokemonList;
+};
 
 const getAllPokemon = async (): Promise<PokemonList> => {
   const response = await fetch(
     "https://pokeapi.co/api/v2/pokemon/?offset=0&limit=1025",
   );
-
   return (await response.json()) as PokemonList;
 };
-
-interface Result {
-  name: string;
-  url: string;
-}
 
 const getPokemonByType = async (type: string): Promise<PokemonList> => {
   const response = await fetch(`https://pokeapi.co/api/v2/type/${type}`);
@@ -121,12 +97,14 @@ const getPokemonByType = async (type: string): Promise<PokemonList> => {
     throw new Error("Failed to fetch Pokémon by type");
   }
 
-  const data = (await response.json()) as { pokemon: { pokemon: Result }[] };
+  const data = (await response.json()) as {
+    pokemon: { pokemon: { name: string; url: string } }[];
+  };
   return {
-    count: 1025,
+    count: data.pokemon.length,
     next: "",
     previous: null,
-    results: data.pokemon.map((p: { pokemon: Result }) => p.pokemon),
+    results: data.pokemon.map((p) => p.pokemon),
   };
 };
 
@@ -134,20 +112,66 @@ function PokedexPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [search, setSearch] = useState(searchParams.get("search") ?? "");
-  const [typeFilter, setTypeFilter] = useState(searchParams.get("type") ?? "");
-  const [open, setOpen] = useState(false);
+  const [typeFilter, setTypeFilter] = useState<string[]>(
+    searchParams.get("type")?.split(",") ?? [],
+  );
+  const [generationFilter, setGenerationFilter] = useState<string[]>(
+    searchParams.get("generation")?.split(",") ?? [],
+  );
+  const [openType, setOpenType] = useState(false);
+  const [openGeneration, setOpenGeneration] = useState(false);
 
   const {
     data: pokemonList,
     isLoading,
     isError,
   } = useQuery({
-    queryKey: ["pokemonlist", typeFilter],
+    queryKey: ["pokemonlist", typeFilter, generationFilter],
     queryFn: async () => {
-      if (typeFilter) {
-        return getPokemonByType(typeFilter);
+      let allPokemon: { name: string; url: string }[] = [];
+
+      // Fetch Pokémon by generation if a generation filter is applied
+      if (generationFilter.length > 0) {
+        const generationPromises = generationFilter.map((gen) =>
+          getPokemonByGeneration(gen),
+        );
+        const generationResults = await Promise.all(generationPromises);
+        allPokemon = generationResults.flatMap((gen) => gen.results);
+      } else {
+        // Fetch all Pokémon if no generation filter is applied
+        const allPokemonData = await getAllPokemon();
+        allPokemon = allPokemonData.results;
       }
-      return getAllPokemon();
+
+      // Apply type filtering if a type filter is applied
+      if (typeFilter.length > 0) {
+        const typePromises = typeFilter.map((type) => getPokemonByType(type));
+        const typeResults = await Promise.all(typePromises);
+
+        // Create a map of Pokémon names for each type
+        const typeSets = typeResults.map(
+          (type) => new Set(type.results.map((p) => p.name)),
+        );
+
+        // If two types are selected, filter Pokémon that have both types
+        if (typeFilter.length === 2) {
+          const [typeSet1, typeSet2] = typeSets;
+          allPokemon = allPokemon.filter(
+            (p) => typeSet1?.has(p.name) && typeSet2?.has(p.name),
+          );
+        } else {
+          // If only one type is selected, filter Pokémon that have that type
+          const [typeSet] = typeSets;
+          allPokemon = allPokemon.filter((p) => typeSet?.has(p.name));
+        }
+      }
+
+      return {
+        count: allPokemon.length,
+        next: null,
+        previous: null,
+        results: allPokemon,
+      };
     },
     staleTime: Number.POSITIVE_INFINITY,
   });
@@ -160,15 +184,21 @@ function PokedexPageContent() {
       params.delete("search");
     }
 
-    if (typeFilter) {
-      params.set("type", typeFilter);
+    if (typeFilter.length > 0) {
+      params.set("type", typeFilter.join(","));
     } else {
       params.delete("type");
     }
 
+    if (generationFilter.length > 0) {
+      params.set("generation", generationFilter.join(","));
+    } else {
+      params.delete("generation");
+    }
+
     const newUrl = params.toString() ? `?${params.toString()}` : "";
     router.push(`/pokedex${newUrl}`, { scroll: false });
-  }, [search, typeFilter, router, searchParams]);
+  }, [search, typeFilter, generationFilter, router, searchParams]);
 
   if (isError || !pokemonList) {
     return <div>Error loading Pokémon list.</div>;
@@ -198,17 +228,24 @@ function PokedexPageContent() {
           className="pl-8"
         />
 
-        <Popover open={open} onOpenChange={setOpen}>
-          <PopoverTrigger asChild className="">
+        {/* Type Filter */}
+        <Popover open={openType} onOpenChange={setOpenType}>
+          <PopoverTrigger asChild>
             <Button
               variant="outline"
               role="combobox"
-              aria-expanded={open}
+              aria-expanded={openType}
               className="justify-between"
             >
-              {typeFilter
-                ? pokemonTypes.find((type) => type.value === typeFilter)?.label
-                : "Select Pokémon type..."}
+              {typeFilter.length > 0
+                ? typeFilter
+                    .map(
+                      (type) =>
+                        pokemonTypes.find((t) => t.value === type)?.label ??
+                        type,
+                    )
+                    .join(", ")
+                : "Select type..."}
               <ChevronsUpDown className="opacity-50" />
             </Button>
           </PopoverTrigger>
@@ -226,17 +263,84 @@ function PokedexPageContent() {
                       key={type.value}
                       value={type.value}
                       onSelect={(currentValue) => {
-                        setTypeFilter(
-                          currentValue === typeFilter ? "" : currentValue,
-                        );
-                        setOpen(false);
+                        setTypeFilter((prev) => {
+                          if (prev.includes(currentValue)) {
+                            return prev.filter((t) => t !== currentValue);
+                          } else if (prev.length < 2) {
+                            return [...prev, currentValue];
+                          }
+                          return prev;
+                        });
+                        setOpenType(false);
                       }}
                     >
                       {type.label}
                       <Check
                         className={cn(
                           "ml-auto",
-                          typeFilter === type.value
+                          typeFilter.includes(type.value)
+                            ? "opacity-100"
+                            : "opacity-0",
+                        )}
+                      />
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              </CommandList>
+            </Command>
+          </PopoverContent>
+        </Popover>
+
+        {/* Generation Filter */}
+        <Popover open={openGeneration} onOpenChange={setOpenGeneration}>
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              role="combobox"
+              aria-expanded={openGeneration}
+              className="justify-between"
+            >
+              {generationFilter.length > 0
+                ? generationFilter
+                    .map(
+                      (gen) =>
+                        pokemonGenerations.find((g) => g.value === gen)
+                          ?.label ?? gen,
+                    )
+                    .join(", ")
+                : "Select generation..."}
+              <ChevronsUpDown className="opacity-50" />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-[200px] p-0">
+            <Command>
+              <CommandInput
+                placeholder="Search Pokémon generation..."
+                className="h-9"
+              />
+              <CommandList>
+                <CommandEmpty>No Pokémon generation found.</CommandEmpty>
+                <CommandGroup>
+                  {pokemonGenerations.map((gen) => (
+                    <CommandItem
+                      key={gen.value}
+                      value={gen.value}
+                      onSelect={(currentValue) => {
+                        setGenerationFilter((prev) => {
+                          if (prev.includes(currentValue)) {
+                            return prev.filter((g) => g !== currentValue);
+                          } else {
+                            return [...prev, currentValue];
+                          }
+                        });
+                        setOpenGeneration(false);
+                      }}
+                    >
+                      {gen.label}
+                      <Check
+                        className={cn(
+                          "ml-auto",
+                          generationFilter.includes(gen.value)
                             ? "opacity-100"
                             : "opacity-0",
                         )}

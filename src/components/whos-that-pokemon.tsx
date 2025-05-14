@@ -15,7 +15,7 @@ import {
   CommandInput,
 } from "~/components/ui/command";
 import { Button } from "~/components/ui/button";
-import { Input } from "~/components/ui/input";
+
 import {
   Card,
   CardContent,
@@ -25,7 +25,6 @@ import {
 } from "~/components/ui/card";
 import { Loader2, RefreshCw, Trophy } from "lucide-react";
 import type { Result, Pokemon, PokemonList } from "~/types/types";
-import { dark } from "@clerk/themes";
 
 const queryClient = new QueryClient();
 function PokemonGameContent() {
@@ -37,7 +36,6 @@ function PokemonGameContent() {
   const [showAnswer, setShowAnswer] = useState(false);
   const [isCorrect, setIsCorrect] = useState(false);
   const [openCommandMenu, setOpenCommandMenu] = useState(false);
-  const [searchResults, setSearchResults] = useState<Result[]>([]);
   const [revealedName, setRevealedName] = useState<string>("");
   const [tries, setTries] = useState(0); // New state for counting tries
 
@@ -100,18 +98,6 @@ function PokemonGameContent() {
       };
     }
   }, [pokemon]);
-
-  // Filter Pokemon names based on user input
-  useEffect(() => {
-    if (pokemonList && guess.length > 0) {
-      const filtered = pokemonList.filter((p: Result) =>
-        p.name.toLowerCase().includes(guess.toLowerCase()),
-      );
-      setSearchResults(filtered.slice(0, 5));
-    } else {
-      setSearchResults([]);
-    }
-  }, [guess, pokemonList]);
 
   useEffect(() => {
     if (pokemon) {

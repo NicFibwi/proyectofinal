@@ -2,11 +2,12 @@
 
 import type { MoveInfo } from "~/types/types";
 import { useQuery } from "@tanstack/react-query";
-import { Loader2, AlertCircle, Zap, Target, Repeat } from "lucide-react";
-import { Card, CardContent, CardTitle } from "~/components/ui/card";
+import { Loader2, AlertCircle } from "lucide-react";
+import { Card } from "~/components/ui/card";
 import { TypeBadge } from "./ui/typebadge";
 import Link from "next/link";
 import { typeColors } from "./ui/typebadge"; // Import typeColors from TypeBadge
+import Image from "next/image";
 
 const getMoveInfo = async (moveUrl: string) => {
   const response = await fetch(moveUrl);
@@ -103,7 +104,7 @@ export function MoveCard({ moveUrl }: { moveUrl: string }) {
 
             <div className="hidden w-1/6 items-center justify-center gap-1 sm:flex">
               {moveInfo?.damage_class?.name && (
-                <img
+                <Image
                   src={`/icons/${
                     moveInfo.damage_class.name === "status"
                       ? "status_move_icon"
@@ -112,8 +113,9 @@ export function MoveCard({ moveUrl }: { moveUrl: string }) {
                         : "special_move_icon"
                   }.png`}
                   alt={`${moveInfo.damage_class.name} icon`}
-                  className="h-12 w-12"
                   loading="lazy"
+                  height={12}
+                  width={12}
                 />
               )}
             </div>

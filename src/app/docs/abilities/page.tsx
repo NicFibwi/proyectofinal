@@ -5,7 +5,7 @@ import { useState, useEffect, Suspense } from "react";
 import { AlertCircle, Loader2 } from "lucide-react";
 import { Input } from "~/components/ui/input"; // Assuming shadcn Input component is here
 import { AbilityCard } from "~/components/ability-card";
-import type { Ability, AbilityInfo } from "~/types/types";
+import type { Ability} from "~/types/types";
 
 const getAllAbilities = async (): Promise<Ability> => {
   const response = await fetch(

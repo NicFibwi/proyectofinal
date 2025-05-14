@@ -63,17 +63,7 @@ export default function PokemonCard({ url }: { url: string }) {
             </CardTitle>
           </CardHeader>
           <CardContent className="flex flex-col items-center justify-center">
-            {/* <Image
-              src={
-                pokemon.sprites.other?.["official-artwork"].front_default ??
-                "/placeholder.png"
-              }
-              alt={pokemon.name}
-              width={100}
-              height={100}
-              loading="lazy"
-            /> */}
-            <img
+            <Image
               src={
                 pokemon.sprites.other?.["official-artwork"].front_default ??
                 "/placeholder.png"
@@ -82,7 +72,7 @@ export default function PokemonCard({ url }: { url: string }) {
               loading="lazy"
               width={100}
               height={100}
-              style={{ imageRendering: "auto" }} // Ensures the image is upscaled without blurring
+              style={{ imageRendering: "crisp-edges" }} // Ensures the image is upscaled without blurring
             />
           </CardContent>
           <CardDescription className="flex flex-row items-center justify-around">

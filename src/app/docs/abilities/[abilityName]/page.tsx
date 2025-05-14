@@ -1,6 +1,5 @@
 import { use } from "react";
 import AbilityDetailCard from "~/components/ability-detail-card";
-import MoveDetailCard from "~/components/move-detail-card";
 
 export default function AbilityPage({
   params: paramsPromise,

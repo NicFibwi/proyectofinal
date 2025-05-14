@@ -1,7 +1,7 @@
 //the table of pokemon that can learn the move
-import { useQuery } from "@tanstack/react-query";
+
 import type { MoveInfo } from "~/types/types";
-import { Card, CardContent, CardTitle } from "./ui/card";
+import { Card, CardContent } from "./ui/card";
 import Link from "next/link";
 export default function MovePokemonList({ move }: { move: MoveInfo }) {
   return (
