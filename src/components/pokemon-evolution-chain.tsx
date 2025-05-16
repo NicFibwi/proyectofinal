@@ -10,7 +10,6 @@ import type {
 } from "~/types/types";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
-import Image from "next/image";
 
 // Fetch the evolution chain data
 export const getPokemonChain = async (
@@ -260,12 +259,10 @@ export default function PokemonEvolutionChain({ url }: { url: string }) {
                     <CardTitle className="capitalize">
                       {evolution.name}
                     </CardTitle>
-                    <Image
+                    <img
                       src={evolution.sprite}
                       alt={evolution.name}
-                      className="object-contain"
-                      height={24}
-                      width={24}
+                      className="h-24 w-24 object-contain"
                     />
                   </CardContent>
                 </Card>

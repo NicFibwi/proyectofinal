@@ -23,7 +23,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "./ui/dialog";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 
 // Cache for evolution data to reduce API calls
@@ -256,7 +255,7 @@ export default function PokemonWordle() {
   >(null);
   const [hasMounted, setHasMounted] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
-
+  const [shareMessage, setShareMessage] = useState<string | null>(null);
   const [isGivenUp, setIsGivenUp] = useState(false);
   const router = useRouter();
 
@@ -497,6 +496,63 @@ export default function PokemonWordle() {
     );
   };
 
+  // Generate the shareable result string
+  const generateShareableResult = () => {
+    const resultHeader = `Pokemon Wordle - Guesses: ${isCorrect ? guesses.length : "X"}`;
+    const resultBody = guesses
+      .map((guess) => {
+        const targetGenNum = helpers.getGenerationNumber(
+          targetPokemonSpecies?.generation.name ?? "",
+        );
+        const guessGenNum = helpers.getGenerationNumber(
+          guess.species.generation.name,
+        );
+
+        // Generate row of emojis for the guess
+        return [
+          targetGenNum === guessGenNum ? "🟩" : "🟥", // Generation
+          guess.evoStage === targetPokemonEvoStage ? "🟩" : "🟥", // Evolution Stage
+          guess.pokemon.types[0]?.type?.name ===
+          targetPokemon?.types[0]?.type?.name
+            ? "🟩"
+            : guess.pokemon.types[0]?.type?.name ===
+                targetPokemon?.types[1]?.type?.name
+              ? "🟨"
+              : "🟥", // Type 1
+          !targetPokemon?.types[1]
+            ? !guess.pokemon.types[1]
+              ? "🟩"
+              : "🟥"
+            : guess.pokemon.types[1]?.type?.name ===
+                targetPokemon?.types[1]?.type?.name
+              ? "🟩"
+              : guess.pokemon.types[1]?.type?.name ===
+                  targetPokemon?.types[0]?.type?.name
+                ? "🟨"
+                : "🟥", // Type 2
+          targetPokemon?.weight === guess.pokemon.weight ? "🟩" : "🟥", // Weight
+          targetPokemon?.height === guess.pokemon.height ? "🟩" : "🟥", // Height
+          guess.isFinalEvo === targetPokemonIsFinalEvo ? "🟩" : "🟥", // Final Evolution
+        ].join("");
+      })
+      .join("\n");
+
+    return `${resultHeader}\n\n${resultBody}`;
+  };
+
+  // Handle the "Share" button click
+  const handleShare = () => {
+    const result = generateShareableResult();
+    navigator.clipboard.writeText(result)
+      .then(() => {
+        setShareMessage("Results copied to clipboard!");
+        setTimeout(() => setShareMessage(null), 2000); // Clear message after 2 seconds
+      })
+      .catch((error) => {
+        console.error("Failed to copy results to clipboard:", error);
+      });
+  };
+
   // If the component hasn't mounted yet, return a loading state
   if (!hasMounted) {
     return (
@@ -588,16 +644,26 @@ export default function PokemonWordle() {
             </DialogTitle>
             <DialogDescription className="flex flex-col items-center">
               <span># Tries: {guesses.length}</span>
-              <Image
+              <img
                 src={
                   targetPokemon?.sprites.other?.["official-artwork"]
                     .front_default ?? "/placeholder.svg"
                 }
                 alt="pokemon-picture"
-                className="mt-4 flex items-center justify-center rounded-lg border border-gray-300 shadow-md"
-                height={60}
-                width={60}
+                className="mt-4 flex h-60 w-60 items-center justify-center rounded-lg"
               />
+
+              <Button
+                onClick={handleShare}
+                className="w-full rounded-lg border border-green-400 bg-emerald-600"
+              >
+                Share
+              </Button>
+              {shareMessage && (
+                <div className="mt-2 text-center text-sm text-green-500">
+                  {shareMessage}
+                </div>
+              )}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
@@ -640,7 +706,7 @@ export default function PokemonWordle() {
                 target="_blank"
               >
                 <div className="flex items-center space-x-3">
-                  <Image
+                  <img
                     src={
                       guess.pokemon.sprites.front_default || "/placeholder.svg"
                     }

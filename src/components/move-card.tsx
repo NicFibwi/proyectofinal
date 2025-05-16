@@ -104,7 +104,7 @@ export function MoveCard({ moveUrl }: { moveUrl: string }) {
 
             <div className="hidden w-1/6 items-center justify-center gap-1 sm:flex">
               {moveInfo?.damage_class?.name && (
-                <Image
+                <img
                   src={`/icons/${
                     moveInfo.damage_class.name === "status"
                       ? "status_move_icon"
@@ -113,9 +113,7 @@ export function MoveCard({ moveUrl }: { moveUrl: string }) {
                         : "special_move_icon"
                   }.png`}
                   alt={`${moveInfo.damage_class.name} icon`}
-                  loading="lazy"
-                  height={12}
-                  width={12}
+                  className="h-10 w-14"
                 />
               )}
             </div>

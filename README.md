@@ -25,7 +25,7 @@
 - [x] make color generation function
 - [x] add icons
 - [ ] Posthog
-- [ ] Minigames
+- [x] Minigames
 - [ ] Teambuilder
 - [ ] https://clerk.com/docs/references/nextjs/basic-rbac
 - [ ]
