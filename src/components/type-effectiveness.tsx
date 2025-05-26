@@ -156,7 +156,7 @@ const TypeEffectivenessTable: React.FC<TypeEffectivenessTableProps> = ({
         typeEffectivenessChart[attackingTypeLower]?.[
           pokemonType.toLowerCase()
         ] ?? 1;
-      if (typeEffectiveness === 0) {
+      if (typeEffectiveness === 0) { 
         return 0;
       }
     }

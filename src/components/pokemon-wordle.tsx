@@ -499,43 +499,46 @@ export default function PokemonWordle() {
   // Generate the shareable result string
   const generateShareableResult = () => {
     const resultHeader = `Pokemon Wordle - Guesses: ${isCorrect ? guesses.length : "X"}`;
-    const resultBody = guesses
-      .map((guess) => {
-        const targetGenNum = helpers.getGenerationNumber(
-          targetPokemonSpecies?.generation.name ?? "",
-        );
-        const guessGenNum = helpers.getGenerationNumber(
-          guess.species.generation.name,
-        );
+    const resultBody =
+      guesses
+        .map((guess) => {
+          const targetGenNum = helpers.getGenerationNumber(
+            targetPokemonSpecies?.generation.name ?? "",
+          );
+          const guessGenNum = helpers.getGenerationNumber(
+            guess.species.generation.name,
+          );
 
-        // Generate row of emojis for the guess
-        return [
-          targetGenNum === guessGenNum ? "🟩" : "🟥", // Generation
-          guess.evoStage === targetPokemonEvoStage ? "🟩" : "🟥", // Evolution Stage
-          guess.pokemon.types[0]?.type?.name ===
-          targetPokemon?.types[0]?.type?.name
-            ? "🟩"
-            : guess.pokemon.types[0]?.type?.name ===
-                targetPokemon?.types[1]?.type?.name
-              ? "🟨"
-              : "🟥", // Type 1
-          !targetPokemon?.types[1]
-            ? !guess.pokemon.types[1]
+          // Generate row of emojis for the guess
+          return [
+            targetGenNum === guessGenNum ? "🟩" : "🟥", // Generation
+            guess.evoStage === targetPokemonEvoStage ? "🟩" : "🟥", // Evolution Stage
+            guess.pokemon.types[0]?.type?.name ===
+            targetPokemon?.types[0]?.type?.name
               ? "🟩"
-              : "🟥"
-            : guess.pokemon.types[1]?.type?.name ===
-                targetPokemon?.types[1]?.type?.name
-              ? "🟩"
-              : guess.pokemon.types[1]?.type?.name ===
-                  targetPokemon?.types[0]?.type?.name
+              : guess.pokemon.types[0]?.type?.name ===
+                  targetPokemon?.types[1]?.type?.name
                 ? "🟨"
-                : "🟥", // Type 2
-          targetPokemon?.weight === guess.pokemon.weight ? "🟩" : "🟥", // Weight
-          targetPokemon?.height === guess.pokemon.height ? "🟩" : "🟥", // Height
-          guess.isFinalEvo === targetPokemonIsFinalEvo ? "🟩" : "🟥", // Final Evolution
-        ].join("");
-      })
-      .join("\n");
+                : "🟥", // Type 1
+            !targetPokemon?.types[1]
+              ? !guess.pokemon.types[1]
+                ? "🟩"
+                : "🟥"
+              : guess.pokemon.types[1]?.type?.name ===
+                  targetPokemon?.types[1]?.type?.name
+                ? "🟩"
+                : guess.pokemon.types[1]?.type?.name ===
+                    targetPokemon?.types[0]?.type?.name
+                  ? "🟨"
+                  : "🟥", // Type 2
+            targetPokemon?.weight === guess.pokemon.weight ? "🟩" : "🟥", // Weight
+            targetPokemon?.height === guess.pokemon.height ? "🟩" : "🟥", // Height
+            guess.isFinalEvo === targetPokemonIsFinalEvo ? "🟩" : "🟥", // Final Evolution
+          ].join("");
+        })
+        .join("\n") +
+      "\n\n" +
+      "Play at: pokecompanion.net"; // Add line breaks between guesses;
 
     return `${resultHeader}\n\n${resultBody}`;
   };
@@ -543,7 +546,8 @@ export default function PokemonWordle() {
   // Handle the "Share" button click
   const handleShare = () => {
     const result = generateShareableResult();
-    navigator.clipboard.writeText(result)
+    navigator.clipboard
+      .writeText(result)
       .then(() => {
         setShareMessage("Results copied to clipboard!");
         setTimeout(() => setShareMessage(null), 2000); // Clear message after 2 seconds

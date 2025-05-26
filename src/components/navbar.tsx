@@ -29,12 +29,7 @@ import {
   CircleUserRound,
   Blocks,
 } from "lucide-react";
-import {
-  SignedIn,
-  SignedOut,
-  SignInButton,
-  UserButton,
-} from "@clerk/nextjs";
+import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
 import { useTheme } from "next-themes";
 import { dark } from "@clerk/themes";
 
@@ -58,7 +53,7 @@ const navItems = [
     description: "Detailed documentation to answer questions about the game",
   },
   {
-    name: "AI Assistant",
+    name: "Pokémaster AI",
     href: "/assistant",
     icon: <Bot className="mr-2 h-4 w-4" />,
     description: "A Pokémon-trained AI assistant to answer questions",
@@ -134,7 +129,7 @@ export default function Navbar() {
               <SignInButton>
                 <Button
                   variant="ghost"
-                  className="h-8 w-20 p-2 border-2"
+                  className="h-8 w-20 border-2 p-2"
                   title="Sign In"
                 >
                   <span>Sign in</span>

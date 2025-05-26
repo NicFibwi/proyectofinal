@@ -4,6 +4,7 @@ import React from "react";
 import { ThemeProvider } from "next-themes";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ClerkProvider } from "@clerk/nextjs";
+import { PostHogProvider } from "~/app/providers";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
@@ -13,9 +14,11 @@ export function Providers({ children }: { children: React.ReactNode }) {
       enableSystem
       disableTransitionOnChange
     >
-      <QueryClientProvider client={new QueryClient()}>
-        <ClerkProvider>{children}</ClerkProvider>
-      </QueryClientProvider>
+      <PostHogProvider>
+        <QueryClientProvider client={new QueryClient()}>
+          <ClerkProvider>{children}</ClerkProvider>
+        </QueryClientProvider>
+      </PostHogProvider>
     </ThemeProvider>
   );
 }

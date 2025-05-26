@@ -44,7 +44,7 @@ const getAllLegendaries = async (): Promise<Pokemon[]> => {
   return allLegendaries;
 };
 
-export default function RandomLegendary() {
+export default function RandomLegendary({ onLegendarySelected }: { onLegendarySelected: (name: string) => void }) {
   const [legendary, setLegendary] = useState<Pokemon | null>(null);
   const [isInitialized, setIsInitialized] = useState(false);
 
@@ -90,9 +90,10 @@ export default function RandomLegendary() {
   useEffect(() => {
     if (legendary) {
       localStorage.setItem("randomLegendaryState", JSON.stringify(legendary));
+      onLegendarySelected(legendary.name); // Pass the legendary's name to the parent
     }
     localStorage.setItem("isInitializedState", JSON.stringify(isInitialized));
-  }, [legendary, isInitialized]);
+  }, [legendary, isInitialized, onLegendarySelected]);
 
   const getRandomLegendary = async () => {
     if (legendaryList && legendaryList.length > 0) {

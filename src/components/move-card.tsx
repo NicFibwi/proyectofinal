@@ -7,7 +7,6 @@ import { Card } from "~/components/ui/card";
 import { TypeBadge } from "./ui/typebadge";
 import Link from "next/link";
 import { typeColors } from "./ui/typebadge"; // Import typeColors from TypeBadge
-import Image from "next/image";
 
 const getMoveInfo = async (moveUrl: string) => {
   const response = await fetch(moveUrl);

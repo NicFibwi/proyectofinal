@@ -99,6 +99,8 @@ export default function RandomPokemon() {
   const [value, setValue] = useState("");
   const [isMovesetTurn, setIsMovesetTurn] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [legendaryName, setLegendaryName] = useState<string | null>(null);
+
   // const [dialogShown, setDialogShown] = useState(false);
   const isAllAttributesDefined =
     hp !== undefined &&
@@ -271,6 +273,44 @@ export default function RandomPokemon() {
               >
                 Play again
               </Button>
+              {/* <Button
+                onClick={async () => {
+                  const message = `Give a verdict on who would win: ${legendaryName} or a custom pokemon with these stats HP: ${hp}, ATTK: ${attack}, DEF: ${defense}, SPATT: ${specialAttack}, SPDEF: ${specialDefense}, SPEED: ${speed}, ABILITY: ${ability}, Moveset: ${moveset.join(", ")}, TYPES: ${types.map((type) => type.type.name).join(", ")}. You have to appoint a winner.`;
+                  try {
+                    const response = await fetch("/api/chat/", {
+                      // Updated endpoint
+                      method: "POST",
+                      headers: {
+                        "Content-Type": "application/json",
+                      },
+                      body: JSON.stringify({
+                        messages: [{ role: "user", content: message }],
+                      }), // Adjusted payload
+                    });
+                    const result = await response.json();
+                    alert(
+                      `Pokemaster's verdict: ${result.verdict || result.content}`,
+                    ); // Adjusted to handle response content
+                  } catch (error) {
+                    console.error(
+                      "Error sending message to Pokemaster:",
+                      error,
+                    );
+                    alert("Failed to get a verdict from Pokemaster.");
+                  }
+                }}
+              >
+                Ask Pokemaster who won!
+              </Button> */}
+              <Button
+                onClick={() => {
+                  const message = `Give a verdict on who would win: ${legendaryName} or a custom pokemon with these stats HP: ${hp}, ATTK: ${attack}, DEF: ${defense}, SPATT: ${specialAttack}, SPDEF: ${specialDefense}, SPEED: ${speed}, ABILITY: ${ability}, Moveset: ${moveset.join(", ")}, TYPES: ${types.map((type) => type.type.name).join(", ")}. You have to appoint a winner without doubt.`;
+                  const encodedMessage = encodeURIComponent(message);
+                  router.push(`/assistant/?message=${encodedMessage}`);
+                }}
+              >
+                Ask Pokemaster who won!
+              </Button>
             </div>
           </DialogFooter>
         </DialogContent>
@@ -294,7 +334,11 @@ export default function RandomPokemon() {
 
       {pokemon && (
         <div className="flex h-full w-full flex-col items-center justify-center">
-          <RandomLegendary />
+          <RandomLegendary
+            onLegendarySelected={(legendary_name: string) =>
+              setLegendaryName(legendary_name)
+            }
+          />
           <div className="flex h-full w-full flex-col md:flex-row">
             {/* img name generate new button */}
             <div className="mb-2 h-full w-full justify-between md:w-1/3">
