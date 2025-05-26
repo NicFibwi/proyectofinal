@@ -128,7 +128,7 @@ export default function PokemasterChat({
                   className={`flex ${message.role === "user" ? "justify-end" : "justify-start"}`}
                 >
                   <div
-                    className={`max-w-[80%] rounded-2xl px-4 py-3 ${message.role === "user" ? "bg-blue-600" : ""}`}
+                    className={`max-w-[80%] rounded-2xl px-4 py-3 ${message.role === "user" ? "bg-blue-500" : ""}`}
                   >
                     {/* Format the message content with line breaks and styling */}
                     <div className="whitespace-pre-wrap">
