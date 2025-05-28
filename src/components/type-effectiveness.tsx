@@ -281,7 +281,7 @@ const TypeEffectivenessTable: React.FC<TypeEffectivenessTableProps> = ({
               <div key={group.value} className="p-4">
                 <div
                   className={cn(
-                    "mb-3 flex items-center gap-3 rounded-lg p-3",
+                    "mb-4 flex items-center gap-3 rounded-lg p-3",
                     group.bgClass,
                   )}
                 >

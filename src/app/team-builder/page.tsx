@@ -1,3 +1,4 @@
+import { SignedIn, SignedOut } from "@clerk/nextjs"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/card"
 
 export default function TeamBuilderPage() {
@@ -9,32 +10,12 @@ export default function TeamBuilderPage() {
       </div>
 
       <Card className="stagger-item stagger-delay-1 transition-all duration-300 hover:shadow-md">
-        <CardHeader>
-          <CardTitle>Create and Edit Teams</CardTitle>
-          <CardDescription>Build and customize your Pokémon teams with advanced options</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="p-8 text-center text-muted-foreground">
-            Team builder interface will be implemented here with options for:
-            <ul className="list-disc list-inside mt-4 text-left space-y-2">
-              {[
-                "Pokémon name",
-                "Ability and Secret Ability",
-                "Nature",
-                "Equipped Item",
-                "Attacks",
-                "EVs (Effort Values) and IVs (Individual Values)",
-              ].map((item, index) => (
-                <li
-                  key={item}
-                  className={`transition-all duration-300 hover:translate-x-2 stagger-item stagger-delay-${index + 1}`}
-                >
-                  {item}
-                </li>
-              ))}
-            </ul>
-          </div>
-        </CardContent>
+        <SignedOut>
+          Please sign in to use the Team Builder.
+          
+          </SignedOut>
+        <SignedIn>
+          </SignedIn>
       </Card>
 
       <Card className="stagger-item stagger-delay-2 transition-all duration-300 hover:shadow-md">
