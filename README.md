@@ -24,8 +24,9 @@
 - [x] make format entry funciton
 - [x] make color generation function
 - [x] add icons
-- [ ] Posthog
+- [x] Posthog
 - [x] Minigames
+- [ ] share button not working?
 - [ ] Teambuilder
 - [ ] https://clerk.com/docs/references/nextjs/basic-rbac
 - [ ]

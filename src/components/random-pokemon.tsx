@@ -256,7 +256,7 @@ export default function RandomPokemon() {
           </DialogHeader>
 
           <DialogFooter>
-            <div className="flex h-full w-full flex-col justify-around space-y-2 sm:flex-row">
+            <div className="flex h-full w-full flex-col justify-around space-y-2">
               <Button onClick={() => router.push("/minigames/whosthatpokemon")}>
                 Play Whos That Pokémon
               </Button>
@@ -266,9 +266,7 @@ export default function RandomPokemon() {
               </Button>
               <Button
                 onClick={() => {
-                  if (confirm("Are you sure you want to reset?")) {
-                    resetStates();
-                  }
+                  resetStates();
                 }}
               >
                 Play again
@@ -308,6 +306,7 @@ export default function RandomPokemon() {
                   const encodedMessage = encodeURIComponent(message);
                   router.push(`/assistant/?message=${encodedMessage}`);
                 }}
+                className="animate-pulse bg-green-400"
               >
                 Ask Pokemaster who won!
               </Button>
