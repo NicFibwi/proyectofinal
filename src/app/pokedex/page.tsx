@@ -111,12 +111,12 @@ const getPokemonByType = async (type: string): Promise<PokemonList> => {
 function PokedexPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [search, setSearch] = useState(searchParams.get("search") ?? "");
+  const [search, setSearch] = useState(searchParams?.get("search") ?? "");
   const [typeFilter, setTypeFilter] = useState<string[]>(
-    searchParams.get("type")?.split(",") ?? [],
+    searchParams?.get("type")?.split(",") ?? [],
   );
   const [generationFilter, setGenerationFilter] = useState<string[]>(
-    searchParams.get("generation")?.split(",") ?? [],
+    searchParams?.get("generation")?.split(",") ?? [],
   );
   const [openType, setOpenType] = useState(false);
   const [openGeneration, setOpenGeneration] = useState(false);
@@ -177,7 +177,7 @@ function PokedexPageContent() {
   });
 
   useEffect(() => {
-    const params = new URLSearchParams(searchParams.toString());
+    const params = new URLSearchParams(searchParams?.toString());
     if (search) {
       params.set("search", search);
     } else {

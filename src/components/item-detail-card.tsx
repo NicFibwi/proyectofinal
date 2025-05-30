@@ -38,6 +38,7 @@ export default function ItemDetailCard({ name }: { name: string }) {
         })) ?? []
     );
   }, [item?.flavor_text_entries]);
+  console.log("English Entries:", englishEntries);
 
   // Get the first tab to use as default
   const defaultTab =

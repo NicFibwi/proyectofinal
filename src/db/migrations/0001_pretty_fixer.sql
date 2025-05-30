@@ -1,0 +1,1 @@
+ALTER TABLE "custom_pokemon" ALTER COLUMN "pokemon_id" SET DATA TYPE serial;

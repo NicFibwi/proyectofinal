@@ -777,3 +777,37 @@ export interface Pokemon {
   pokemon: Generation;
   slot: number;
 }
+
+// nature/id
+export interface Nature {
+  decreased_stat: DecreasedStat;
+  hates_flavor: DecreasedStat;
+  id: number;
+  increased_stat: DecreasedStat;
+  likes_flavor: DecreasedStat;
+  move_battle_style_preferences: MoveBattleStylePreference[];
+  name: string;
+  names: Name[];
+  pokeathlon_stat_changes: PokeathlonStatChange[];
+}
+
+export interface DecreasedStat {
+  name: string;
+  url: string;
+}
+
+export interface MoveBattleStylePreference {
+  high_hp_preference: number;
+  low_hp_preference: number;
+  move_battle_style: DecreasedStat;
+}
+
+export interface Name {
+  language: DecreasedStat;
+  name: string;
+}
+
+export interface PokeathlonStatChange {
+  max_change: number;
+  pokeathlon_stat: DecreasedStat;
+}

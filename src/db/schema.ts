@@ -143,7 +143,7 @@ export const itemRelations = relations(items, ({ many }) => ({
 export const customPokemon = pgTable(
   "custom_pokemon",
   {
-    pokemon_id: integer("pokemon_id").notNull(),
+    pokemon_id: serial("pokemon_id").notNull(),
     team_id: integer("team_id")
       .notNull()
       .references(() => pokemonteams.team_id),
