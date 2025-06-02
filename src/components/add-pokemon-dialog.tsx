@@ -444,13 +444,16 @@ export default function AddPokemonDialog({ team_id }: { team_id: number }) {
           <div className="mb-6 flex flex-col items-center space-y-4 border-b-2 pb-2">
             <div className="relative">
               <img
-                src={
-                  selectedPokemon?.sprites?.other?.["official-artwork"]
-                    .front_default || selectedPokemon.sprites.front_default
-                }
-                alt={selectedPokemon.name}
-                className="h-48 w-48 object-contain"
-                crossOrigin="anonymous"
+              src={
+                selectedPokemon?.sprites?.other?.["official-artwork"]
+                .front_default || selectedPokemon.sprites.front_default
+              }
+              alt={selectedPokemon.name}
+              className="h-48 w-48 object-contain cursor-pointer"
+              crossOrigin="anonymous"
+              onClick={() =>
+                window.open(`/pokedex/${selectedPokemon.name}`, "_blank")
+              }
               />
             </div>
             <div className="flex gap-2">
@@ -476,7 +479,7 @@ export default function AddPokemonDialog({ team_id }: { team_id: number }) {
           <div className="mb-6 space-y-2 border-b-2 pb-2">
             <Label className="mb-4">Moves ({selectedMoves.length}/4)</Label>
             <div className="grid max-h-40 grid-cols-2 gap-2 overflow-y-auto rounded-md border p-2">
-              {selectedPokemon?.moves.slice(0, 50).map((moveData) => (
+              {selectedPokemon?.moves.map((moveData) => (
                 <Button
                   key={moveData.move.name}
                   variant={

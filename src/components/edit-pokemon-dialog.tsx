@@ -255,7 +255,7 @@ export default function EditPokemonDialog({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="bg-blue-400 h-8 w-8 ml-2">
+        <Button className="ml-2 h-8 w-8 bg-blue-400">
           <Pencil />
         </Button>
       </DialogTrigger>
@@ -277,8 +277,11 @@ export default function EditPokemonDialog({
                       .front_default || selectedPokemon.sprites.front_default
                   }
                   alt={selectedPokemon.name}
-                  className="h-48 w-48 object-contain"
+                  className="h-48 w-48 cursor-pointer object-contain"
                   crossOrigin="anonymous"
+                  onClick={() =>
+                    window.open(`/pokedex/${selectedPokemon.name}`, "_blank")
+                  }
                 />
               </div>
               <div className="flex gap-2">
@@ -305,7 +308,7 @@ export default function EditPokemonDialog({
             <div className="mb-6 space-y-2 border-b-2 pb-2">
               <Label className="mb-4">Moves ({selectedMoves.length}/4)</Label>
               <div className="grid max-h-40 grid-cols-2 gap-2 overflow-y-auto rounded-md border p-2">
-                {selectedPokemon?.moves.slice(0, 50).map((moveData) => (
+                {selectedPokemon?.moves.map((moveData) => (
                   <Button
                     key={moveData.move.name}
                     variant={
