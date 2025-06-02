@@ -15,6 +15,13 @@
       "when": 1748595524287,
       "tag": "0001_pretty_fixer",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1748864421687,
+      "tag": "0002_goofy_proemial_gods",
+      "breakpoints": true
     }
   ]
 }

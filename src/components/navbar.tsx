@@ -28,8 +28,15 @@ import {
   Menu,
   CircleUserRound,
   Blocks,
+  Settings,
 } from "lucide-react";
-import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
+import {
+  SignedIn,
+  SignedOut,
+  SignInButton,
+  UserButton,
+  useUser,
+} from "@clerk/nextjs";
 import { useTheme } from "next-themes";
 import { dark } from "@clerk/themes";
 
@@ -81,6 +88,15 @@ const navItems = [
 export default function Navbar() {
   const pathname = usePathname();
   const currentTheme = useTheme();
+  const { isSignedIn, user } = useUser();
+
+  // Check if user is admin (assuming role is stored in publicMetadata.role)
+  const isAdmin =
+    isSignedIn &&
+    user?.publicMetadata &&
+    (user.publicMetadata.role === "admin" ||
+      (Array.isArray(user.publicMetadata.role) &&
+        user.publicMetadata.role.includes("admin")));
 
   return (
     <header className="bg-background/95 supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50 w-full border-b backdrop-blur">
@@ -123,6 +139,18 @@ export default function Navbar() {
 
         {/* Theme Toggle */}
         <div className="mr-4 flex flex-row items-center">
+          {/* Admin Button (visible only to admins) */}
+          {isAdmin && (
+            <Link href="/admin">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="transition-transform duration-200 hover:scale-110"
+              >
+                <Settings />
+              </Button>
+            </Link>
+          )}
           <ThemeToggle />
           <div className="space-around flex items-center">
             <SignedOut>

@@ -15,7 +15,7 @@ import { relations } from "drizzle-orm";
 // USER TABLE
 export const users = pgTable("users", {
   user_id: varchar("user_id").primaryKey(),
-  username: varchar("username").notNull(),
+  username: varchar("username"),
 });
 
 export const userRelations = relations(users, ({ many }) => ({
@@ -257,3 +257,11 @@ export const evSpreadsRelations = relations(evSpreads, ({ one }) => ({
     references: [customPokemon.pokemon_id, customPokemon.team_id],
   }),
 }));
+
+export const aiPrompts = pgTable("ai_prompts", {
+  id: serial("id").primaryKey(),
+  last_modified_by: varchar("last_modified_by").notNull(),
+  created_at: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
+  prompt: text("prompt").notNull(),
+});
+  

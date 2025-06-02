@@ -11,8 +11,9 @@ import {
   basePokemon,
   pokemonAbilities,
   pokemonMoves,
+  aiPrompts,
 } from "~/db/schema";
-import { eq, and } from "drizzle-orm";
+import { eq, and, desc } from "drizzle-orm";
 import type {
   Ability,
   AbilityInfo,
@@ -474,7 +475,7 @@ export async function getPokemonMovesFull(pokemonId: number, teamId: number) {
 }
 
 // Get all abilities for a base Pokémon (returns ability objects)
-export async function getAllAbilitiesForPokemon(pokedex_n: number) {
+export async function getAllAbilitiesForPokemon(pokedex_n: number) {    
   const relations = await db
     .select()
     .from(pokemonAbilities)
@@ -485,4 +486,18 @@ export async function getAllAbilitiesForPokemon(pokedex_n: number) {
       return { ...ability, is_hidden: rel.is_hidden };
     }),
   );
+}
+
+export async function getLatestSystemPrompt() {
+  const result = await db
+    .select()
+    .from(aiPrompts)
+    .orderBy(desc(aiPrompts.created_at))
+    .limit(1);
+
+  return result[0]?.prompt ?? null;
+}
+
+export async function setSystemPrompt(userId: string, prompt: string) {
+  return db.insert(aiPrompts).values({ last_modified_by: userId, prompt });
 }
