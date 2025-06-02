@@ -7,7 +7,6 @@ import {
   deleteEvSpread,
   deletePokemonMoves,
   getTeamByIdAndUserId,
-  getPokemonAbilitiesByIds,
   getMoveById,
   getCustomPokemonByTeamId,
   getItemById,
@@ -25,7 +24,7 @@ import {
   CardTitle,
 } from "~/components/ui/card";
 import { Button } from "~/components/ui/button";
-import { Check, ChevronsUpDown, Pencil, Trash2 } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -37,6 +36,7 @@ import NavigationButtons from "~/components/navigation-buttons";
 import { useCallback } from "react";
 
 import EditPokemonDialog from "~/components/edit-pokemon-dialog";
+import { TeamExport } from "~/components/team-export-import";
 
 interface EVStats {
   hp: number;
@@ -122,13 +122,22 @@ export default function TeamPage() {
       <NavigationButtons id={0} route={""} limit={0} />
       <Card>
         <CardHeader>
-          <CardTitle className="text-2xl font-extrabold">
-            {team.team_name}
-          </CardTitle>
-          <CardDescription>
-            Create and manage your Pokémon team with ease. Add, edit, or remove
-            Pokémon and customize their moves.
-          </CardDescription>
+          <div className="flex items-start justify-between">
+            <div>
+              <CardTitle className="text-2xl font-extrabold">
+                {team.team_name}
+              </CardTitle>
+              <CardDescription>
+                Create and manage your Pokémon team with ease. Add, edit, or
+                remove Pokémon and customize their moves.
+              </CardDescription>
+            </div>
+            <TeamExport
+              teamId={teamId}
+              userId={user.id}
+              teamName={team.team_name}
+            />
+          </div>
         </CardHeader>
         <CardContent>
           <div className="grid gap-4 sm:grid-cols-2 sm:grid-rows-3 lg:grid-cols-3 lg:grid-rows-2">

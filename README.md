@@ -34,7 +34,7 @@
 
 ## DB RELATED
 
-- [ ] Teambuilder
+- [x] Teambuilder
 
 - [x] create user
 - [x] delete user

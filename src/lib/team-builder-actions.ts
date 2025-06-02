@@ -83,6 +83,36 @@ export async function getTeamByIdAndUserId(teamId: number, userId: string) {
 
 // Delete a team
 export async function deleteTeam(teamId: number) {
+  // Get all custom Pokémon for the team
+  const customMons = await db
+    .select()
+    .from(customPokemon)
+    .where(eq(customPokemon.team_id, teamId));
+
+  // Delete all moves and ev spreads for each custom Pokémon
+  for (const mon of customMons) {
+    await db
+      .delete(pokemonMoves)
+      .where(
+        and(
+          eq(pokemonMoves.team_id, teamId),
+          eq(pokemonMoves.pokemon_id, mon.pokemon_id),
+        ),
+      );
+    await db
+      .delete(evSpreads)
+      .where(
+        and(
+          eq(evSpreads.team_id, teamId),
+          eq(evSpreads.pokemon_id, mon.pokemon_id),
+        ),
+      );
+  }
+
+  // Delete all custom Pokémon for the team
+  await db.delete(customPokemon).where(eq(customPokemon.team_id, teamId));
+
+  // Finally, delete the team
   return await db.delete(pokemonteams).where(eq(pokemonteams.team_id, teamId));
 }
 
