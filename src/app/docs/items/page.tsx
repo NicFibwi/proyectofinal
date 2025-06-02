@@ -102,11 +102,11 @@ function ItemsPageContent() {
   });
 
   // Get initial values from URL search params
-  const initialPage = searchParams.get("page")
+  const initialPage = searchParams?.get("page")
     ? Number.parseInt(searchParams.get("page")!, 10)
     : 1;
-  const initialNameFilter = searchParams.get("name") ?? "";
-  const initialCategoryFilter = searchParams.get("category") ?? "";
+  const initialNameFilter = searchParams?.get("name") ?? "";
+  const initialCategoryFilter = searchParams?.get("category") ?? "";
 
   const [currentPage, setCurrentPage] = useState(initialPage);
   const [nameFilter, setNameFilter] = useState(initialNameFilter);
@@ -119,7 +119,7 @@ function ItemsPageContent() {
     name?: string;
     category?: string;
   }) => {
-    const newSearchParams = new URLSearchParams(searchParams.toString());
+    const newSearchParams = new URLSearchParams(searchParams?.toString() ?? "");
 
     // Update or remove parameters based on their values
     if (params.page && params.page > 1) {
@@ -327,7 +327,7 @@ function ItemsPageContent() {
                     ))}
                   </TableHeader>
                   <TableBody>
-                    {table.getRowModel().rows.length ? (      
+                    {table.getRowModel().rows.length ? (
                       table.getRowModel().rows.map((row) => (
                         <TableRow
                           key={row.id}

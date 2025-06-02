@@ -31,7 +31,7 @@ function AbilitiesListPageContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState(
-    searchParams.get("search") ?? "",
+    searchParams?.get("search") ?? "",
   );
 
   useEffect(() => {

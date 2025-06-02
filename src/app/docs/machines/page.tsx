@@ -41,9 +41,9 @@ function MachinePageContent() {
   const searchParams = useSearchParams();
 
   // Get filter values from URL
-  const generationFilter = searchParams.get("generation") ?? "";
-  const machineFilter = searchParams.get("machine") ?? "";
-  const moveFilter = searchParams.get("move") ?? "";
+  const generationFilter = searchParams?.get("generation") ?? "";
+  const machineFilter = searchParams?.get("machine") ?? "";
+  const moveFilter = searchParams?.get("move") ?? "";
 
   // Local state for form inputs
   const [generation, setGeneration] = useState(generationFilter);

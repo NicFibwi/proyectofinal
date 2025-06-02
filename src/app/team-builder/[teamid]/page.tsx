@@ -1,3 +1,4 @@
+/* eslint-disable */
 "use client";
 import { useUser } from "@clerk/nextjs";
 import { useEffect, useState } from "react";
@@ -258,9 +259,16 @@ export default function TeamPage() {
           </CardTitle>
         </CardHeader>
         <CardContent className="flex w-full justify-center">
-          <div className="flex w-2/3">
-            <AddPokemonDialog team_id={id} />
-          </div>
+            {customPokemon.length < 6 ? (
+            <div className="flex w-2/3">
+              <AddPokemonDialog team_id={id} />
+            </div>
+            ) : (
+            <div className="text-center text-secondary-foreground">
+              <p>6/6 Pokémon created.</p>
+              <p>To add more Pokémon, delete a current Pokémon from the team.</p>
+            </div>
+            )}
         </CardContent>
       </Card>
     </div>

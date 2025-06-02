@@ -28,8 +28,8 @@ function MovesTablePageContent() {
   const searchParams = useSearchParams();
 
   // Get filter values from URL
-  const nameFilter = searchParams.get("name") ?? "";
-  const categoryFilter = searchParams.get("category") ?? "";
+  const nameFilter = searchParams?.get("name") ?? "";
+  const categoryFilter = searchParams?.get("category") ?? "";
 
   // Local state for input fields
   const [nameInput, setNameInput] = useState(nameFilter);

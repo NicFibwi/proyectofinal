@@ -129,12 +129,12 @@ export async function createItem(itemObject: ItemInfo) {
   const description =
     itemObject?.flavor_text_entries
       ?.find((entry) => entry.language.name === "en")
-      ?.text?.replace(/\f/g, " ") || "";
+      ?.text?.replace(/\f/g, " ") ?? "";
 
   await db.insert(items).values({
     item_id: itemObject.id,
     name: itemObject.name,
-    description: description || "",
+    description: description ?? "",
   });
 }
 
@@ -154,8 +154,8 @@ export async function createNature(natureObject: Nature) {
   return await db.insert(natures).values({
     nature_id: natureObject.id,
     name: natureObject.name,
-    boost_stat: natureObject.increased_stat?.name || null,
-    nerf_stat: natureObject.decreased_stat?.name || null,
+    boost_stat: natureObject.increased_stat?.name ?? null,
+    nerf_stat: natureObject.decreased_stat?.name ?? null,
   });
 }
 
@@ -174,12 +174,12 @@ export async function createAbility(abilityObject: AbilityInfo) {
   const description =
     abilityObject?.flavor_text_entries
       ?.find((entry) => entry.language.name === "en")
-      ?.text?.replace(/\f/g, " ") || "";
+      ?.text?.replace(/\f/g, " ") ?? "";
 
   return await db.insert(abilities).values({
     ability_id: abilityObject.id,
     name: abilityObject.name,
-    description: description || "",
+    description: description ?? "",
   });
 }
 
@@ -198,7 +198,7 @@ export async function createMove(moveData: MoveInfo) {
   const description =
     moveData?.flavor_text_entries
       ?.find((entry) => entry.language.name === "en")
-      ?.text?.replace(/\f/g, " ") || "";
+      ?.text?.replace(/\f/g, " ") ?? "";
 
   return await db
     .insert(moves)
@@ -206,10 +206,10 @@ export async function createMove(moveData: MoveInfo) {
       move_id: moveData.id,
       name: moveData.name,
       typing: moveData.type.name,
-      power: moveData.power || 0,
-      accuracy: moveData.accuracy || 0,
-      PP: moveData.pp || 0,
-      effect: description || "",
+      power: moveData.power ?? 0,
+      accuracy: moveData.accuracy ?? 0,
+      PP: moveData.pp ?? 0,
+      effect: description ?? "",
     })
     .onConflictDoNothing();
 }

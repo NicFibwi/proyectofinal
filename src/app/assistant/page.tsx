@@ -15,7 +15,7 @@ import { Suspense } from "react";
 
 function AssistantPageContent() {
   const searchParams = useSearchParams();
-  const message = searchParams.get("message");
+  const message = searchParams ? searchParams.get("message") : null;
 
   return (
     <div className="space-y-6">

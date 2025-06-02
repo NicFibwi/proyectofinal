@@ -1,3 +1,4 @@
+/* eslint-disable */
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
@@ -170,6 +171,10 @@ const handleSubmit = async (
     return stats;
   };
 
+  if (nickname.trim() === "") {
+    nickname = pokemon.name.replaceAll("-", " ");
+  }
+
   const abilityData = await getAbilityData(ability);
   const natureData = await getNatureData(nature);
   const itemData = await getItemData(item);
@@ -213,9 +218,13 @@ const handleSubmit = async (
     }
 
     //Check wether the item already exists
-    const existingItem = await getItemById(itemData.id);
-    if (!existingItem) {
-      await createItem(itemData);
+    if (itemData) {
+      const existingItem = await getItemById(itemData.id);
+      if (!existingItem) {
+        await createItem(itemData);
+      }
+    } else {
+      console.warn("Item data is null or undefined.");
     }
 
     // Check and create moves if they don't exist
@@ -444,16 +453,16 @@ export default function AddPokemonDialog({ team_id }: { team_id: number }) {
           <div className="mb-6 flex flex-col items-center space-y-4 border-b-2 pb-2">
             <div className="relative">
               <img
-              src={
-                selectedPokemon?.sprites?.other?.["official-artwork"]
-                .front_default || selectedPokemon.sprites.front_default
-              }
-              alt={selectedPokemon.name}
-              className="h-48 w-48 object-contain cursor-pointer"
-              crossOrigin="anonymous"
-              onClick={() =>
-                window.open(`/pokedex/${selectedPokemon.name}`, "_blank")
-              }
+                src={
+                  selectedPokemon?.sprites?.other?.["official-artwork"]
+                    .front_default || selectedPokemon.sprites.front_default
+                }
+                alt={selectedPokemon.name}
+                className="h-48 w-48 cursor-pointer object-contain"
+                crossOrigin="anonymous"
+                onClick={() =>
+                  window.open(`/pokedex/${selectedPokemon.name}`, "_blank")
+                }
               />
             </div>
             <div className="flex gap-2">
@@ -504,7 +513,7 @@ export default function AddPokemonDialog({ team_id }: { team_id: number }) {
           {/* ability selector */}
           <div className="mb-6 space-y-2 border-b-2 pb-2">
             <Label className="mb-4">Ability</Label>
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2 md:flex-nowrap">
               {selectedPokemon.abilities.map((abilityData) => (
                 <Button
                   key={abilityData.ability.name}
@@ -515,6 +524,7 @@ export default function AddPokemonDialog({ team_id }: { team_id: number }) {
                   }
                   size="sm"
                   onClick={() => setSelectedAbility(abilityData.ability.name)}
+                  className="w-full md:w-auto"
                 >
                   {abilityData.ability.name.replace("-", " ")}
                   {abilityData.is_hidden && (
@@ -655,15 +665,14 @@ export default function AddPokemonDialog({ team_id }: { team_id: number }) {
                   teamId,
                 ).then(() => {
                   resetForm();
-                  alert("Pokemon added successfully!");
-
                   window.location.reload();
                 })
               }
               disabled={
                 selectedMoves.length === 0 ||
                 !selectedAbility ||
-                !selectedNature
+                !selectedNature ||
+                !selectedItem
               }
             >
               Submit

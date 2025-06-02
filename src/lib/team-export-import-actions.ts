@@ -110,19 +110,15 @@ export async function importTeam(
   newTeamName?: string,
 ): Promise<number> {
   try {
-    const parsedData: ExportedTeam = JSON.parse(teamData);
+    const parsedData = JSON.parse(teamData) as ExportedTeam;
 
-    // Validate the data structure
     if (!parsedData.teamName || !Array.isArray(parsedData.pokemon)) {
       throw new Error("Invalid team data format");
     }
 
-    // Create new team
-    const teamName = newTeamName || `${parsedData.teamName} (Imported)`;
+    const teamName = newTeamName ?? `${parsedData.teamName} (Imported)`;
     const newTeamResult = await createTeam(userId, teamName);
 
-    // Get the new team ID (this depends on your createTeam implementation)
-    // You might need to modify this based on what createTeam returns
     const newTeams = await db
       .select()
       .from(pokemonteams)

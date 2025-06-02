@@ -24,6 +24,7 @@ import {
   DialogTrigger,
 } from "./ui/dialog";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 // Cache for evolution data to reduce API calls
 const evolutionCache = new Map<
@@ -437,7 +438,6 @@ export default function PokemonWordle() {
           (g) => g.pokemon.name.toLowerCase() === fullName.toLowerCase(),
         )
       ) {
-        alert("You have already guessed this Pokémon!");
         return;
       }
 

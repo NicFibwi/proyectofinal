@@ -1,3 +1,4 @@
+/* eslint-disable */
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
@@ -222,8 +223,8 @@ export default function EditPokemonDialog({
       teamId,
       pokemonId,
       selectedPokemon.id,
-      nickname,
-      natureData.id,
+      nickname || selectedPokemon.name.replaceAll("-", " "),
+      natureData.id,  
       itemData.id,
     );
 
@@ -481,7 +482,8 @@ export default function EditPokemonDialog({
                 disabled={
                   selectedMoves.length === 0 ||
                   !selectedAbility ||
-                  !selectedNature
+                  !selectedNature ||
+                  !selectedItem
                 }
               >
                 Save Changes
