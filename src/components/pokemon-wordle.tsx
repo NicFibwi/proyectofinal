@@ -538,7 +538,7 @@ export default function PokemonWordle() {
         })
         .join("\n") +
       "\n\n" +
-      "Play at: pokecompanion.net"; // Add line breaks between guesses;
+      "Play at: pokecompanion.xyz";
 
     return `${resultHeader}\n\n${resultBody}`;
   };
@@ -664,9 +664,9 @@ export default function PokemonWordle() {
                 Share
               </Button>
               {shareMessage && (
-                <div className="mt-2 text-center text-sm text-green-500">
+                <span className="mt-2 text-center text-sm text-green-500">
                   {shareMessage}
-                </div>
+                </span>
               )}
             </DialogDescription>
           </DialogHeader>
