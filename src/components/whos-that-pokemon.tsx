@@ -123,7 +123,14 @@ function PokemonGameContent() {
       if (pokemon) {
         const nextLetterIndex = revealedName.length;
         if (nextLetterIndex < pokemon.name.length) {
-          setRevealedName(pokemon.name.slice(0, nextLetterIndex + 1));
+          const newRevealed = pokemon.name.slice(0, nextLetterIndex + 1);
+          setRevealedName(newRevealed);
+
+          // If all letters are revealed, automatically show the answer
+          if (newRevealed.length === pokemon.name.length) {
+            setShowAnswer(true);
+            setIsCorrect(false);
+          }
         }
       }
     }
@@ -188,7 +195,14 @@ function PokemonGameContent() {
           <div
             className={`transition-opacity duration-300 ${showAnswer ? "opacity-0" : "opacity-100"}`}
           >
-            <canvas ref={canvasRef} className="h-auto max-h-64 max-w-full" />
+            {isLoading ? (
+              <div className="flex h-64 items-center justify-center">
+                <Loader2 className="h-10 w-10 animate-spin" />
+                <span className="ml-2">Loading image...</span>
+              </div>
+            ) : (
+              <canvas ref={canvasRef} className="h-auto max-h-64 max-w-full" />
+            )}
           </div>
 
           {/* Reveal image */}

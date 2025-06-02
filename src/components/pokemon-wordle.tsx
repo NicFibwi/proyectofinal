@@ -427,59 +427,117 @@ export default function PokemonWordle() {
     }
   };
 
-  // Handle guess submission
-  const handleKeyDown = async (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter" && guess.trim() !== "") {
-      const fullName = helpers.getFullPokemonName(guess.trim());
+  // Add a handler for submit button and enter key
+  const handleGuessSubmit = async () => {
+    if (guess.trim() === "") return;
+    const fullName = helpers.getFullPokemonName(guess.trim());
 
-      // Check if already guessed
+    // Check if already guessed
+    if (
+      guesses.some(
+        (g) => g.pokemon.name.toLowerCase() === fullName.toLowerCase(),
+      )
+    ) {
+      return;
+    }
+
+    try {
+      // Fetch Pokémon data
+      const guessedPokemon = await api.getPokemonData(fullName);
+      const speciesData = await api.getPokemonSpeciesData(
+        guessedPokemon.species.url,
+      );
+
+      // Get evolution data
+      const { stage, isFinalEvo } = await analyzeEvolution(
+        speciesData.evolution_chain.url,
+        guessedPokemon.name,
+      );
+
+      // Add to guesses
+      setGuesses((prevGuesses) => [
+        ...prevGuesses,
+        {
+          pokemon: guessedPokemon,
+          species: speciesData,
+          evoStage: stage,
+          isFinalEvo,
+        },
+      ]);
+
+      // Check if correct
       if (
-        guesses.some(
-          (g) => g.pokemon.name.toLowerCase() === fullName.toLowerCase(),
-        )
+        guessedPokemon.name.toLowerCase() === targetPokemon?.name.toLowerCase()
       ) {
-        return;
+        setIsCorrect(true);
+        setIsOpen(true); // Automatically open the dialog
       }
+    } catch (error) {
+      console.error("Failed to fetch Pokémon data for the guess:", error);
+    }
 
-      try {
-        // Fetch Pokémon data
-        const guessedPokemon = await api.getPokemonData(fullName);
-        const speciesData = await api.getPokemonSpeciesData(
-          guessedPokemon.species.url,
-        );
+    setGuess("");
+  };
 
-        // Get evolution data
-        const { stage, isFinalEvo } = await analyzeEvolution(
-          speciesData.evolution_chain.url,
-          guessedPokemon.name,
-        );
-
-        // Add to guesses
-        setGuesses((prevGuesses) => [
-          ...prevGuesses,
-          {
-            pokemon: guessedPokemon,
-            species: speciesData,
-            evoStage: stage,
-            isFinalEvo,
-          },
-        ]);
-
-        // Check if correct
-        if (
-          guessedPokemon.name.toLowerCase() ===
-          targetPokemon?.name.toLowerCase()
-        ) {
-          setIsCorrect(true);
-          setIsOpen(true); // Automatically open the dialog
-        }
-      } catch (error) {
-        console.error("Failed to fetch Pokémon data for the guess:", error);
-      }
-
-      setGuess("");
+  const handleKeyDown = async (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      await handleGuessSubmit();
     }
   };
+
+  // Handle guess submission
+  // const handleKeyDown = async (e: React.KeyboardEvent<HTMLInputElement>) => {
+  //   if (e.key === "Enter" && guess.trim() !== "") {
+  //     const fullName = helpers.getFullPokemonName(guess.trim());
+
+  //     // Check if already guessed
+  //     if (
+  //       guesses.some(
+  //         (g) => g.pokemon.name.toLowerCase() === fullName.toLowerCase(),
+  //       )
+  //     ) {
+  //       return;
+  //     }
+
+  //     try {
+  //       // Fetch Pokémon data
+  //       const guessedPokemon = await api.getPokemonData(fullName);
+  //       const speciesData = await api.getPokemonSpeciesData(
+  //         guessedPokemon.species.url,
+  //       );
+
+  //       // Get evolution data
+  //       const { stage, isFinalEvo } = await analyzeEvolution(
+  //         speciesData.evolution_chain.url,
+  //         guessedPokemon.name,
+  //       );
+
+  //       // Add to guesses
+  //       setGuesses((prevGuesses) => [
+  //         ...prevGuesses,
+  //         {
+  //           pokemon: guessedPokemon,
+  //           species: speciesData,
+  //           evoStage: stage,
+  //           isFinalEvo,
+  //         },
+  //       ]);
+
+  //       // Check if correct
+  //       if (
+  //         guessedPokemon.name.toLowerCase() ===
+  //         targetPokemon?.name.toLowerCase()
+  //       ) {
+  //         setIsCorrect(true);
+  //         setIsOpen(true); // Automatically open the dialog
+  //       }
+  //     } catch (error) {
+  //       console.error("Failed to fetch Pokémon data for the guess:", error);
+  //     }
+
+  //     setGuess("");
+  //   }
+  // };
 
   // Render comparison indicator (up/down arrow or nothing if correct)
   const renderComparisonIndicator = (
@@ -511,8 +569,8 @@ export default function PokemonWordle() {
 
           // Generate row of emojis for the guess
           return [
-            targetGenNum === guessGenNum ? "🟩" : "🟥", // Generation
-            guess.evoStage === targetPokemonEvoStage ? "🟩" : "🟥", // Evolution Stage
+            targetGenNum === guessGenNum ? "🟩" : "🟥",
+            guess.evoStage === targetPokemonEvoStage ? "🟩" : "🟥",
             guess.pokemon.types[0]?.type?.name ===
             targetPokemon?.types[0]?.type?.name
               ? "🟩"
@@ -531,9 +589,9 @@ export default function PokemonWordle() {
                     targetPokemon?.types[0]?.type?.name
                   ? "🟨"
                   : "🟥", // Type 2
-            targetPokemon?.weight === guess.pokemon.weight ? "🟩" : "🟥", // Weight
-            targetPokemon?.height === guess.pokemon.height ? "🟩" : "🟥", // Height
-            guess.isFinalEvo === targetPokemonIsFinalEvo ? "🟩" : "🟥", // Final Evolution
+            targetPokemon?.weight === guess.pokemon.weight ? "🟩" : "🟥",
+            targetPokemon?.height === guess.pokemon.height ? "🟩" : "🟥",
+            guess.isFinalEvo === targetPokemonIsFinalEvo ? "🟩" : "🟥",
           ].join("");
         })
         .join("\n") +
@@ -543,7 +601,6 @@ export default function PokemonWordle() {
     return `${resultHeader}\n\n${resultBody}`;
   };
 
-  // Handle the "Share" button click
   const handleShare = () => {
     const result = generateShareableResult();
     navigator.clipboard
@@ -557,7 +614,6 @@ export default function PokemonWordle() {
       });
   };
 
-  // If the component hasn't mounted yet, return a loading state
   if (!hasMounted) {
     return (
       <div className="flex w-full justify-center p-8">
@@ -587,8 +643,8 @@ export default function PokemonWordle() {
           onChange={(e) => setGuess(e.target.value)}
           onKeyDown={handleKeyDown}
           list="pokemon-suggestions"
-          className="mr-4 mb-2"
-          disabled={isCorrect || isGivenUp} // Disable input if game is over
+          className="mr-2 mb-2"
+          disabled={isCorrect || isGivenUp}
         />
 
         {guess.trim() !== "" && (
@@ -600,7 +656,7 @@ export default function PokemonWordle() {
                   .toLowerCase()
                   .startsWith(guess.toLowerCase()),
               )
-              .slice(0, 10) // Limit suggestions for better performance
+              .slice(0, 10)
               .map((pokemon) => (
                 <option
                   key={pokemon.name}
@@ -610,20 +666,14 @@ export default function PokemonWordle() {
           </datalist>
         )}
         <Button
-          onClick={() => {
-            if (!isCorrect && guesses.length > 0) {
-              setIsGivenUp(true);
-              setIsOpen(true); // Ensure the dialog opens
-            } else {
-              void fetchNewRandomPokemon(); // Fetch a new Pokémon
-            }
-          }}
-          className="mb-4"
+          onClick={handleGuessSubmit}
+          className="mb-2"
+          disabled={isCorrect || isGivenUp || guess.trim() === ""}
           variant="default"
         >
-          <RefreshCw className="mr-2 h-4 w-4" />
-          {!isCorrect && guesses.length > 0 ? "Give Up" : "New Pokémon"}
+          Submit
         </Button>
+        {/* Removed the New/Give Up button from here */}
       </div>
 
       <Dialog
@@ -853,13 +903,30 @@ export default function PokemonWordle() {
             </Card>
           );
         })}
-
-        {(isCorrect || isGivenUp) && (
-          <Button onClick={() => setIsOpen(true)} className="mt-4">
-            Show modal
-          </Button>
-        )}
       </div>
+
+      {/* Move the New Pokémon / Give Up button here for better UX */}
+      <div className="mt-6 flex w-full max-w-3xl flex-row justify-center"></div>
+      {(isCorrect || isGivenUp) && (
+        <Button onClick={() => setIsOpen(true)} className="mt-4">
+          Show modal
+        </Button>
+      )}
+      <Button
+        onClick={() => {
+          if (!isCorrect && guesses.length > 0) {
+            setIsGivenUp(true);
+            setIsOpen(true);
+          } else {
+            void fetchNewRandomPokemon();
+          }
+        }}
+        variant="default"
+        className="mt-4"
+      >
+        <RefreshCw className="mr-2 h-4 w-4" />
+        {!isCorrect && guesses.length > 0 ? "Give Up" : "New Pokémon"}
+      </Button>
     </div>
   );
 }
