@@ -1,5 +1,3 @@
-//the table of pokemon that can learn the move
-
 import type { MoveInfo } from "~/types/types";
 import { Card, CardContent } from "./ui/card";
 import Link from "next/link";

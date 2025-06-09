@@ -24,7 +24,6 @@ import {
   DialogTrigger,
 } from "./ui/dialog";
 import { useRouter } from "next/navigation";
-import { toast } from "sonner";
 
 // Cache for evolution data to reduce API calls
 const evolutionCache = new Map<
@@ -485,61 +484,6 @@ export default function PokemonWordle() {
     }
   };
 
-  // Handle guess submission
-  // const handleKeyDown = async (e: React.KeyboardEvent<HTMLInputElement>) => {
-  //   if (e.key === "Enter" && guess.trim() !== "") {
-  //     const fullName = helpers.getFullPokemonName(guess.trim());
-
-  //     // Check if already guessed
-  //     if (
-  //       guesses.some(
-  //         (g) => g.pokemon.name.toLowerCase() === fullName.toLowerCase(),
-  //       )
-  //     ) {
-  //       return;
-  //     }
-
-  //     try {
-  //       // Fetch Pokémon data
-  //       const guessedPokemon = await api.getPokemonData(fullName);
-  //       const speciesData = await api.getPokemonSpeciesData(
-  //         guessedPokemon.species.url,
-  //       );
-
-  //       // Get evolution data
-  //       const { stage, isFinalEvo } = await analyzeEvolution(
-  //         speciesData.evolution_chain.url,
-  //         guessedPokemon.name,
-  //       );
-
-  //       // Add to guesses
-  //       setGuesses((prevGuesses) => [
-  //         ...prevGuesses,
-  //         {
-  //           pokemon: guessedPokemon,
-  //           species: speciesData,
-  //           evoStage: stage,
-  //           isFinalEvo,
-  //         },
-  //       ]);
-
-  //       // Check if correct
-  //       if (
-  //         guessedPokemon.name.toLowerCase() ===
-  //         targetPokemon?.name.toLowerCase()
-  //       ) {
-  //         setIsCorrect(true);
-  //         setIsOpen(true); // Automatically open the dialog
-  //       }
-  //     } catch (error) {
-  //       console.error("Failed to fetch Pokémon data for the guess:", error);
-  //     }
-
-  //     setGuess("");
-  //   }
-  // };
-
-  // Render comparison indicator (up/down arrow or nothing if correct)
   const renderComparisonIndicator = (
     guessValue: number | undefined,
     targetValue: number | undefined,

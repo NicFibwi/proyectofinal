@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useState, useEffect, Suspense } from "react";
 import { AlertCircle, Loader2 } from "lucide-react";
-import { Input } from "~/components/ui/input"; // Assuming shadcn Input component is here
+import { Input } from "~/components/ui/input"; 
 import { AbilityCard } from "~/components/ability-card";
 import type { Ability} from "~/types/types";
 
@@ -25,7 +25,7 @@ function AbilitiesListPageContent() {
   } = useQuery({
     queryKey: ["abilityInfo"],
     queryFn: () => getAllAbilities(),
-    staleTime: 1000 * 60 * 60, // 1 hour
+    staleTime: 1000 * 60 * 60, 
   });
 
   const searchParams = useSearchParams();

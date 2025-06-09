@@ -39,14 +39,7 @@ import { useCallback } from "react";
 import EditPokemonDialog from "~/components/edit-pokemon-dialog";
 import { TeamExport } from "~/components/team-export-import";
 
-interface EVStats {
-  hp: number;
-  attack: number;
-  defense: number;
-  "special-attack": number;
-  "special-defense": number;
-  speed: number;
-}
+
 
 export default function TeamPage() {
   const { user } = useUser();
@@ -82,7 +75,7 @@ export default function TeamPage() {
       nature: nature?.name || "None",
       moves: moveNames,
       nickname: poke.nickname,
-      evs: evs || null, // <-- add EVs to details
+      evs: evs || null,
     });
   }, []);
 

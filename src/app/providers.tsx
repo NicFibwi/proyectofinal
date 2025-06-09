@@ -12,8 +12,8 @@ export function PostHogProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY as string, {
       api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST || 'https://eu.i.posthog.com',
-      person_profiles: 'identified_only', // or 'always' to create profiles for anonymous users as well
-      capture_pageview: false // Disable automatic pageview capture, as we capture manually
+      person_profiles: 'identified_only', 
+      capture_pageview: false 
     })
   }, [])
 
@@ -45,9 +45,7 @@ function PostHogPageView() {
   return null
 }
 
-// Wrap PostHogPageView in Suspense to avoid the useSearchParams usage above
-// from de-opting the whole app into client-side rendering
-// See: https://nextjs.org/docs/messages/deopted-into-client-rendering
+
 function SuspendedPostHogPageView() {
   return (
     <Suspense fallback={null}>

@@ -271,7 +271,7 @@ function ItemsPageContent() {
                 onChange={(e) => {
                   const newValue = e.target.value;
                   setNameFilter(newValue);
-                  setCurrentPage(1); // Reset to first page on filter change
+                  setCurrentPage(1); 
                   updateSearchParams({ name: newValue, page: 1 });
                 }}
                 className="pl-8"
@@ -280,8 +280,8 @@ function ItemsPageContent() {
             <Select
               value={categoryFilter}
               onValueChange={(value) => {
-                setCategoryFilter(value === "all" ? "" : value); // Handle "all" as no filter
-                setCurrentPage(1); // Reset to first page on filter change
+                setCategoryFilter(value === "all" ? "" : value); 
+                setCurrentPage(1); 
                 updateSearchParams({
                   category: value === "all" ? "" : value,
                   page: 1,

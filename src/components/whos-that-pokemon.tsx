@@ -27,7 +27,7 @@ import { Loader2, RefreshCw, Trophy } from "lucide-react";
 import type { Result, Pokemon, PokemonList } from "~/types/types";
 
 const queryClient = new QueryClient();
-function PokemonGameContent() {
+function WhosThatPokemonContent() {
   const [randomPokemonId, setRandomPokemonId] = useState<number>(
     Math.floor(Math.random() * 1025) + 1,
   );
@@ -84,14 +84,14 @@ function PokemonGameContent() {
       img.src = pokemon.sprites.other["official-artwork"].front_default;
 
       img.onload = () => {
-        // Set canvas dimensions to match image
+    
         canvas.width = img.width;
         canvas.height = img.height;
 
-        // Draw the image
+ 
         ctx.drawImage(img, 0, 0);
 
-        // Create silhouette effect
+      
         ctx.globalCompositeOperation = "source-in";
         ctx.fillStyle = "black";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -101,7 +101,7 @@ function PokemonGameContent() {
 
   useEffect(() => {
     if (pokemon) {
-      setRevealedName(""); // Start with no letter revealed
+      setRevealedName(""); 
     }
   }, [pokemon]);
 
@@ -109,7 +109,7 @@ function PokemonGameContent() {
     setGuess(pokemonName);
     setOpenCommandMenu(false);
 
-    setTries(tries + 1); // Increment tries on each guess
+    setTries(tries + 1);
 
     if (pokemon && pokemonName.toLowerCase() === pokemon.name.toLowerCase()) {
       setScore(score + 1);
@@ -119,14 +119,14 @@ function PokemonGameContent() {
       setIsCorrect(false);
       setShowAnswer(false);
 
-      // Reveal the next letter of the Pokémon's name
+    
       if (pokemon) {
         const nextLetterIndex = revealedName.length;
         if (nextLetterIndex < pokemon.name.length) {
           const newRevealed = pokemon.name.slice(0, nextLetterIndex + 1);
           setRevealedName(newRevealed);
 
-          // If all letters are revealed, automatically show the answer
+         
           if (newRevealed.length === pokemon.name.length) {
             setShowAnswer(true);
             setIsCorrect(false);
@@ -142,8 +142,8 @@ function PokemonGameContent() {
     setShowAnswer(false);
     setIsCorrect(false);
     setOpenCommandMenu(false);
-    setRevealedName(""); // Reset the revealed name
-    setTries(0); // Reset tries counter
+    setRevealedName("");
+    setTries(0); 
   };
 
   const handleReveal = () => {
@@ -185,7 +185,7 @@ function PokemonGameContent() {
           <span className="font-bold">Score: {score}</span>
         </div>
         <div className="text-muted-foreground text-center text-sm">
-          Tries: {tries} {/* Display the tries counter */}
+          Tries: {tries} 
         </div>
       </CardHeader>
 
@@ -300,10 +300,10 @@ function PokemonGameContent() {
   );
 }
 
-export default function PokemonGame() {
+export default function WhosThatPokemon() {
   return (
     <QueryClientProvider client={queryClient}>
-      <PokemonGameContent />
+      <WhosThatPokemonContent />
     </QueryClientProvider>
   );
 }

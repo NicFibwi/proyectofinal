@@ -33,7 +33,7 @@ export default function PokemonDetailsPage({
 }: {
   params: Promise<{ name: string }>;
 }) {
-  const params = React.use(paramsPromise); // Unwrap the params Promise
+  const params = React.use(paramsPromise); 
   const { name } = params;
 
   const {
@@ -54,7 +54,7 @@ export default function PokemonDetailsPage({
   } = useQuery({
     queryKey: ["speciesdata", speciesUrl],
     queryFn: () => getPokemonSpeciesData(speciesUrl!),
-    enabled: !!speciesUrl, // Only fetch species data if the URL is available
+    enabled: !!speciesUrl, 
   });
 
   if (isLoadingPokemon || isLoadingSpecies) {

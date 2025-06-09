@@ -107,7 +107,7 @@ export default function MoveDetailCard({ name }: { name: string }) {
                       value={entry.version}
                       className={cn(
                         "text-xs capitalize hover:bg-gray-500",
-                        color, // Apply the color dynamically
+                        color, 
                       )}
                     >
                       {formatGenerationName(entry.version)}

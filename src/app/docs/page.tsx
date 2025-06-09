@@ -24,7 +24,6 @@ export default function DocsPage() {
         >
           <CardHeader>
             <div className="flex items-center gap-2">
-              {/* <div className="animate-float">{feature.icon}</div> */}
               <CardTitle>Items</CardTitle>
             </div>
             <CardDescription>List of all pokémon items</CardDescription>
@@ -45,7 +44,6 @@ export default function DocsPage() {
         >
           <CardHeader>
             <div className="flex items-center gap-2">
-              {/* <div className="animate-float">{feature.icon}</div> */}
               <CardTitle>Machines</CardTitle>
             </div>
             <CardDescription>List of all TMs and HMs</CardDescription>
@@ -66,7 +64,6 @@ export default function DocsPage() {
         >
           <CardHeader>
             <div className="flex items-center gap-2">
-              {/* <div className="animate-float">{feature.icon}</div> */}
               <CardTitle>Moves</CardTitle>
             </div>
             <CardDescription>List of all pokémon moves</CardDescription>
@@ -87,7 +84,6 @@ export default function DocsPage() {
         >
           <CardHeader>
             <div className="flex items-center gap-2">
-              {/* <div className="animate-float">{feature.icon}</div> */}
               <CardTitle>Abilities</CardTitle>
             </div>
             <CardDescription>List of all pokémon abilities</CardDescription>

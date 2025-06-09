@@ -15,13 +15,11 @@ import {
 } from "~/db/schema";
 import { eq, and, desc } from "drizzle-orm";
 import type {
-  Ability,
   AbilityInfo,
   ItemInfo,
   MoveInfo,
   Nature,
 } from "~/types/types";
-import { useMemo } from "react";
 
 // Add user to the database
 export async function addUser(userId: string, username: string) {

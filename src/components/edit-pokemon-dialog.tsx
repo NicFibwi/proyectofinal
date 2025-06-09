@@ -4,11 +4,9 @@
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import type {
-  ItemInfo,
-  MoveInfo,
-  Nature,
+
   Pokemon,
-  PokemonList,
+
 } from "~/types/types";
 import {
   Command,
@@ -33,8 +31,6 @@ import { Input } from "./ui/input";
 import {
   getCustomPokemonByTeamIdAndPokemonId,
   getBasePokemonById,
-  //   getPokemonMovesFull,
-  //   getAllAbilitiesForPokemon,
   getEvSpreadByTeamIdAndPokemonId,
   getMoveById,
   getAbilityById,
@@ -49,7 +45,6 @@ import {
   deletePokemonMoves,
   addPokemonMove,
   getPokemonMovesFull,
-  getAllAbilitiesForPokemon,
 } from "~/lib/team-builder-actions";
 import {
   getMoveData,
@@ -58,7 +53,6 @@ import {
   getNatureData,
   getAllItems,
   getAllNatures,
-  getAllPokemon,
 } from "./add-pokemon-dialog";
 import {
   Dialog,

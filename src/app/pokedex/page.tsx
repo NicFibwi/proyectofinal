@@ -213,7 +213,7 @@ function PokedexPageContent() {
       <div className="animate-fade-in">
         <h1 className="text-3xl font-bold tracking-tight">Pokédex</h1>
         <p className="text-muted-foreground">
-          Database of essential information about Pokémon and game mechanics
+          Database of essential information about Pokémon and their variants.
         </p>
       </div>
 

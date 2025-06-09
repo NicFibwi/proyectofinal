@@ -13,18 +13,8 @@ import {
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
-import { Textarea } from "~/components/ui/textarea";
-import {
-  getLatestSystemPrompt,
-  setSystemPrompt,
-} from "~/lib/team-builder-actions";
-import { useUser } from "@clerk/nextjs";
 import EditPromptForm from "~/app/admin/EditPromptForm";
 
-// const handleSubmit = async (textAreaPrompt: string) => {
-//   const userId = useUser().user?.id as string;
-//   await setSystemPrompt(userId, textAreaPrompt);
-// };
 
 export default async function AdminDashboard(params: {
   searchParams: Promise<{ search?: string }>;
@@ -38,14 +28,6 @@ export default async function AdminDashboard(params: {
   const client = await clerkClient();
 
   const users = query ? (await client.users.getUserList({ query })).data : [];
-
-  //   const [prompt, setPrompt] = useState("");
-
-  //   useEffect(() => {
-  //     getLatestSystemPrompt().then((promptText) => {
-  //       setPrompt(promptText || "");
-  //     });
-  //   });
 
   return (
     <div className="space-y-6">

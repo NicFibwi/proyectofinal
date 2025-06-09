@@ -27,7 +27,6 @@ export default function MinigamesPage() {
         </CardHeader>
         <CardContent>
           <div className="flex flex-col gap-4 md:flex-row md:justify-evenly">
-            {/* <HoverCardEffect key={"pokedle"} className="w-full"> */}
             <Card className="h-45 max-w-sm flex-1">
               <CardHeader>
                 <div className="flex items-center gap-2">
@@ -48,7 +47,6 @@ export default function MinigamesPage() {
                 </Link>
               </CardFooter>
             </Card>
-            {/* </HoverCardEffect> */}
 
             <Card className="h-45 max-w-sm flex-1">
               <CardHeader>
@@ -71,7 +69,6 @@ export default function MinigamesPage() {
               </CardFooter>
             </Card>
 
-            {/* <HoverCardEffect key={"randomon"} className="w-full"> */}
             <Card className="h-45 max-w-sm flex-1">
               <CardHeader>
                 <div className="flex items-center gap-2">
@@ -93,7 +90,6 @@ export default function MinigamesPage() {
                 </Link>
               </CardFooter>
             </Card>
-            {/* </HoverCardEffect> */}
           </div>
         </CardContent>
       </Card>
